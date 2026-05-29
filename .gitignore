@@ -1,0 +1,28 @@
+# Eclipse（個人環境依存のメタ情報のみ除外）
+# .project と .classpath は EGit でプロジェクトを共有するためにコミット対象とする
+.metadata/
+.settings/
+bin/
+tmp/
+*.tmp
+*.bak
+*.swp
+
+# ビルド成果物
+target/
+build/
+out/
+
+# ログ・OS固有
+*.log
+.DS_Store
+Thumbs.db
+
+# IDE固有（念のため）
+.idea/
+*.iml
+
+# 機密情報
+*.env
+*.key
+application-local.properties
