@@ -19,7 +19,7 @@ public class PetInformationDAO {
 		}
 		try (Connection conn = DriverManager.getConnection(JDBC_URL)){
 			
-			String sql = "INSERT INTO PetInformation(int petInformationID,int petID,String name,String gender,int age,String color,int pet_size,String vaccine,int price,String comment) VALUES(?,?,?,?,?,?,?,?,?,?)";
+			String sql = "INSERT INTO PetInformation( petInformationID, petID, name, gender, age, color, pet_size, vaccine, price, comment) VALUES(?,?,?,?,?,?,?,?,?,?)";
 			PreparedStatement pStmt = conn.prepareStatement(sql);
 			
 			pStmt.setInt(1, petInformation.getPetInformationID());
