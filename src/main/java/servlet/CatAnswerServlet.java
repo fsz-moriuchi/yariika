@@ -52,7 +52,7 @@ public class CatAnswerServlet extends HttpServlet {
 		request.setAttribute("percent", percent);
 						
 		//フォワード
-		RequestDispatcher dispatcher = request.getRequestDispatcher("WEB-INF/quiz_jsp/catResult.jsp");
+		RequestDispatcher dispatcher = request.getRequestDispatcher("WEB-INF/jsp/catResult.jsp");
 		dispatcher.forward(request, response);
 		}
 }

@@ -52,7 +52,7 @@ public class DogAnswerServlet extends HttpServlet {
 		request.setAttribute("percent", percent);
 				
 		//フォワード
-		RequestDispatcher dispatcher = request.getRequestDispatcher("WEB-INF/quiz_jsp/dogResult.jsp");
+		RequestDispatcher dispatcher = request.getRequestDispatcher("WEB-INF/jsp/dogResult.jsp");
 		dispatcher.forward(request, response);
 	}
 }

@@ -29,7 +29,7 @@ public class DogQuizServlet extends HttpServlet {
 		HttpSession session = request.getSession();
 		session.setAttribute("dogQuizList", dogQuizList);
 				
-		RequestDispatcher dispatcher = request.getRequestDispatcher("WEB-INF/quiz_jsp/dogQuiz.jsp");
+		RequestDispatcher dispatcher = request.getRequestDispatcher("WEB-INF/jsp/dogQuiz.jsp");
 		dispatcher.forward(request, response);
 	}
 }
