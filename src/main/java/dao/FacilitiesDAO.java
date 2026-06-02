@@ -6,14 +6,14 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import model.UserLogin;
-import model.User;
+import model.Facility;
+import model.FacilityLogin;
 
-public class UsersDAO {
+public class FacilitiesDAO {
 	private final String JDBC_URL = "jdbc:sqlserver://localhost\\\\\\\\SQLEXPRESS:61371;databaseName=master;integratedSecurity=true;encrypt=true;trustServerCertificate=true;";
 
-	public User findByLogin(UserLogin login) {
-		User user = null;
+	public Facility findByLogin(FacilityLogin login) {
+		Facility facility = null;
 
 		try {
 			Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
@@ -23,26 +23,26 @@ public class UsersDAO {
 
 		try (Connection conn = DriverManager.getConnection(JDBC_URL)) {
 
-			String sql = "SELECT USER_ID, PASSWORD_HASH FROM USERS WHERE USER_ID = ? AND PASSWORD_HASH= ?";
+			String sql = "SELECT FACILITY_ID, PASSWORD_HASH FROM FACILITIES WHERE FACILITY_ID = ? AND PASSWORD_HASH= ?";
 			PreparedStatement pStmt = conn.prepareStatement(sql);
-			pStmt.setString(1, login.getUserId());
+			pStmt.setString(1, login.getFacilityId());
 			pStmt.setString(2, login.getPasswordHash());
 
 			ResultSet rs = pStmt.executeQuery();
 
 			if (rs.next()) {
-				String userId = rs.getString("USER_ID");
+				String facilityId = rs.getString("FACILITY_ID");
 				String passwordHash = rs.getString("PASSWORD_HASH");
-				user = new User(userId, passwordHash);
+				facility = new Facility(facilityId, passwordHash);
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 			return null;
 		}
-		return user;
+		return facility;
 	}
 	
-	public boolean registerUser(User user) {
+	public boolean registerFacility(Facility facility) {
 		try {
 			Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
 		} catch (ClassNotFoundException e) {
@@ -50,11 +50,11 @@ public class UsersDAO {
 		}
 		try (Connection conn = DriverManager.getConnection(JDBC_URL)) {
 
-			String sql = "INSERT INTO USERS(USER_ID, PASSWORD_HASH) VALUES(?, ?)";
+			String sql = "INSERT INTO FACILITIES(FACILITY_ID, PASSWORD_HASH) VALUES(?, ?)";
 			PreparedStatement pStmt = conn.prepareStatement(sql);
 
-			pStmt.setString(1, user.getUserId());
-			pStmt.setString(2, user.getPasswordHash());
+			pStmt.setString(1, facility.getFacilityId());
+			pStmt.setString(2, facility.getPasswordHash());
 
 			int result = pStmt.executeUpdate();
 			if (result != 1) {
@@ -69,3 +69,5 @@ public class UsersDAO {
 
 
 }
+
+

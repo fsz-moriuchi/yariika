@@ -1,10 +1,10 @@
 package model;
 
-public class Login {
+public class UserLogin {
 	private String userId;
 	private String passwordHash;
 
-	public Login(String userId, String passwordHash) {
+	public UserLogin(String userId, String passwordHash) {
 		this.userId = userId;
 		this.passwordHash = passwordHash;
 	}

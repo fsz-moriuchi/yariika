@@ -8,19 +8,19 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
 
-import model.Login;
-import model.LoginLogic;
+import dao.UsersDAO;
+import model.User;
+import util.PasswordUtil;
 
-@WebServlet("/LoginServlet")
-public class LoginServlet extends HttpServlet {
+@WebServlet("/UserRegisterServlet")
+public class UserRegisterServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 
-		RequestDispatcher dispatcher = request.getRequestDispatcher("WEB-INF/jsp/login.jsp");
+		RequestDispatcher dispatcher = request.getRequestDispatcher("WEB-INF/jsp/userRegister.jsp");
 		dispatcher.forward(request, response);
 	}
 
@@ -29,19 +29,20 @@ public class LoginServlet extends HttpServlet {
 
 		request.setCharacterEncoding("UTF-8");
 		String userId = request.getParameter("userId");
-		String passwordHash = request.getParameter("passwordHash");
+		String password = request.getParameter("password");
 
-		Login login = new Login(userId, passwordHash);
-		LoginLogic bo = new LoginLogic();
-		boolean result = bo.execute(login);
+		String hash = PasswordUtil.hashPassword(password);
+
+		User user = new User(userId, hash);
+		UsersDAO dao = new UsersDAO();
+		boolean result = dao.registerUser(user);
 
 		if (result) {
-			HttpSession session = request.getSession();
-			session.setAttribute("userId", userId);
-			RequestDispatcher dispatcher = request.getRequestDispatcher("WEB-INF/jsp/");
-			dispatcher.forward(request, response);
+			response.sendRedirect("UserLoginServlet");
 		} else {
-			response.sendRedirect("LoginServlet");
+			request.setAttribute("errorMsg", "そのユーザーIDは既に使用されています");
+			RequestDispatcher dispatcher = request.getRequestDispatcher("WEB-INF/jsp/userRegister.jsp");
+			dispatcher.forward(request, response);
 		}
 	}
 
