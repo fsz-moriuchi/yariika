@@ -7,13 +7,13 @@ public class PetInformation {
 	private String gender;
 	private int age;
 	private String color;
-	private int pet_size;
+	private String pet_size;
 	private String vaccine;
 	private int price;
-	private String comment;
+	private String commentText;
 	
 	public PetInformation() {};
-	public PetInformation(int petInformationID,int petID,String name,String gender,int age,String color,int pet_size,String vaccine,int price,String comment) {
+	public PetInformation(int petInformationID,int petID,String name,String gender,int age,String color,String pet_size,String vaccine,int price,String commentText) {
 		this.petInformationID = petInformationID;
 		this.petID = petID;
 		this.name = name;
@@ -23,7 +23,7 @@ public class PetInformation {
 		this.pet_size = pet_size;
 		this.vaccine = vaccine;
 		this.price = price;
-		this.comment = comment;
+		this.commentText = commentText;
 	}
 
 	public int getPetInformationID() {
@@ -74,11 +74,11 @@ public class PetInformation {
 		this.color = color;
 	}
 
-	public int getPet_size() {
+	public String getPet_size() {
 		return pet_size;
 	}
 
-	public void setPet_size(int pet_size) {
+	public void setPet_size(String pet_size) {
 		this.pet_size = pet_size;
 	}
 
@@ -98,12 +98,12 @@ public class PetInformation {
 		this.price = price;
 	}
 
-	public String getComment() {
-		return comment;
+	public String getCommentText() {
+		return commentText;
 	}
 
-	public void setComment(String comment) {
-		this.comment = comment;
+	public void setCommentText(String commentText) {
+		this.commentText = commentText;
 	}
 
 }
