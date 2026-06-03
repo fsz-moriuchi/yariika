@@ -10,26 +10,20 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 
-@WebServlet("/MyPageServlet")
-public class MyPageServlet extends HttpServlet {
+@WebServlet("/SurveyEditServlet")
+public class SurveyEditServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
 	
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		/*
-		//ログインユーザーをセッションから取得
-		HttpSession session = request.getSession();
-		User user = (User) session.getAttribute("user");
-		*/
-		
-		//フォワード
-		RequestDispatcher dispatcher = request.getRequestDispatcher("WEB-INF/jsp/mypage.jsp");
+		RequestDispatcher dispatcher = request.getRequestDispatcher("WEB-INF/jsp/surveyEdit.jsp");
 		dispatcher.forward(request, response);
 	}
 
 	
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		
+		RequestDispatcher dispatcher = request.getRequestDispatcher("WEB-INF/jsp/surveyEdit.jsp");
+		dispatcher.forward(request, response);
 	}
 
 }

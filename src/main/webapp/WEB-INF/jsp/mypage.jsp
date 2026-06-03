@@ -11,17 +11,24 @@
 <body>
 <h1>マイページ</h1>
 
-<form action="" method="get"></form>
+<form action="UserInfoServlet" method="get">
 <button type="submit">個人情報確認</button>
 </form>
 
-<form action="MySurveyServlet" method="get">
+
+<form action="SurveyServlet" method="get">
 <button type="submit">アンケート回答</button>
 </form>
 
-<form action="MySurveyConfirmServlet" method="get">
+<form action="SurveyConfirmServlet" method="get">
 <button type="submit">アンケート確認</button>
 </form>
+
+
+<form action="ReservationServlet" method="get">
+<button type="submit">予約確認</button>
+</form>
+
 
 <form action="" method="get">
 <button type="submit">戻る</button>

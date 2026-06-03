@@ -10,20 +10,30 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 
-@WebServlet("/MyPageServlet")
-public class MyPageServlet extends HttpServlet {
+@WebServlet("/UserInfoServlet")
+public class UserInfoServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
 	
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		/*
-		//ログインユーザーをセッションから取得
+		//セッションからuserID取得
 		HttpSession session = request.getSession();
-		User user = (User) session.getAttribute("user");
+		User user = (User)session.getAttribute(user);
+		
+		int userId = user.getId();
+		
+		//UserDAOでDBからユーザー情報を取得
+		UserDAO dao = new UserDAO();
+		User user = dao.findById(userId);
+		
+		
+		//リクエストにセット
+		request.setAttribute("user", user);
 		*/
 		
 		//フォワード
-		RequestDispatcher dispatcher = request.getRequestDispatcher("WEB-INF/jsp/mypage.jsp");
+		RequestDispatcher dispatcher = request.getRequestDispatcher("WEB-INF/jsp/userInfo.jsp");
 		dispatcher.forward(request, response);
 	}
 
