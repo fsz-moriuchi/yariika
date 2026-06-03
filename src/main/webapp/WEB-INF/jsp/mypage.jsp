@@ -25,7 +25,7 @@
 </form>
 
 
-<form action="ReservationServlet" method="get">
+<form action="ReservationConfirmServlet" method="get">
 <button type="submit">予約確認</button>
 </form>
 
