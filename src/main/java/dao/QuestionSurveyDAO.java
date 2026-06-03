@@ -12,8 +12,8 @@ import model.Question;
 
 public class QuestionSurveyDAO {
 	
-	private final String JDBC_URL =
-			"jdbc:sqlserver://localhost\\\\\\\\SQLEXPRESS:53375;databaseName=master;integratedSecurity=true;encrypt=true;trustServerCertificate=true";
+	private final String JDBC_URL = "jdbc:sqlserver://localhost\\\\SQLEXPRESS:58956;databaseName=master;integratedSecurity=true;encrypt=true;trustServerCertificate=true";
+
 	public List<Question> findAllQuestion(){
 		List<Question> questionSurveyList = new ArrayList<>();
 	
