@@ -13,8 +13,8 @@ import model.PetInformationView;
 
 
 public class PetListDAO {
-	private final String JDBC_URL = "jdbc:sqlserver://localhost\\\\SQLEXPRESS:61371;databaseName=master;integratedSecurity=true;encrypt=true;trustServerCertificate=true";
-	
+	private final String JDBC_URL = "jdbc:sqlserver://localhost\\\\SQLEXPRESS:58956;databaseName=master;integratedSecurity=true;encrypt=true;trustServerCertificate=true";
+
 	public List<PetInformationView> showList() {
 		List<PetInformationView> petList = new ArrayList<>();
 		
