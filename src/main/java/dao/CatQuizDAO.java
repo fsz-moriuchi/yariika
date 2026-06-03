@@ -1,20 +1,16 @@
 package dao;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
 import model.CatQuiz;
+import util.DButil;
 
 public class CatQuizDAO {
-	//データベース接続に使用する情報
-	private final String JDBC_URL ="jdbc:sqlserver://localhost\\\\\\\\SQLEXPRESS:58887;databaseName=master;"
-	+"integratedSecurity=true;encrypt=true;trustServerCertificate=true;";
-
+	
 	// クイズ一覧取得
 	public List<CatQuiz> findAll() {
 		List<CatQuiz> catQuizList = new ArrayList<>();
@@ -26,7 +22,7 @@ public class CatQuizDAO {
 			throw new IllegalStateException("JDBCドライバを読み込めませんでした");
 		}
 		//データベースに接続
-		try(Connection conn = DriverManager.getConnection(JDBC_URL)){
+		try (Connection conn = DButil.getConnection()) {
 			//SELECT文を準備
 			String sql = "SELECT * FROM CatQuiz";
 			PreparedStatement ps = conn.prepareStatement(sql);
@@ -43,7 +39,7 @@ public class CatQuizDAO {
 				CatQuiz quiz = new CatQuiz(id, question, choice1,choice2, choice3, choice4, answer);
 				catQuizList.add(quiz);	//listに一件ずつ追加
 			}
-		}catch(SQLException e) {
+		}catch(Exception e) {
 			e.printStackTrace();
 			return null;
 		}
