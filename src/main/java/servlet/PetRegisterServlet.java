@@ -56,8 +56,14 @@ public class PetRegisterServlet extends HttpServlet {
 		boolean petInformation2 = dao.createPetInformation(petInformation);
 		
 		if(petInformation1 && petInformation2) {
-			RequestDispatcher dispatcher = request.getRequestDispatcher("WEB-INF/jsp/petRegisterSuccess.jsp");
-			dispatcher.forward(request, response);	
+
+		    RequestDispatcher dispatcher =
+		        request.getRequestDispatcher(
+		            "WEB-INF/jsp/petRegisterSuccess.jsp");
+		    dispatcher.forward(request, response);
+
+		} else {
+		    response.getWriter().println("IDが重複しています");
 		}
 		
 	}
