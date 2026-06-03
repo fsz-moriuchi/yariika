@@ -1,16 +1,14 @@
 package dao;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 
 import model.Facility;
 import model.FacilityLogin;
+import util.DButil;
 
 public class FacilitiesDAO {
-	private final String JDBC_URL = "jdbc:sqlserver://localhost\\\\\\\\SQLEXPRESS:61371;databaseName=master;integratedSecurity=true;encrypt=true;trustServerCertificate=true;";
 
 	public Facility findByLogin(FacilityLogin login) {
 		Facility facility = null;
@@ -21,7 +19,7 @@ public class FacilitiesDAO {
 			throw new IllegalStateException("JDBCドライバを読み込めませんでした");
 		}
 
-		try (Connection conn = DriverManager.getConnection(JDBC_URL)) {
+		try (Connection conn = DButil.getConnection()) {
 
 			String sql = "SELECT FACILITY_ID, PASSWORD_HASH FROM FACILITIES WHERE FACILITY_ID = ? AND PASSWORD_HASH= ?";
 			PreparedStatement pStmt = conn.prepareStatement(sql);
@@ -35,20 +33,20 @@ public class FacilitiesDAO {
 				String passwordHash = rs.getString("PASSWORD_HASH");
 				facility = new Facility(facilityId, passwordHash);
 			}
-		} catch (SQLException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 			return null;
 		}
 		return facility;
 	}
-	
+
 	public boolean registerFacility(Facility facility) {
 		try {
 			Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
 		} catch (ClassNotFoundException e) {
 			throw new IllegalStateException("JBDCドライバを読み込めませんでした");
 		}
-		try (Connection conn = DriverManager.getConnection(JDBC_URL)) {
+		try (Connection conn = DButil.getConnection()) {
 
 			String sql = "INSERT INTO FACILITIES(FACILITY_ID, PASSWORD_HASH) VALUES(?, ?)";
 			PreparedStatement pStmt = conn.prepareStatement(sql);
@@ -60,14 +58,11 @@ public class FacilitiesDAO {
 			if (result != 1) {
 				return false;
 			}
-		} catch (SQLException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 			return false;
 		}
 		return true;
 	}
 
-
 }
-
-
