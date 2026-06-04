@@ -1,6 +1,7 @@
 package servlet;
 
 import java.io.IOException;
+import java.sql.Date;
 
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletException;
@@ -8,7 +9,11 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 
+import dao.UserInfoDAO;
+import model.User;
+import model.UserInfo;
 
 @WebServlet("/UserEditServlet")
 public class UserEditServlet extends HttpServlet {
@@ -16,21 +21,18 @@ public class UserEditServlet extends HttpServlet {
 
 	//表示
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		/*
 		//セッション
 		HttpSession session = request.getSession();
-		User user = (User)session.getAttribute(user);
+		User user = (User)session.getAttribute("user");
 				
-		int userId = user.getId();
+		String userId = user.getUserId();
 				
 		//UserDAOでDBからユーザー情報を取得
-		UserDAO dao = new UserDAO();
-		User user = dao.findById(userId);
-				
+		UserInfoDAO dao = new UserInfoDAO();
+		UserInfo userInfo = dao.findByUserId(userId);
 				
 		//リクエストにセット
 		request.setAttribute("user", user);
-		*/
 		
 		RequestDispatcher dispatcher = request.getRequestDispatcher("WEB-INF/jsp/userEdit.jsp");
 		dispatcher.forward(request, response);
@@ -39,26 +41,33 @@ public class UserEditServlet extends HttpServlet {
 	
 	//データの更新
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		/*
 		//セッション
 		HttpSession session = request.getSession();
-		User user = (User)session.getAttribute(user);
+		User user = (User)session.getAttribute("user");
 		
-		//フォーム値で取得
+		String userId = user.getUserId();
 		
-		
-		int userId = user.getId();
+		 // フォームから取得
+	    String userName = request.getParameter("userName");
+	    String userGender = request.getParameter("userGender");
+	    String birthdayStr = request.getParameter("userBirthday");
+	    Date userBirthday = Date.valueOf(birthdayStr);
+		String userTel = request.getParameter("userTel");
+		String userMail = request.getParameter("userMail");
+		String userAddress = request.getParameter("userAddress");
+	    UserInfo userInfo = new UserInfo(0, userId, userName, userGender, userBirthday, userTel, userMail, userAddress);
 		
 		//UserDAOでDBをアップデート
-		UserDAO dao = new UserDAO();
-		User user = dao.update(userId);
+		UserInfoDAO dao = new UserInfoDAO();
+		boolean result = dao.updateInfo(userInfo);
 		
 		
-		//リクエストにセット
-		request.setAttribute("user", user);
-		*/
-		RequestDispatcher dispatcher = request.getRequestDispatcher("WEB-INF/jsp/userEdit.jsp");
-		dispatcher.forward(request, response);
+		if (result) {
+	        response.sendRedirect("UserInfoServlet"); // 更新後表示
+	    } else {
+	        request.setAttribute("errorMsg", "更新に失敗しました");
+	        RequestDispatcher dispatcher = request.getRequestDispatcher("WEB-INF/jsp/userEdit.jsp");
+	        dispatcher.forward(request, response);
+	    }
 	}
-
 }

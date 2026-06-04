@@ -8,7 +8,9 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 
+import model.User;
 import model.UserLogin;
 import model.UserLoginLogic;
 import util.PasswordUtil;
@@ -38,6 +40,11 @@ public class UserLoginServlet extends HttpServlet {
 		boolean result = bo.execute(login);
 
 		if (result) {
+			//追加
+			User user = bo.getUser(login);
+			HttpSession session = request.getSession();
+			session.setAttribute("user", user);
+			
 			response.sendRedirect("HomeServlet");
 		} else {
 			request.setAttribute("errorMsg", "ログインに失敗しました");
