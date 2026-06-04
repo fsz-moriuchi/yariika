@@ -28,6 +28,7 @@ public class PetRegisterServlet extends HttpServlet {
 		request.setCharacterEncoding("UTF-8");
 		
 		int petID = Integer.parseInt(request.getParameter("petID"));
+		String facilityID = request.getParameter("facilityID");
 		String category = request.getParameter("category");
 		int petInformationID = Integer.parseInt(request.getParameter("petInformationID"));
 		String name = request.getParameter("name");
@@ -47,7 +48,7 @@ public class PetRegisterServlet extends HttpServlet {
 		String commentText = request.getParameter("commentText");
 		
 		
-		Pet pet = new Pet(petID,category);
+		Pet pet = new Pet(petID, facilityID ,category);
 		PetInformation petInformation = new PetInformation(petInformationID, petID, name, gender, age, colorText, pet_size, vaccine, price, commentText);
 		
 		PetListDAO dao = new PetListDAO();

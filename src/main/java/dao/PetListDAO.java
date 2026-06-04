@@ -121,13 +121,14 @@ public class PetListDAO {
 
 		try (Connection conn = DButil.getConnection()) {
 
-			String sql = "SELECT P.petID, P.category, PI.petInformationID, PI.name, PI.gender, PI.age, PI.color, PI.pet_size, PI.vaccine, PI.price, PI.commentText FROM Pet P JOIN PetInformation PI ON P.petID = PI.petID WHERE P.petID = ?";
+			String sql = "SELECT P.petID, P.FACILITY_ID , P.category, PI.petInformationID, PI.name, PI.gender, PI.age, PI.color, PI.pet_size, PI.vaccine, PI.price, PI.commentText FROM Pet P JOIN PetInformation PI ON P.petID = PI.petID WHERE P.petID = ?";
 			PreparedStatement pStmt = conn.prepareStatement(sql);
 			pStmt.setInt(1, petID);
 
 			ResultSet rs = pStmt.executeQuery();
 
 			while (rs.next()) {
+				String facilityID = rs.getString("FACILITY_ID");
 				String category = rs.getString("category");
 				int petInformationID = rs.getInt("petInformationID");
 				String name = rs.getString("name");
@@ -138,7 +139,7 @@ public class PetListDAO {
 				String vaccine = rs.getString("vaccine");
 				int price = rs.getInt("price");
 				String commentText = rs.getString("commentText");
-				petDetail = new PetDetail(petID, category, petInformationID, name, gender, age, color, pet_size,
+				petDetail = new PetDetail(petID, facilityID ,category, petInformationID, name, gender, age, color, pet_size,
 						vaccine, price, commentText);
 			}
 		} catch (Exception e) {
