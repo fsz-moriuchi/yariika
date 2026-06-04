@@ -20,7 +20,7 @@
 <h1>ペットの情報一覧</h1>
 
 
-<form action="SurveyServlet" method="">
+<form action="SurveyServlet" method="post">
 <%for(Question q : questionList) {%>
 <%=q.getQuestionID() %>.	<%=q.getPetQuestion() %> <br>
 <%for(Choice c : allChoiceList) {%>

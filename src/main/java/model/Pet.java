@@ -5,11 +5,8 @@ public class Pet {
 	private int petID;
 	private String category;
 
-	public Pet() {
-	};
-
-	public Pet(int petID, String category) {
-		this.petID = petID;
+	public Pet(){};
+	public Pet(String category) {
 		this.category = category;
 	}
 

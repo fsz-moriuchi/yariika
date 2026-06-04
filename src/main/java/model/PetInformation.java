@@ -15,9 +15,8 @@ public class PetInformation {
 	public PetInformation() {
 	};
 
-	public PetInformation(int petInformationID, int petID, String name, String gender, int age, String color,
+	public PetInformation(int petID , String name, String gender, int age, String color,
 			String pet_size, String vaccine, int price, String commentText) {
-		this.petInformationID = petInformationID;
 		this.petID = petID;
 		this.name = name;
 		this.gender = gender;
