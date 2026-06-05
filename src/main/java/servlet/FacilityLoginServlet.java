@@ -8,23 +8,25 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 
 import model.FacilityLogin;
 import model.FacilityLoginLogic;
 import util.PasswordUtil;
 
-
 @WebServlet("/FacilityLoginServlet")
 public class FacilityLoginServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	protected void doGet(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
 		RequestDispatcher dispatcher = request.getRequestDispatcher("WEB-INF/jsp/facilityLogin.jsp");
 		dispatcher.forward(request, response);
 	}
 
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		
+	protected void doPost(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+
 		request.setCharacterEncoding("UTF-8");
 		String facilityId = request.getParameter("facilityId");
 		String password = request.getParameter("password");
@@ -36,6 +38,10 @@ public class FacilityLoginServlet extends HttpServlet {
 		boolean result = bo.execute(login);
 
 		if (result) {
+			//追加
+			HttpSession session = request.getSession();
+			session.setAttribute("facilityId", facilityId);
+			//
 			response.sendRedirect("HomeServlet");
 		} else {
 			request.setAttribute("errorMsg", "ログインに失敗しました");
@@ -43,6 +49,5 @@ public class FacilityLoginServlet extends HttpServlet {
 			dispatcher.forward(request, response);
 		}
 	}
-
 
 }

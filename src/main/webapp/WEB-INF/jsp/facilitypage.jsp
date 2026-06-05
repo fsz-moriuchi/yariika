@@ -1,0 +1,23 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+	pageEncoding="UTF-8"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>店舗ページ</title>
+</head>
+<body>
+	<a href="FacilityInfomationServlet">施設情報の入力へ</a>
+	<br>
+	<a href="FacilityInfomationConfirmServlet">施設情報の確認・変更へ</a>
+	<br>
+	<a href="ReserveConfirmServlet">予約確認へ</a>
+	<br>
+	<a href="PetListServlet">ペット一覧へ</a>
+	<br>
+	<a href="PetRegisterServlet">ペット登録へ</a>
+	<br>
+	<a href="HomeServlet">もどる</a>
+	<br>
+</body>
+</html>
