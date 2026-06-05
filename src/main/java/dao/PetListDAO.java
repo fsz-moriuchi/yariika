@@ -1,10 +1,8 @@
 package dao;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,9 +10,9 @@ import model.Pet;
 import model.PetDetail;
 import model.PetInformation;
 import model.PetInformationView;
+import util.DButil;
 
 public class PetListDAO {
-	private final String JDBC_URL = "jdbc:sqlserver://localhost\\\\SQLEXPRESS:58956;databaseName=master;integratedSecurity=true;encrypt=true;trustServerCertificate=true";
 
 	public boolean createPet(Pet pet) {
 
@@ -23,7 +21,8 @@ public class PetListDAO {
 		} catch (ClassNotFoundException e) {
 			throw new IllegalStateException("JDBCドライバを読み込めませんでした");
 		}
-		try (Connection conn = DriverManager.getConnection(JDBC_URL)) {
+
+		try (Connection conn = DButil.getConnection()) {
 
 			String sql = "INSERT INTO Pet(petID,category) VALUES(?, ?)";
 			PreparedStatement pStmt = conn.prepareStatement(sql);
@@ -36,7 +35,7 @@ public class PetListDAO {
 				return false;
 			}
 
-		} catch (SQLException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 			return false;
 		}
@@ -49,7 +48,7 @@ public class PetListDAO {
 		} catch (ClassNotFoundException e) {
 			throw new IllegalStateException("JDBCドライバを読み込めませんでした");
 		}
-		try (Connection conn = DriverManager.getConnection(JDBC_URL)) {
+		try (Connection conn = DButil.getConnection()) {
 
 			String sql = "INSERT INTO PetInformation( petInformationID, petID, name, gender, age, color, pet_size, vaccine, price, commentText) VALUES(?,?,?,?,?,?,?,?,?,?)";
 			PreparedStatement pStmt = conn.prepareStatement(sql);
@@ -70,7 +69,7 @@ public class PetListDAO {
 				return false;
 			}
 
-		} catch (SQLException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 			return false;
 		}
@@ -87,7 +86,7 @@ public class PetListDAO {
 					"JDBCドライバは読み込めませんでした");
 		}
 
-		try (Connection conn = DriverManager.getConnection(JDBC_URL)) {
+		try (Connection conn = DButil.getConnection()) {
 
 			String sql = "SELECT P.petID, P.category, PI.gender, PI.age, PI.price FROM Pet P JOIN PetInformation PI ON P.petID = PI.petID ORDER BY P.petID";
 			PreparedStatement pStmt = conn.prepareStatement(sql);
@@ -103,7 +102,7 @@ public class PetListDAO {
 				PetInformationView petInformationView = new PetInformationView(petID, category, gender, age, price);
 				petList.add(petInformationView);
 			}
-		} catch (SQLException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 			return null;
 		}
@@ -120,7 +119,7 @@ public class PetListDAO {
 					"JDBCドライバは読み込めませんでした");
 		}
 
-		try (Connection conn = DriverManager.getConnection(JDBC_URL)) {
+		try (Connection conn = DButil.getConnection()) {
 
 			String sql = "SELECT P.petID, P.category, PI.petInformationID, PI.name, PI.gender, PI.age, PI.color, PI.pet_size, PI.vaccine, PI.price, PI.commentText FROM Pet P JOIN PetInformation PI ON P.petID = PI.petID WHERE P.petID = ?";
 			PreparedStatement pStmt = conn.prepareStatement(sql);
@@ -142,12 +141,11 @@ public class PetListDAO {
 				petDetail = new PetDetail(petID, category, petInformationID, name, gender, age, color, pet_size,
 						vaccine, price, commentText);
 			}
-		} catch (SQLException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 			return null;
 		}
 		return petDetail;
-
 	}
 
 }

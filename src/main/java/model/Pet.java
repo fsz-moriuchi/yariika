@@ -1,6 +1,7 @@
 package model;
 
 public class Pet {
+
 	private int petID;
 	private String category;
 
