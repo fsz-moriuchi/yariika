@@ -24,7 +24,7 @@ public class CatQuizDAO {
 		//データベースに接続
 		try (Connection conn = DButil.getConnection()) {
 			//SELECT文を準備
-			String sql = "SELECT * FROM CatQuiz";
+			String sql = "SELECT * FROM CatQuiz";	//SELECT * FROM CatQuiz WHERE CAT_QUIZ_ID = ? 一件ずつ取り出す
 			PreparedStatement ps = conn.prepareStatement(sql);
 			ResultSet rs = ps.executeQuery();
 					

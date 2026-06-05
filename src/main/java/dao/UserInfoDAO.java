@@ -90,7 +90,7 @@ public class UserInfoDAO {
 		//データベースに接続
 		try (Connection conn = DButil.getConnection()) {
 
-	        String sql = "UPDATE UserInfo SET USER_NAME=?, USER_GENDER=?, USER_BIRTHDAY=?, USER_TEL=?, USER_MAIL=?, USER_ADDRESS=? WHERE USER_ID=?";
+	        String sql = "UPDATE UserInfo SET USER_NAME=?, USER_GENDER=?, USER_BIRTHDAY=?, USER_TEL=?, USER_MAIL=?, USER_ADDRESS=? WHERE USER_INFO_ID=?";
 	        PreparedStatement pStmt = conn.prepareStatement(sql);
 
 	        pStmt.setString(1, userInfo.getUserName());
@@ -99,7 +99,7 @@ public class UserInfoDAO {
 	        pStmt.setString(4, userInfo.getUserTel());
 	        pStmt.setString(5, userInfo.getUserMail());
 	        pStmt.setString(6, userInfo.getUserAddress());
-	        pStmt.setString(7, userInfo.getUserId()); 
+	        pStmt.setInt(7, userInfo.getUserInfoId()); 
 
 	        int result = pStmt.executeUpdate();
 	        return result == 1;

@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -13,6 +14,8 @@
 
 <form action="UserEditServlet" method="post">
 
+<input type="hidden" name="userInfoId" value="${userInfo.userInfoId}">
+
 <p>名前：<input type="text" name="userName" value="${userInfo.userName}"></p>
 
 <p>性別：
@@ -21,14 +24,12 @@
   <option value="女" ${userInfo.userGender == '女' ? 'selected' : ''}>女</option>
 </select></p>
 
-<p>生年月日：<input type="date" name="userBirthday" value="${userInfo.userBirthday}"></p>>
+<p>生年月日：<input type="date" name="userBirthday" value="<fmt:formatDate value='${userInfo.userBirthday}' pattern='yyyy-MM-dd'/>"></p>
 
-<p>電話番号：<input type="text" name="userTel" value="${userInfo.userTel}"></p>>
-<p>メール：<input type="email" name="userMail" value="${userInfo.userMail}"></p>>
-<p>住所：<input type="text" name="userAddress" value="${userInfo.userAddress}"></p>>
+<p>電話番号：<input type="text" name="userTel" value="${userInfo.userTel}"></p>
+<p>メール：<input type="email" name="userMail" value="${userInfo.userMail}"></p>
+<p>住所：<input type="text" name="userAddress" value="${userInfo.userAddress}"></p>
 
-
-<form action="MyPageServlet" method="get">
 <button type="submit">更新</button>
 </form>
 

@@ -21,7 +21,7 @@
 <p>住所: ${userInfo.userAddress}</p>
 
 
-<form action="UserEditServlet" method="post">
+<form action="UserEditServlet" method="get">
 <button type="submit">修正</button>
 </form>
 

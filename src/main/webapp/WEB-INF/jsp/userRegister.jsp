@@ -31,7 +31,7 @@
 
 <p>住所：<input type="text" name="userAddress" required></p>
 
-<input type="submit" value="登録"><br>
+<input type="submit" value="登録">
 </form>
 
 <c:if test="${not empty errorMsg}">
