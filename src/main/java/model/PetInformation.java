@@ -107,5 +107,6 @@ public class PetInformation {
 	public void setCommentText(String commentText) {
 		this.commentText = commentText;
 	}
+	
 
 }

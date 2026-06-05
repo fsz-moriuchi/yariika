@@ -1,6 +1,7 @@
 package servlet;
 
 import java.io.IOException;
+import java.util.List;
 
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletException;
@@ -11,6 +12,7 @@ import jakarta.servlet.http.HttpServletResponse;
 
 import dao.PetListDAO;
 import model.PetDetail;
+import model.PetSurvey;
 
 @WebServlet("/PetEditServlet")
 public class PetEditServlet extends HttpServlet {
@@ -25,8 +27,9 @@ public class PetEditServlet extends HttpServlet {
 
 		PetListDAO dao = new PetListDAO();
 		PetDetail petDetail = dao.showPetDetail(petID);
-
+		List<PetSurvey> petSurveyList = dao.showPetSurvey(petID);
 		request.setAttribute("petDetail", petDetail);
+		request.setAttribute("petSurveyList", petSurveyList);
 
 		RequestDispatcher dispatcher = request.getRequestDispatcher("WEB-INF/jsp/petInformation.jsp");
 		dispatcher.forward(request, response);

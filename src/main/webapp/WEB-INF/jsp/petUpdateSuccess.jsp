@@ -8,7 +8,9 @@
 </head>
 <body>
 
-<h1>ペット情報を更新しました</h1>
-<a href="StoreServlet">ペット管理ページへ</a>
+<script>
+alert("ペット情報更新成功。");
+window.location.href="StoreServlet";
+</script>
 </body>
 </html>

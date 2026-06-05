@@ -4,13 +4,14 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Insert title here</title>
+<title>edit success</title>
 </head>
 <body>
-<h1>ペット情報登録成功</h1>
 
-<form action="SurveyServlet" method="get">
-<input type="submit" value="アンケート登録へ">
-</form>
+<script>
+alert("ペット情報登録成功");
+window.location.href="StoreServlet";
+</script>
+
 </body>
 </html>

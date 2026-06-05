@@ -41,7 +41,7 @@ public class PetListDAO {
 		}
 		return -1;
 	}
-
+	//新規インフォメーショ
 	public boolean createPetInformation(PetInformation petInformation) {
 		try {
 			Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
@@ -73,7 +73,7 @@ public class PetListDAO {
 		}
 		return true;
 	}
-	
+	//新規アンケート
 	public boolean createPetSurvey(PetSurvey petSurvey) {
 		try {
 			Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
@@ -152,6 +152,32 @@ public class PetListDAO {
 			return false;
 		}
 	}
+	
+	public boolean updatePetSurvey(int petID,int questionID,int surveyChoiceID) {
+		try {
+			Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
+		} catch (ClassNotFoundException e) {
+			throw new IllegalStateException("JDBCドライバを読み込めませんでした");
+		}
+
+		try (Connection conn = DButil.getConnection()) {
+
+			String sql = "UPDATE PetSurvey SET surveyChoiceID = ? WHERE petID = ? AND questionID = ?";
+			PreparedStatement pStmt = conn.prepareStatement(sql);
+
+			pStmt.setInt(2, petID);
+			pStmt.setInt(3, questionID);
+			pStmt.setInt(1,surveyChoiceID);
+
+			int result = pStmt.executeUpdate();
+			return result == 1;
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		}
+		
+	}
 		
 //（店舗）delete ペット情報削除
 	public boolean deletePet(int petID) {
@@ -161,16 +187,11 @@ public class PetListDAO {
 			throw new IllegalStateException("JDBCドライバを読み込めませんでした");
 		}
 		try (Connection conn = DButil.getConnection()) {
-
-			String sql1 = "DELETE FROM PetInformation WHERE petID = ?";
-			PreparedStatement pStmt1 = conn.prepareStatement(sql1);
-			pStmt1.setInt(1, petID);
-			pStmt1.executeUpdate();
 			
-			String sql2 = "DELETE FROM Pet WHERE petID = ?";
-			PreparedStatement pStmt2 = conn.prepareStatement(sql2);
-			pStmt2.setInt(1, petID);
-			int result = pStmt2.executeUpdate();
+			String sql = "DELETE FROM Pet WHERE petID = ?";
+			PreparedStatement pStmt = conn.prepareStatement(sql);
+			pStmt.setInt(1, petID);
+			int result = pStmt.executeUpdate();
 			
 			return result == 1;
 			
@@ -253,5 +274,33 @@ public class PetListDAO {
 		}
 		return petDetail;
 	}
+	public List<PetSurvey> showPetSurvey(int petID){
+		List<PetSurvey> petSurveyList = new ArrayList<>();
 
+		try {
+			Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
+		} catch (ClassNotFoundException e) {
+			throw new IllegalStateException(
+					"JDBCドライバは読み込めませんでした");
+		}
+
+		try (Connection conn = DButil.getConnection()) {
+
+			String sql = "SELECT * FROM PetSurvey WHERE petID = ?";
+			PreparedStatement pStmt = conn.prepareStatement(sql);
+			pStmt.setInt(1, petID);
+			ResultSet rs = pStmt.executeQuery();
+
+			while (rs.next()) {
+				int questionID = rs.getInt("questionID");
+				int surveyChoiceID = rs.getInt("surveyChoiceID");
+				PetSurvey petSurvey = new PetSurvey(petID,questionID,surveyChoiceID);
+				petSurveyList.add(petSurvey);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return petSurveyList;
+
+	}
 }

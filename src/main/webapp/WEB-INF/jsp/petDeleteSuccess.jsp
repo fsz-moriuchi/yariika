@@ -7,7 +7,9 @@
 <title>petDeleteSuccess</title>
 </head>
 <body>
-<h1>ペット情報削除しました</h1>
-<a href="StoreServlet">ペット管理ページへ</a>
+<script>
+alert("ペット情報削除成功");
+window.location.href="StoreServlet";
+</script>
 </body>
 </html>

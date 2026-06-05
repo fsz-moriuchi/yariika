@@ -8,7 +8,7 @@ public class PetSurvey {
     private int surveyChoiceID;
 
 
-    public PetSurvey(int petID,int surveyChoiceID, int questionID) {
+    public PetSurvey(int petID, int questionID,int surveyChoiceID) {
         this.petID = petID;
     		this.surveyChoiceID = surveyChoiceID;
         this.questionID = questionID;
