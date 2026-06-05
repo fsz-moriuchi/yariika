@@ -23,7 +23,7 @@ public class FacilityInformationDAO {
 
 		try (Connection conn = DriverManager.getConnection(JDBC_URL)) {
 		
-			String sql = "SELECT facilityInformationID, FACILITY_ID, facilityName, tel, address, mail, openTime, closeTime, closedDay WHERE USER_ID = ?";
+			String sql = "SELECT facilityInformationID, FACILITY_ID, facilityName, tel, address, mail, openTime, closeTime, closedDay FROM FacilityInformation WHERE FACILITY_ID = ?";
 			PreparedStatement pStmt = conn.prepareStatement(sql);
 			pStmt.setString(1, facilityID);
 

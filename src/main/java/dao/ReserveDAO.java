@@ -16,14 +16,12 @@ public class ReserveDAO {
 		}
 		try (Connection conn = DButil.getConnection()) {
 
-			String sql = "INSERT INTO Reserve(petID, USER_ID, FACILITY_ID, reserveStatus, reserveTime) VALUES(?, ?, ?, ?, ?)";
+			String sql = "INSERT INTO Reserve(petID, USER_ID, reserveTime) VALUES( ?, ?, ?)";
 			PreparedStatement pStmt = conn.prepareStatement(sql);
 
 			pStmt.setInt(1, reserve.getPetID());
 			pStmt.setString(2, reserve.getUserID());
-			pStmt.setString(3, reserve.getFacilityID());
-			pStmt.setString(4, reserve.getReserveStatus());
-			pStmt.setTimestamp(5, Timestamp.valueOf(reserve.getReserveTime()));
+			pStmt.setTimestamp(3, Timestamp.valueOf(reserve.getReserveTime()));
 
 			int result = pStmt.executeUpdate();
 			if (result != 1) {

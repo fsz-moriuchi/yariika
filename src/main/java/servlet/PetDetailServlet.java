@@ -8,6 +8,7 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 
 import dao.PetListDAO;
 import model.PetDetail;
@@ -23,12 +24,16 @@ public class PetDetailServlet extends HttpServlet {
 
 		int petID = Integer.parseInt(request.getParameter("petID"));
 
-		request.setAttribute("petID", petID);
-
 		PetListDAO dao = new PetListDAO();
 		PetDetail petDetail = dao.showPetDetail(petID);
-
+		String facilityID = petDetail.getFacilityID();
+		
 		request.setAttribute("petDetail", petDetail);
+		request.setAttribute("petID", petID);
+		
+		HttpSession session = request.getSession();
+		session.setAttribute("reservePetID", petID);
+		session.setAttribute("reserveFacilityID", facilityID);
 
 		RequestDispatcher dispatcher = request.getRequestDispatcher("WEB-INF/jsp/petDetail.jsp");
 		dispatcher.forward(request, response);

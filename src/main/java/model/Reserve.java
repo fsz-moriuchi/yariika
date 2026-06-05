@@ -6,17 +6,18 @@ public class Reserve {
 	private int reservationID;
 	private int petID;
 	private String userID;
-	private String facilityID;
-	private String reserveStatus;
 	private LocalDateTime reserveTime;
 
-	public Reserve(int reservationID, int petID, String userID, String facilityID, String reserveStatus,
-			LocalDateTime reserveTime) {
+	public Reserve(int reservationID, int petID, String userID, LocalDateTime reserveTime) {
 		this.reservationID = reservationID;
 		this.petID = petID;
 		this.userID = userID;
-		this.facilityID = facilityID;
-		this.reserveStatus = reserveStatus;
+		this.reserveTime = reserveTime;
+	}
+	
+	public Reserve(int petID, String userID, LocalDateTime reserveTime) {
+		this.petID = petID;
+		this.userID = userID;
 		this.reserveTime = reserveTime;
 	}
 
@@ -30,14 +31,6 @@ public class Reserve {
 
 	public String getUserID() {
 		return userID;
-	}
-
-	public String getFacilityID() {
-		return facilityID;
-	}
-
-	public String getReserveStatus() {
-		return reserveStatus;
 	}
 
 	public LocalDateTime getReserveTime() {

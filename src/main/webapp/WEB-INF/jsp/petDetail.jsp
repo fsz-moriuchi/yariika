@@ -26,7 +26,7 @@
 <c:out value="${petDetail.vaccine}"/><br>
 <c:out value="${petDetail.price}"/><br>
 <c:out value="${petDetail.commentText}"/><br>
-<a href="ReserveServlet?facilityID=${petDetail.facilityID}">予約する</a>
+<a href="ReserveServlet">予約する</a>
 <a href="HomeServlet">ホームに戻る</a>
 </body>
 </html>
