@@ -38,16 +38,18 @@ public class FacilityInfomationServlet extends HttpServlet {
 		String openTime = request.getParameter("openTime");
 		String closeTime = request.getParameter("closeTime");
 		String closedDay = request.getParameter("closedDay");
-
+		//テーブルに登録
 		FacilityInformation facilityInfo = new FacilityInformation(facilityId,facilityName,tel,address,mail,openTime,closeTime,closedDay);
 		FacilityInfomationDAO dao = new FacilityInfomationDAO();
 
 		boolean result = dao.insert(facilityInfo);
 
 		if (result) {
-			response.sendRedirect("FacilityPageServlet");
+		    response.sendRedirect("FacilityInformationCompleteServlet");
 		} else {
-			response.sendRedirect("facilityRegisterError.jsp");
+		    request.setAttribute("errorMsg", "店舗情報の登録に失敗しました。入力内容を確認してください。");
+		    RequestDispatcher dispatcher = request.getRequestDispatcher("WEB-INF/jsp/facilityinfomation.jsp");
+		    dispatcher.forward(request, response);
 		}
 	}
 

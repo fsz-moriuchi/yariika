@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="jakarta.tags.core"%>
 <!DOCTYPE html>
 <html>
 <head>
@@ -8,7 +9,12 @@
 </head>
 <body>
 	<h2>店舗情報登録</h2>
-	<form action="FacilityRegisterServlet" method="post">
+	<c:if test="${not empty errorMsg}">
+		<p style="color: red;">
+			<c:out value="${errorMsg}" />
+		</p>
+	</c:if>
+	<form action="FacilityInfomationServlet" method="post">
 		1.店舗名<br> <input type="text" name="facilityName" required><br>
 		<br> 2.電話番号<br> <input type="text" name="tel"><br>
 		<br> 3.住所<br> <input type="text" name="address"><br>
