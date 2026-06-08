@@ -1,6 +1,6 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="jakarta.tags.core"%>
-
+<%@ taglib prefix="fn" uri="jakarta.tags.functions"%>
 <!DOCTYPE html>
 <html>
 <head>
@@ -28,11 +28,11 @@
 		</tr>
 		<tr>
 			<th>開店時間</th>
-			<td>${facilityInfo.openTime}</td>
+			<td>${fn:substring(facilityInfo.openTime, 0, 5)}</td>
 		</tr>
 		<tr>
 			<th>閉店時間</th>
-			<td>${facilityInfo.closeTime}</td>
+			<td>${fn:substring(facilityInfo.closeTime, 0, 5)}</td>
 		</tr>
 		<tr>
 			<th>定休日</th>
