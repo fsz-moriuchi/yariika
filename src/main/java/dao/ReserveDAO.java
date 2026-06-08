@@ -2,7 +2,12 @@ package dao;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.List;
 
 import model.Reserve;
 import util.DButil;
@@ -12,7 +17,7 @@ public class ReserveDAO {
 		try {
 			Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
 		} catch (ClassNotFoundException e) {
-			throw new IllegalStateException("JBDCドライバを読み込めませんでした");
+			throw new IllegalStateException("JDBCドライバを読み込めませんでした");
 		}
 		try (Connection conn = DButil.getConnection()) {
 
@@ -33,5 +38,38 @@ public class ReserveDAO {
 		}
 		return true;
 	}
+	
+	public List<LocalTime> findByFacilityAndDate(String facilityID, LocalDate reserveDate){
+			List<LocalTime> reservedTimeList = new ArrayList<>();
 
-}
+			try {
+				Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
+			} catch (ClassNotFoundException e) {
+				throw new IllegalStateException(
+						"JDBCドライバは読み込めませんでした");
+			}
+
+			try (Connection conn = DButil.getConnection()) {
+
+				String sql = "SELECT R.reserveTime FROM Reserve R JOIN Pet P ON P.petID = R.petID WHERE P.FACILITY_ID = ? AND CAST(R.reserveTime AS DATE) = ?";
+				PreparedStatement pStmt = conn.prepareStatement(sql);
+				pStmt.setString(1, facilityID);
+				pStmt.setDate(2, java.sql.Date.valueOf(reserveDate));
+
+				ResultSet rs = pStmt.executeQuery();
+
+				while (rs.next()) {
+					LocalTime reservaTime = rs.getTimestamp("reserveTime").toLocalDateTime().toLocalTime();
+					reservedTimeList.add(reservaTime);
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+				return null;
+			}
+			return reservedTimeList;
+
+		}
+
+	}
+
+

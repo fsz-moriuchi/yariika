@@ -9,7 +9,7 @@
 </head>
 <body>
 <h1>日時の予約</h1>
-<p>所要時間は1時間程度です。前後のお時間に余裕をもってご予約ください。</p>
+<p>所要時間は30分程度です。前後のお時間に余裕をもってご予約ください。</p>
 <form action="ReserveServlet" method="post">
 <p>日付を選択してください<input type="date" name="reserveDateStr" value="${reserveDate}"required><input type="submit" value="この日付で検索する"></p>
 </form>

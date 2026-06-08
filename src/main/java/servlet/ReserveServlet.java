@@ -15,6 +15,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
 import dao.FacilityInformationDAO;
+import dao.ReserveDAO;
 import model.FacilityInformation;
 
 @WebServlet("/ReserveServlet")
@@ -25,7 +26,7 @@ public class ReserveServlet extends HttpServlet {
 			throws ServletException, IOException {
 
 		request.setCharacterEncoding("UTF-8");
-		
+
 		RequestDispatcher dispatcher = request.getRequestDispatcher("WEB-INF/jsp/reserve.jsp");
 		dispatcher.forward(request, response);
 	}
@@ -41,37 +42,42 @@ public class ReserveServlet extends HttpServlet {
 
 		String reserveDateStr = request.getParameter("reserveDateStr");
 
-		FacilityInformationDAO dao = new FacilityInformationDAO();
-		FacilityInformation facilityInformation = dao.findByFacilityID(facilityID);
-		
+		FacilityInformationDAO dao1 = new FacilityInformationDAO();
+		FacilityInformation facilityInformation = dao1.findByFacilityID(facilityID);
+
 		LocalTime openTime = facilityInformation.getOpenTime();
 		LocalTime closeTime = facilityInformation.getCloseTime();
 		String closedDay = facilityInformation.getClosedDay();
 
-		LocalTime lastTime = closeTime.minusHours(1);
+		LocalTime lastTime = closeTime.minusMinutes(30);
 		LocalTime time = openTime;
 
 		List<String> timeList = new ArrayList<>();
-		
+
 		LocalDate reserveDate = LocalDate.parse(reserveDateStr);
-		
-		if(!reserveDate.getDayOfWeek().name().equals(closedDay)) {
+
+		ReserveDAO dao2 = new ReserveDAO();
+		List<LocalTime> reservedTimeList = dao2.findByFacilityAndDate(facilityID, reserveDate);
+
+		if (!reserveDate.getDayOfWeek().name().equals(closedDay)) {
 			while (!time.isAfter(lastTime)) {
-				timeList.add(time.toString());
+				if (!reservedTimeList.contains(time)) {
+					timeList.add(time.toString());
+				}
 				time = time.plusMinutes(30);
-			}}else if(reserveDate.getDayOfWeek().name().equals(closedDay)){
-				request.setAttribute("errorMsg", "定休日を選択しています");
 			}
-		
+		} else {
+			request.setAttribute("errorMsg", "定休日を選択しています");
+		}
+
 		request.setAttribute("petID", petID);
 		request.setAttribute("facilityID", facilityID);
 		request.setAttribute("reserveDate", reserveDate);
 		request.setAttribute("timeList", timeList);
-		
+
 		session.setAttribute("reserveDate", reserveDateStr);
 
-		RequestDispatcher dispatcher =
-				request.getRequestDispatcher("/WEB-INF/jsp/reserve.jsp");
+		RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/jsp/reserve.jsp");
 		dispatcher.forward(request, response);
 
 	}
