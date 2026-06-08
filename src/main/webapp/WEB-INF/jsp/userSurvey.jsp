@@ -22,16 +22,16 @@
 <body>
 <h1>ユーザーアンケート</h1>
 
-<form action="SurveyServlet" method="post">
+<form action="UserSuveyServlet" method="post">
 <%for(Question q : questionList) {%>
-<%=q.getQuestionID() %>.	<%=q.getPetQuestion() %> <br>
+<%=q.getQuestionID() %>.	<%=q.getUserQuestion() %> <br>
 <%for(Choice c : allChoiceList) {%>
 <% if(c.getQuestionID() == q.getQuestionID()){%>
     <%
     boolean checked = false;
-    if(petSurveyList != null){
-        for(PetSurvey ps : petSurveyList){
-        	if(ps.getQuestionID() == q.getQuestionID()&& ps.getSurveyChoiceID() == c.getSurveyChoiceID()){
+    if(userSurveyList != null){
+        for(UserSurvey us : userSurveyList){
+        	if(us.getQuestionID() == q.getQuestionID()&& us.getSurveyChoiceID() == c.getSurveyChoiceID()){
         		checked = true;
         		break;
             }
@@ -47,12 +47,11 @@
 <%} %><br>
 
 <c:choose>
-<c:when test="${empty userID}">
-    <input type="submit" value="登録">
+<c:when test="${empty userSurveyList}">
+    <input type="submit" name="action" value="登録">
 </c:when>
 <c:otherwise>
-    <input type="submit" value="更新">
-    <input type="hidden" name="petID" value="${userID}">
+    <input type="submit" name="action" value="更新">
 </c:otherwise>
 </c:choose>
 

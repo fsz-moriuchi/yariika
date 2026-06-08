@@ -152,7 +152,6 @@ public class PetRegisterServlet extends HttpServlet {
 		    request.setAttribute("allChoiceList", allChoiceList);
 
 		    RequestDispatcher dispatcher =request.getRequestDispatcher("WEB-INF/jsp/petSurvey.jsp");
-
 		    dispatcher.forward(request, response);
 		}
 		
@@ -163,10 +162,12 @@ public class PetRegisterServlet extends HttpServlet {
 			PetListDAO dao = new PetListDAO();
 			boolean result = dao.deletePet(petID);
 			request.setAttribute("petID", petID);
-
+			if(result) {
 			RequestDispatcher dispatcher = request.getRequestDispatcher("WEB-INF/jsp/petDeleteSuccess.jsp");
 			dispatcher.forward(request, response);
-			
+			}else {
+				response.getWriter().println("削除失敗");
+			}
 		}
 		
 	}

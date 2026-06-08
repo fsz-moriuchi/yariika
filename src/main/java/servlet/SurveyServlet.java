@@ -41,6 +41,7 @@ public class SurveyServlet extends HttpServlet {
 
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		request.setCharacterEncoding("UTF-8");
 		HttpSession session = request.getSession();
 		String nowPetID = request.getParameter("petID");
 //新規入力
@@ -80,14 +81,17 @@ public class SurveyServlet extends HttpServlet {
 			boolean petSurveyResult = true;
 			for(int qID =1;qID <=6;qID++) {
 				int surveyChoiceID =Integer.parseInt(request.getParameter("q" + qID));
-				PetSurvey petSurvey =new PetSurvey(petID,qID,surveyChoiceID);
 				if(!dao.updatePetSurvey(petID,qID,surveyChoiceID)) {
 					petSurveyResult = false;
 					break;
 				};
 			}
+			if(petSurveyResult) {
 			RequestDispatcher dispatcher = request.getRequestDispatcher("WEB-INF/jsp/petRegisterSuccess.jsp");
 			dispatcher.forward(request, response);
-	}
+			}else {
+				 response.getWriter().println("更新失敗");
+			}
+			}
 	}
 }
