@@ -26,3 +26,6 @@ Thumbs.db
 *.env
 *.key
 application-local.properties
+
+# DB接続情報
+db.properties
