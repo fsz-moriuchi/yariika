@@ -4,14 +4,14 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>edit success</title>
+<title>userSurveySuccess</title>
+
 </head>
 <body>
-
 <script>
-alert("ペット情報登録成功");
-window.location.href="StoreServlet";
-</script>
 
+alert("ユーザー情報登録成功。");
+window.location.href="MyPageServlet";
+</script>
 </body>
 </html>

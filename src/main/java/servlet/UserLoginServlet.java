@@ -8,6 +8,7 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 
 import model.UserLogin;
 import model.UserLoginLogic;
@@ -26,7 +27,7 @@ public class UserLoginServlet extends HttpServlet {
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-
+		HttpSession session = request.getSession();
 		request.setCharacterEncoding("UTF-8");
 		String userId = request.getParameter("userId");
 		String password = request.getParameter("password");
@@ -38,6 +39,8 @@ public class UserLoginServlet extends HttpServlet {
 		boolean result = bo.execute(login);
 
 		if (result) {
+
+			session.setAttribute("userId", userId);
 			response.sendRedirect("HomeServlet");
 		} else {
 			request.setAttribute("errorMsg", "ログインに失敗しました");
