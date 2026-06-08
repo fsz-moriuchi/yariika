@@ -1,6 +1,7 @@
 package servlet;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 
 import jakarta.servlet.RequestDispatcher;
@@ -9,11 +10,14 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 
 import dao.CatQuizAnswerDAO;
 import dao.CatQuizDAO;
+import dao.CatQuizResultDAO;
 import model.CatQuiz;
 import model.CatQuizAnswer;
+import model.CatQuizResult;
 
 
 @WebServlet("/CatAnswerServlet")
@@ -22,19 +26,26 @@ public class CatAnswerServlet extends HttpServlet {
 
 	
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		request.setCharacterEncoding("UTF-8");
+		
 		//DAOでクイズを取得
 		CatQuizDAO dao = new CatQuizDAO();
-		List<CatQuiz> catQuizList = dao.findAll();
-		/*				
-		//セッションからユーザーID取得
+		//List<CatQuiz> catQuizList = dao.findAll();
 		HttpSession session = request.getSession();
-		String userId =(String)session.getAttribute("userId");					
+		List<CatQuiz> catQuizList = (List<CatQuiz>) session.getAttribute("catQuizList");
 		
-		//JSPに表示
+		//今はログイン機能と結びついていないため、仮ユーザーID
+		String userId = "1212";
+		/*
+		//★実際はセッションから取得
+		HttpSession session = request.getSession();
+		User login = (User) session.getAttribute("user");
+		String userId = login.getUserId();
+		
+		/*
+		//JSPに表示(いる？)
 		session.setAttribute("catQuizList", catQuizList);
 		*/
-		
-		String userId = "1234";
 		
 		//追加
 		//DAOでJOIN結果取得
@@ -58,7 +69,7 @@ public class CatAnswerServlet extends HttpServlet {
         	count++;
         }
 		*/
-        // ★ 1問ずつ処理
+        //1問ずつ処理
         for (CatQuiz cq : catQuizList) {
 
             // q1, q2, q3…
@@ -69,15 +80,15 @@ public class CatAnswerServlet extends HttpServlet {
                 continue;
             }
 
-            int userAnswer = Integer.parseInt(value);
+            int catUserAnswer = Integer.parseInt(value);
 
-            // ★ モデルに詰める
-            CatQuizAnswer answer = new CatQuizAnswer(userId, cq.getId(), userAnswer);
+            //モデルに詰める
+            CatQuizAnswer answer = new CatQuizAnswer(userId, cq.getId(), catUserAnswer);
 
-            // ★ DB保存
+            //DB保存
             answerDao.insert(answer);
             
-            if(/*catUserAnswer*/userAnswer == cq.getAnswer()) {
+            if(catUserAnswer == cq.getAnswer()) {
             	count++;
             }
         }
@@ -112,17 +123,21 @@ public class CatAnswerServlet extends HttpServlet {
 		int totalCount = catQuizList.size();
 		int percent = count * 100 / totalCount;
 		
-        
-		//セッションに保持
 		request.setAttribute("totalCount", totalCount);
 		request.setAttribute("count", count);
 		request.setAttribute("percent", percent);
 		
-		//フォワード
+		//JOIN
+		CatQuizResultDAO resultDao = new CatQuizResultDAO();
+		List<CatQuizResult> catResultList = resultDao.findByUserId(userId);
+		//クイズ表示順を逆に
+		Collections.reverse(catResultList);
+		// JSPに渡す
+		request.setAttribute("catResultList", catResultList);
+		
+		
 		RequestDispatcher dispatcher = request.getRequestDispatcher("WEB-INF/jsp/catResult.jsp");
 		dispatcher.forward(request, response);
-		
-	
 	}
 }
 

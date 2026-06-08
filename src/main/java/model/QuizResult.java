@@ -1,27 +1,28 @@
 package model;
 
-public class CatQuizResult {
-	private int catQuizId;
+public class QuizResult {
+	private int quizId;
 	private String question;
 	private int answer;
-	private int catUserAnswer;
+	private int userAnswer;
 	private String choice1;
 	private String choice2;
 	private String choice3;
 	private String choice4;
-	private int catQuizAnswerId;
-	
-	public CatQuizResult(int catQuizId, String question, String choice1, String choice2, String choice3, String choice4, int answer, int catUserAnswer) {
+	private int quizAnswerId;
+		
+	public QuizResult(int quizId, String question, String choice1, String choice2, String choice3, String choice4, int answer, int userAnswer) {
+		this.quizId = quizId;
 		this.question = question;
 		this.choice1 = choice1;
 		this.choice2 = choice2;
 		this.choice3 = choice3;
 		this.choice4 = choice4;
 		this.answer = answer;
-		this.catUserAnswer = catUserAnswer;
+		this.userAnswer = userAnswer;
 	}
-	public int getCatQuizId() {
-		return catQuizId;
+	public int getQuizId() {
+		return quizId;
 	}
 	public String getQuestion() {
 		return question;
@@ -47,24 +48,24 @@ public class CatQuizResult {
 	public void setAnswer(int answer) {
 		this.answer = answer;
 	}
-	public int getCatUserAnswer() {
-		return catUserAnswer;
+	public int getUserAnswer() {
+		return userAnswer;
 	}
-	public void setCatUserAnswer(int catUserAnswer){
-		this.catUserAnswer = catUserAnswer;
+	public void setUserAnswer(int userAnswer){
+		this.userAnswer = userAnswer;
 	}
-	public int getCatQuizAnswerId() {
-		return catQuizAnswerId;
+	public int getQuizAnswerId() {
+		return quizAnswerId;
 	}
-	
+		
 	//正誤判定
 	public boolean isCorrect() {
-	    return answer == catUserAnswer;
+		return answer == userAnswer;
 	}
-	
+		
 	//選択肢の文字変換
 	public String getUserAnswerText() {
-		switch(catUserAnswer) {
+		switch(userAnswer) {
 			case 1: return choice1;
 			case 2: return choice2;
 			case 3: return choice3;
@@ -82,5 +83,4 @@ public class CatQuizResult {
 			default: return "";
 		}
 	}
-
 }

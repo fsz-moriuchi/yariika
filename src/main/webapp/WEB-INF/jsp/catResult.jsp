@@ -13,13 +13,17 @@
 <h1>猫の基本知識問題の結果</h1>
 
 <%--クイズ結果一覧表示 --%>
-<c:forEach var="q" items="${quizList}">
-    <p>${q.question}</p>
-
-    <input type="radio" name="q${q.catQuizId}" value="1">${q.choice1}<br>
-    <input type="radio" name="q${q.catQuizId}" value="2">${q.choice2}<br>
-    <input type="radio" name="q${q.catQuizId}" value="3">${q.choice3}<br>
-    <input type="radio" name="q${q.catQuizId}" value="4">${q.choice4}<br>
+<c:forEach var="cqr" items="${catResultList}">
+<p>問題：${cqr.question}</p>
+<p>あなたの回答：${cqr.catUserAnswer}(${cqr.userAnswerText})</p>
+<p>正解：${cqr.answer}(${cqr.correctAnswerText})</p>
+<p>結果：
+<c:choose>
+<c:when test="${cqr.correct}">○</c:when>
+<c:otherwise>×</c:otherwise>
+</c:choose>
+</p>
+<hr>
 </c:forEach>
 
 

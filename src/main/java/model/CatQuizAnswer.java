@@ -36,6 +36,4 @@ public class CatQuizAnswer {
 	public void setCatUserAnswer(int catUserAnswer) {
 		this.catUserAnswer = catUserAnswer;
 	}
-	
-
 }

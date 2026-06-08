@@ -6,13 +6,12 @@ import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
 
-import model.CatQuizResult;
+import model.QuizResult;
 import util.DButil;
 
-public class CatQuizResultDAO {
-	
-	public List<CatQuizResult> findByUserId(String userId) {
-		List<CatQuizResult> catResultList = new ArrayList<>();
+public class QuizResultDAO {
+	public List<QuizResult> findByUserId(String userId) {
+		List<QuizResult> resultList = new ArrayList<>();
 		
 		//JDBCドライバを読み込む
 		try {
@@ -30,21 +29,20 @@ public class CatQuizResultDAO {
 	        ResultSet rs = pStmt.executeQuery();
 	        
 	        while (rs.next()) {
-	        	int catQuizId = rs.getInt("CAT_QUIZ_ID");
+	        	int quizId = rs.getInt("CAT_QUIZ_ID");
 	        	String question = rs.getString("QUESTION");
 	        	String choice1 = rs.getString("CHOICE1");
 	        	String choice2 = rs.getString("CHOICE2");
 	        	String choice3 = rs.getString("CHOICE3");
 	        	String choice4 = rs.getString("CHOICE4");
 	        	int answer = rs.getInt("ANSWER");
-	        	int catUserAnswer = rs.getInt("CAT_USER_ANSWER");
-	        	CatQuizResult cqr = new CatQuizResult(catQuizId, question,choice1, choice2, choice3, choice4, answer, catUserAnswer);
-	        	catResultList.add(cqr);
+	        	int userAnswer = rs.getInt("CAT_USER_ANSWER");
+	        	QuizResult qr = new QuizResult(quizId, question,choice1, choice2, choice3, choice4, answer, userAnswer);
+	        	resultList.add(qr);
 	        }
 		}catch (Exception e) {
 			e.printStackTrace();
 		}
-		return catResultList;
+		return resultList;
 	}
-	
 }

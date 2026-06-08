@@ -3,12 +3,12 @@ package dao;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 
-import model.CatQuizAnswer;
+import model.QuizAnswer;
 import util.DButil;
 
-public class CatQuizAnswerDAO {
+public class QuizAnswerDAO {
 	//userIdをインサート
-	public void insert(CatQuizAnswer answer) {
+	public void insert(QuizAnswer answer) {
 		//JDBCドライバを読み込む
 		try {
 			Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
@@ -18,11 +18,12 @@ public class CatQuizAnswerDAO {
 		//データベースに接続
 		try (Connection conn = DButil.getConnection()) {
 			//SELECT文を準備
-			String sql = "INSERT INTO CatQuizAnswer (USER_ID, CAT_QUIZ_ID, CAT_USER_ANSWER) VALUES (?, ?, ?)";
+			String sql = "INSERT INTO QuizAnswer (USER_ID, CAT_QUIZ_ID, CAT_USER_ANSWER, QUIZ_SESSION_ID) VALUES (?, ?, ?)";
 			PreparedStatement pStmt = conn.prepareStatement(sql);
 			pStmt.setString(1, answer.getUserId());
-			pStmt.setInt(2, answer.getCatQuizId());
-			pStmt.setInt(3, answer.getCatUserAnswer());
+			pStmt.setInt(2, answer.getQuizId());
+			pStmt.setInt(3, answer.getUserAnswer());
+			pStmt.setString(4,  answer.getQuizSessionId());
 			pStmt.executeUpdate();
 		}catch (Exception e) {
 			e.printStackTrace();

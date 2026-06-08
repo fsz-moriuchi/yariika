@@ -1,27 +1,27 @@
 package model;
 
-public class CatQuizResult {
-	private int catQuizId;
+public class DogQuizResult {
+	private int dogQuizId;
 	private String question;
 	private int answer;
-	private int catUserAnswer;
+	private int dogUserAnswer;
 	private String choice1;
 	private String choice2;
 	private String choice3;
 	private String choice4;
-	private int catQuizAnswerId;
+	private int dogQuizAnswerId;
 	
-	public CatQuizResult(int catQuizId, String question, String choice1, String choice2, String choice3, String choice4, int answer, int catUserAnswer) {
+	public DogQuizResult(int dogQuizId, String question, String choice1, String choice2, String choice3, String choice4, int answer, int dogUserAnswer) {
 		this.question = question;
 		this.choice1 = choice1;
 		this.choice2 = choice2;
 		this.choice3 = choice3;
 		this.choice4 = choice4;
 		this.answer = answer;
-		this.catUserAnswer = catUserAnswer;
+		this.dogUserAnswer = dogUserAnswer;
 	}
-	public int getCatQuizId() {
-		return catQuizId;
+	public int getDogQuizId() {
+		return dogQuizId;
 	}
 	public String getQuestion() {
 		return question;
@@ -47,24 +47,24 @@ public class CatQuizResult {
 	public void setAnswer(int answer) {
 		this.answer = answer;
 	}
-	public int getCatUserAnswer() {
-		return catUserAnswer;
+	public int getDogUserAnswer() {
+		return dogUserAnswer;
 	}
-	public void setCatUserAnswer(int catUserAnswer){
-		this.catUserAnswer = catUserAnswer;
+	public void setDogUserAnswer(int dogUserAnswer){
+		this.dogUserAnswer = dogUserAnswer;
 	}
-	public int getCatQuizAnswerId() {
-		return catQuizAnswerId;
+	public int getDogQuizAnswerId() {
+		return dogQuizAnswerId;
 	}
 	
 	//正誤判定
 	public boolean isCorrect() {
-	    return answer == catUserAnswer;
+	    return answer == dogUserAnswer;
 	}
 	
 	//選択肢の文字変換
 	public String getUserAnswerText() {
-		switch(catUserAnswer) {
+		switch(dogUserAnswer) {
 			case 1: return choice1;
 			case 2: return choice2;
 			case 3: return choice3;
@@ -82,5 +82,4 @@ public class CatQuizResult {
 			default: return "";
 		}
 	}
-
 }
