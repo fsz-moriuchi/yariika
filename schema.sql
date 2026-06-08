@@ -1,0 +1,92 @@
+
+--ユーザー関連テーブル
+
+--[顧客テーブル]
+CREATE TABLE USERS(	
+USER_ID VARCHAR(50) PRIMARY KEY,
+PASSWORD_HASH VARCHAR(255) NOT NULL
+);
+--[施設テーブル]
+CREATE TABLE FACILITIES(
+FACILITY_ID VARCHAR(50) PRIMARY KEY,
+PASSWORD_HASH VARCHAR(255) NOT NULL
+);
+
+--pet関連テーブル
+
+--[ペットテーブル]
+CREATE TABLE Pet (
+    petID INTEGER PRIMARY KEY,
+    category VARCHAR(50)
+);
+--[ペット情報テーブル]
+CREATE TABLE PetInformation (
+    petInformationID INTEGER PRIMARY KEY,
+    petID INTEGER NOT NULL,
+    name VARCHAR(100),
+    gender VARCHAR(50),
+    age INTEGER,
+    color VARCHAR(50),
+    pet_size INTEGER,
+    vaccine VARCHAR(50),
+    price INTEGER,
+    comment VARCHAR(300),
+ 
+    FOREIGN KEY (petID)
+        REFERENCES Pet(petID)
+);
+
+--アンケート関連テーブル
+
+--[問題テーブル]
+CREATE TABLE QuestionSurvey (
+QuestionID INTEGER PRIMARY KEY,
+userQuestion VARCHAR(300) NOT NULL,
+petQuestion VARCHAR(300) NOT NULL
+);
+--[選択肢テーブル]
+CREATE TABLE SurveyChoice(
+SurveyChoiceID INTEGER PRIMARY KEY,
+QuestionID INTEGER NOT NULL,
+Choice VARCHAR(300) NOT NULL,
+FOREIGN KEY (QuestionID) REFERENCES QuestionSurvey(QuestionID)
+);
+--[ペットアンケートテーブル]
+CREATE TABLE PetSurvey(
+PetSurveyID INTEGER PRIMARY KEY,
+SurveyChoiceID INTEGER NOT NULL,
+QuestionID INTEGER NOT NULL,
+FOREIGN KEY (QuestionID) REFERENCES QuestionSurvey(QuestionID),
+FOREIGN KEY (SurveyChoiceID) REFERENCES SurveyChoice(SurveyChoiceID)
+);
+--[顧客アンケートテーブル]
+CREATE TABLE UserSurvey(
+UserSurveyID INTEGER PRIMARY KEY,
+SurveyChoiceID INTEGER NOT NULL,
+QuestionID INTEGER NOT NULL,
+FOREIGN KEY (QuestionID) REFERENCES QuestionSurvey(QuestionID),
+FOREIGN KEY (SurveyChoiceID) REFERENCES SurveyChoice(SurveyChoiceID)
+);
+
+--クイズ関連テーブル
+
+--犬クイズテーブル
+CREATE TABLE DogQuiz (
+DOG_QUIZ_ID INT PRIMARY KEY,
+QUESTION VARCHAR(300),
+CHOICE1 VARCHAR(100),
+CHOICE2 VARCHAR(100),
+CHOICE3 VARCHAR(100),
+CHOICE4 VARCHAR(100),
+ANSWER INT
+);
+--猫クイズテーブル
+CREATE TABLE CatQuiz(
+CAT_QUIZ_ID INT PRIMARY KEY,
+QUESTION VARCHAR(300),
+CHOICE1 VARCHAR(100),
+CHOICE2 VARCHAR(100),
+CHOICE3 VARCHAR(100),
+CHOICE4 VARCHAR(100),
+ANSWER INT
+);
