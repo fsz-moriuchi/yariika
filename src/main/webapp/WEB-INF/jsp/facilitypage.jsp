@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="jakarta.tags.core"%>
 <!DOCTYPE html>
 <html>
 <head>
@@ -7,8 +8,10 @@
 <title>店舗ページ</title>
 </head>
 <body>
-	<a href="FacilityInfomationServlet">施設情報の入力へ</a>
-	<br>
+	<c:if test="${!registered}">
+		<a href="FacilityInfomationServlet"> 施設情報の入力へ </a>
+		<br>
+	</c:if>
 	<a href="FacilityInfomationConfirmServlet">施設情報の確認・変更へ</a>
 	<br>
 	<a href="ReserveConfirmServlet">予約確認へ</a>
