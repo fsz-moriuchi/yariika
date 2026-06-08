@@ -59,7 +59,7 @@ public class PetRegisterServlet extends HttpServlet {
 			String commentText = request.getParameter("commentText");
 					
 					
-			Pet pet = new Pet(category);
+			Pet pet = new Pet(facilityId,category);
 			PetInformation petInformation = new PetInformation(0, name, gender, age, colorText, pet_size, vaccine, price, commentText);
 			
 			session.setAttribute("pet",pet);
@@ -93,7 +93,7 @@ public class PetRegisterServlet extends HttpServlet {
 			int price = Integer.parseInt(request.getParameter("price"));
 			String commentText = request.getParameter("commentText");
 			
-			Pet pet = new Pet(category);
+			Pet pet = new Pet(facilityId,category);
 			pet.setPetID(petID);
 			PetListDAO dao = new PetListDAO();
 			PetInformation petInformation = new PetInformation(petID, name, gender, age, colorText, pet_size, vaccine, price, commentText);
@@ -141,7 +141,7 @@ public class PetRegisterServlet extends HttpServlet {
 		    List<Question> questionList = qDao.findAllQuestion();
 		    List<Choice> allChoiceList = cDao.findAllChoices();
 		   
-		    Pet pet = new Pet(category);
+		    Pet pet = new Pet(facilityId,category);
 			pet.setPetID(petID);
 			dao.updatePet(pet);
 		    dao.updatePetInformation(petInformation);

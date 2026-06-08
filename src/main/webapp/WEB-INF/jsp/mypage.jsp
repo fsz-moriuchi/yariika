@@ -1,5 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
+    
+    <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -15,14 +17,19 @@
 <button type="submit">個人情報確認</button>
 </form>
 
-
-<form action="UserSuveyServlet" method="get">
-<button type="submit">アンケート回答</button>
+<c:choose>
+<c:when test="${empty userSurveyList}">
+	<form action="UserSuveyServlet" method="get">
+	<button type="submit">アンケート回答</button>
 </form>
+</c:when>
 
-<form action="SurveyConfirmServlet" method="get">
-<button type="submit">アンケート確認</button>
+<c:otherwise>
+	<form action="SurveyConfirmServlet" method="get">
+	<button type="submit">アンケート確認</button>
 </form>
+</c:otherwise>
+</c:choose>
 
 
 <form action="ReservationServlet" method="get">
@@ -30,7 +37,7 @@
 </form>
 
 
-<form action="" method="get">
+<form action="HomeServlet" method="get">
 <button type="submit">戻る</button>
 </form>
 

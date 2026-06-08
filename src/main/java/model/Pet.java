@@ -3,10 +3,13 @@ package model;
 public class Pet {
 
 	private int petID;
+	private String facilityId;
 	private String category;
 
+
 	public Pet(){};
-	public Pet(String category) {
+	public Pet(String facilityId,String category) {
+		this.facilityId = facilityId;
 		this.category = category;
 	}
 
@@ -24,6 +27,12 @@ public class Pet {
 
 	public void setPetID(int petID) {
 		this.petID = petID;
+	}
+	public String getFacilityId() {
+		return facilityId;
+	}
+	public void setFacilityId(String facilityId) {
+		this.facilityId = facilityId;
 	}
 
 }
