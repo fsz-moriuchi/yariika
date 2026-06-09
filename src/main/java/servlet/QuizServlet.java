@@ -21,15 +21,18 @@ public class QuizServlet extends HttpServlet {
 
 	
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		HttpSession session = request.getSession();
 		//カテゴリーを取得
-		//int categoryId = Integer.parseInt(request.getParameter("categoryId"));
-		int categoryId = 1;
+		Integer categoryId = (Integer)session.getAttribute("categoryId");
+		if (categoryId == null) {
+		    response.sendRedirect("HomeServlet");
+		    return;
+		}
 		
 		//DAOでクイズを取得
 		PetQuizDAO quizDao = new PetQuizDAO();
 		List<PetQuiz> quizList = quizDao.findByCategory(categoryId);
 		
-		HttpSession session = request.getSession();
 		session.setAttribute("quizList", quizList);
 		
 		session.setAttribute("categoryId", categoryId);

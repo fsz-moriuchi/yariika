@@ -18,6 +18,7 @@ import dao.QuizResultDAO;
 import model.PetQuiz;
 import model.QuizAnswer;
 import model.QuizResult;
+import model.User;
 
 
 @WebServlet("/QuizAnswerServlet")
@@ -34,16 +35,18 @@ public class QuizAnswerServlet extends HttpServlet {
 		List<PetQuiz> petQuizList = (List<PetQuiz>) session.getAttribute("quizList");
 		String quizSessionId = (String) session.getAttribute("quizSessionId");
 		
-		//今はログイン機能と結びついていないため、仮ユーザーID
-		String userId = "1212";
-		/*
-		//★実際はセッションから取得
-		HttpSession session = request.getSession();
 		User login = (User) session.getAttribute("user");
+		if (login == null) {
+		    response.sendRedirect("LoginServlet");
+		    return;
+		}
 		String userId = login.getUserId();
-		*/
 		
-		int categoryId = (int) session.getAttribute("categoryId");
+		Integer categoryId = (Integer) session.getAttribute("categoryId");
+		if (categoryId == null) {
+		    response.sendRedirect("HomeServlet");
+		    return;
+		}
 		
 		//DAOでJOIN結果取得
 		QuizAnswerDAO answerDao = new QuizAnswerDAO();
