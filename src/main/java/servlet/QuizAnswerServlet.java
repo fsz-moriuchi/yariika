@@ -29,7 +29,7 @@ public class QuizAnswerServlet extends HttpServlet {
 		request.setCharacterEncoding("UTF-8");
 		//DAOでクイズを取得
 		PetQuizDAO dao = new PetQuizDAO();
-		//List<CatQuiz> catQuizList = dao.findAll();
+		
 		HttpSession session = request.getSession();
 		List<PetQuiz> petQuizList = (List<PetQuiz>) session.getAttribute("quizList");
 		String quizSessionId = (String) session.getAttribute("quizSessionId");
@@ -41,11 +41,9 @@ public class QuizAnswerServlet extends HttpServlet {
 		HttpSession session = request.getSession();
 		User login = (User) session.getAttribute("user");
 		String userId = login.getUserId();
-		
-		/*
-		//JSPに表示(いる？)
-		session.setAttribute("petQuizList", petQuizList);
 		*/
+		
+		int categoryId = (int) session.getAttribute("categoryId");
 		
 		//DAOでJOIN結果取得
 		QuizAnswerDAO answerDao = new QuizAnswerDAO();

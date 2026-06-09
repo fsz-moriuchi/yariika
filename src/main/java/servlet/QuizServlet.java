@@ -32,6 +32,8 @@ public class QuizServlet extends HttpServlet {
 		HttpSession session = request.getSession();
 		session.setAttribute("quizList", quizList);
 		
+		session.setAttribute("categoryId", categoryId);
+		
 		//sessionId生成
 		String quizSessionId = java.util.UUID.randomUUID().toString();
 		session.setAttribute("quizSessionId", quizSessionId);
