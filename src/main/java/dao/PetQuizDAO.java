@@ -6,15 +6,14 @@ import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
 
-import model.DogQuiz;
+import model.PetQuiz;
 import util.DButil;
 
-public class DogQuizDAO {
-
+public class PetQuizDAO {
 	// クイズ一覧取得
-	public List<DogQuiz> findAll() {
-		List<DogQuiz> dogQuizList = new ArrayList<>();
-			
+	public List<PetQuiz> findByCategory(int categoryId) {
+		List<PetQuiz> quizList = new ArrayList<>();
+						
 		//JDBCドライバを読み込む
 		try {
 			Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
@@ -24,27 +23,29 @@ public class DogQuizDAO {
 		//データベースに接続
 		try (Connection conn = DButil.getConnection()) {
 			//SELECT文を準備
-			String sql = "SELECT * FROM DogQuiz";
-			PreparedStatement ps = conn.prepareStatement(sql);
-			ResultSet rs = ps.executeQuery();
-				
+			String sql = "SELECT * FROM PetQuiz WHERE CATEGORY_ID = ?";
+			PreparedStatement pStmt = conn.prepareStatement(sql);
+			pStmt.setInt(1, categoryId);
+			
+			ResultSet rs = pStmt.executeQuery();
+							
 			while (rs.next()) {
-				int id = rs.getInt("DOG_QUIZ_ID");
+				int quizId = rs.getInt("QUIZ_ID");
 				String question = rs.getString("QUESTION");
 				String choice1 = rs.getString("CHOICE1");
 				String choice2 = rs.getString("CHOICE2");
 				String choice3 = rs.getString("CHOICE3");
 				String choice4 = rs.getString("CHOICE4");
 				int answer = rs.getInt("ANSWER");
-				DogQuiz quiz = new DogQuiz(id, question, choice1,choice2, choice3, choice4, answer);
-				dogQuizList.add(quiz);	//listに一件ずつ追加
+				int category = rs.getInt("CATEGORY_ID");
+				PetQuiz quiz = new PetQuiz(quizId, question, choice1,choice2, choice3, choice4, answer, category);
+				quizList.add(quiz);	//listに一件ずつ追加
 			}
 		}catch(Exception e) {
 			e.printStackTrace();
 			return null;
 		}
 		//全件まとめて返す
-		return dogQuizList;
+		return quizList;
 	}
 }
-
