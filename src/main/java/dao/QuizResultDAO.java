@@ -10,7 +10,7 @@ import model.QuizResult;
 import util.DButil;
 
 public class QuizResultDAO {
-	public List<QuizResult> findByUserId(String userId) {
+	public List<QuizResult> findByUserId(String userId, String quizSessionId) {
 		List<QuizResult> resultList = new ArrayList<>();
 		
 		//JDBCドライバを読み込む
@@ -22,21 +22,27 @@ public class QuizResultDAO {
 		//データベースに接続
 		try (Connection conn = DButil.getConnection()) {
 			//SELECT文を準備
-	        String sql = "SELECT TOP 10 q.CAT_QUIZ_ID, q.QUESTION, q.CHOICE1, q.CHOICE2, q.CHOICE3, q.CHOICE4, q.ANSWER, a.CAT_USER_ANSWER FROM CatQuiz q JOIN CatQuizAnswer a ON q.CAT_QUIZ_ID = a.CAT_QUIZ_ID WHERE a.USER_ID = ? ORDER BY a.CAT_QUIZ_ANSWER_ID DESC";
+			String sql = "SELECT q.QUIZ_ID, q.QUESTION, q.CHOICE1, q.CHOICE2, " +
+	                "q.CHOICE3, q.CHOICE4, q.ANSWER, a.USER_ANSWER " +
+	                "FROM QuizAnswer a " +
+	                "JOIN PetQuiz q ON a.QUIZ_ID = q.QUIZ_ID " +
+	                "WHERE a.USER_ID = ? AND a.QUIZ_SESSION_ID = ? " +
+	                "ORDER BY q.QUIZ_ID DESC";
 	        
 	        PreparedStatement pStmt = conn.prepareStatement(sql);
 	        pStmt.setString(1, userId);
+	        pStmt.setString(2,  quizSessionId);
 	        ResultSet rs = pStmt.executeQuery();
 	        
 	        while (rs.next()) {
-	        	int quizId = rs.getInt("CAT_QUIZ_ID");
+	        	int quizId = rs.getInt("QUIZ_ID");
 	        	String question = rs.getString("QUESTION");
 	        	String choice1 = rs.getString("CHOICE1");
 	        	String choice2 = rs.getString("CHOICE2");
 	        	String choice3 = rs.getString("CHOICE3");
 	        	String choice4 = rs.getString("CHOICE4");
 	        	int answer = rs.getInt("ANSWER");
-	        	int userAnswer = rs.getInt("CAT_USER_ANSWER");
+	        	int userAnswer = rs.getInt("USER_ANSWER");
 	        	QuizResult qr = new QuizResult(quizId, question,choice1, choice2, choice3, choice4, answer, userAnswer);
 	        	resultList.add(qr);
 	        }

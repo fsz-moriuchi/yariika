@@ -11,8 +11,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
-import dao.QuizDAO;
-import model.Quiz;
+import dao.PetQuizDAO;
+import model.PetQuiz;
 
 
 @WebServlet("/QuizServlet")
@@ -21,20 +21,23 @@ public class QuizServlet extends HttpServlet {
 
 	
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		//カテゴリーを取得
+		//int categoryId = Integer.parseInt(request.getParameter("categoryId"));
+		int categoryId = 1;
+		
 		//DAOでクイズを取得
-		QuizDAO quizDao = new QuizDAO();
-		List<Quiz> quizList = quizDao.findAll();
-		//JSPに表示
+		PetQuizDAO quizDao = new PetQuizDAO();
+		List<PetQuiz> quizList = quizDao.findByCategory(categoryId);
+		
 		HttpSession session = request.getSession();
 		session.setAttribute("quizList", quizList);
-										
-		RequestDispatcher dispatcher = request.getRequestDispatcher("WEB-INF/jsp/catQuiz.jsp");
-		dispatcher.forward(request, response);
-	}
-
-	
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
+		//sessionId生成
+		String quizSessionId = java.util.UUID.randomUUID().toString();
+		session.setAttribute("quizSessionId", quizSessionId);
+		
+		RequestDispatcher dispatcher = request.getRequestDispatcher("WEB-INF/jsp/quiz.jsp");
+		dispatcher.forward(request, response);
 	}
 
 }

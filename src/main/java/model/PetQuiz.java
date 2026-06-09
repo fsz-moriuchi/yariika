@@ -1,6 +1,6 @@
 package model;
 
-public class Quiz {
+public class PetQuiz {
 	private int quizId;
 	private String question;
 	private String choice1;
@@ -10,7 +10,7 @@ public class Quiz {
 	private int answer;
 	private int categoryId;
 	
-	public Quiz(int quizId, String question, String choice1, String choice2, String choice3, String choice4, int answer, int categoryId) {
+	public PetQuiz(int quizId, String question, String choice1, String choice2, String choice3, String choice4, int answer, int categoryId) {
 		this.quizId = quizId;
 		this.question = question;
 		this.choice1 = choice1;

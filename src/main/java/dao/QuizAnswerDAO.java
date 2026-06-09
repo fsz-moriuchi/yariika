@@ -18,7 +18,7 @@ public class QuizAnswerDAO {
 		//データベースに接続
 		try (Connection conn = DButil.getConnection()) {
 			//SELECT文を準備
-			String sql = "INSERT INTO QuizAnswer (USER_ID, CAT_QUIZ_ID, CAT_USER_ANSWER, QUIZ_SESSION_ID) VALUES (?, ?, ?)";
+			String sql = "INSERT INTO QuizAnswer (USER_ID, QUIZ_ID, USER_ANSWER, QUIZ_SESSION_ID) VALUES (?, ?, ?, ?)";
 			PreparedStatement pStmt = conn.prepareStatement(sql);
 			pStmt.setString(1, answer.getUserId());
 			pStmt.setInt(2, answer.getQuizId());
