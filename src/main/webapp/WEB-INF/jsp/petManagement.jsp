@@ -31,6 +31,10 @@
 	<input type="hidden" name="petID" value="${pet.petID}">
 	<input type="submit" value="修正">
 </form>
+<form action="PetEditServlet" method="post">
+	<input type="hidden" name="petID" value="${pet.petID}">
+	<input type="submit" value="アンケート確認">
+</form>
 </td>
 </tr>
 

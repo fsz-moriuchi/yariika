@@ -44,9 +44,7 @@ public class SurveyServlet extends HttpServlet {
 		request.setCharacterEncoding("UTF-8");
 		HttpSession session = request.getSession();
 		String nowPetID = request.getParameter("petID");
-		System.out.println("SurveyServlet: nowPetID = " + nowPetID);
-		System.out.println("SurveyServlet: pet = " + session.getAttribute("pet"));
-		System.out.println("SurveyServlet: petInformation = " + session.getAttribute("petInformation"));
+
 //新規入力
 		if(nowPetID == null || nowPetID.isEmpty()) {
 		Pet pet = (Pet)session.getAttribute("pet");
@@ -60,6 +58,11 @@ public class SurveyServlet extends HttpServlet {
 		
 		PetListDAO dao = new PetListDAO();
 		int petID = dao.createPet(pet);
+		if(petID == -1) {
+		    response.setContentType("text/html; charset=UTF-8");
+		    response.getWriter().println("ペット情報の登録に失敗しました。");
+		    return;
+		}
 		petInformation.setPetID(petID);
 		boolean petInformationResult = dao.createPetInformation(petInformation);
 		boolean petSurveyResult = true;
@@ -75,12 +78,8 @@ public class SurveyServlet extends HttpServlet {
 		session.removeAttribute("pet");
 		session.removeAttribute("petInformation");
 
-		if(petID == -1) {
-		    response.setContentType("text/html; charset=UTF-8");
-		    response.getWriter().println("ペット基本情報の登録に失敗しました。店舗IDを確認してください。");
-		    return;
-		}
-		if(petID != -1 && petInformationResult && petSurveyResult) {
+
+		if(petInformationResult && petSurveyResult) {
 		RequestDispatcher dispatcher = request.getRequestDispatcher("WEB-INF/jsp/petRegisterSuccess.jsp");
 		dispatcher.forward(request, response);
 		}else {
@@ -106,7 +105,7 @@ public class SurveyServlet extends HttpServlet {
 			dispatcher.forward(request, response);
 			}else {
 				response.setContentType("text/html; charset=UTF-8");
-				 response.getWriter().println("更新失敗");
+				response.getWriter().println("更新失敗");
 			}
 			}
 	}
