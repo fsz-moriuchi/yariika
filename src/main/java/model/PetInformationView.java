@@ -34,4 +34,26 @@ public class PetInformationView {
 	public int getPrice() {
 		return price;
 	}
+	
+	public String getCategoryName() {
+		if(category == null) {
+			return "";
+		}
+		switch(category){
+			case "dog" : return "犬";
+			case "cat": return "猫";
+			default : return category;
+		}
+	}
+	public String getGenderName() {
+		if(gender == null) {
+			return "";
+		}
+		switch(gender){
+			case "male" : return "男の子";
+			case "female": return "女の子";
+			default : return gender;
+		}
+	}
+
 }

@@ -16,7 +16,7 @@
 </form>
 
 
-<form action="SurveyServlet" method="get">
+<form action="UserSuveyServlet" method="get">
 <button type="submit">アンケート回答</button>
 </form>
 

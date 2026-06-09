@@ -71,5 +71,28 @@ public class PetDetail {
 	public String getCommentText() {
 		return commentText;
 	}
+	public String getPetSizeName() {
+		if(pet_size == null) {
+			return "";
+		}
+		switch(pet_size){
+			case "small" : return "小型";
+			case "medium": return "中型";
+			case "large": return "大型";
+			default : return pet_size;
+		}
+	}
+	public String getVaccineName() {
+		if(vaccine == null) {
+			return "";
+		}
+		switch(vaccine){
+			case "vaccineDone" : return "接種済み";
+			case "vaccineYet": return "未接種";
+			default : return vaccine;
+		}
+	}
+	
+
 
 }
