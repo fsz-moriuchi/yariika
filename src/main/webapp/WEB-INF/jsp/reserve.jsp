@@ -9,9 +9,10 @@
 </head>
 <body>
 <h1>日時の予約</h1>
-<p>所要時間は30分程度です。前後のお時間に余裕をもってご予約ください。</p>
+<p>見学のご予約は、3日後から1週間以内の日程で受け付けております。<br>
+所要時間は30分程度です。前後のお時間に余裕をもってご予約ください。</p>
 <form action="ReserveServlet" method="post">
-<p>日付を選択してください<input type="date" name="reserveDateStr" value="${reserveDate}"required><input type="submit" value="この日付で検索する"></p>
+<p>日付を選択してください<input type="date" name="reserveDateStr" value="${reserveDate}" min="${minDate}" max="${maxDate}" required><input type="submit" value="この日付で検索する"></p>
 </form>
 <form action ="ReserveCompleteServlet" method="post">
 <c:if test="${not empty timeList}">
@@ -26,5 +27,6 @@
 <c:out value="${errorMsg}"/>
 </c:if>
 </form>
+<a href="ReserveCancelServlet">キャンセルしてホームに戻る</a>
 </body>
 </html>

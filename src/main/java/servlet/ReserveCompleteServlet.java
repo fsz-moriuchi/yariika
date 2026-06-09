@@ -42,6 +42,18 @@ public class ReserveCompleteServlet extends HttpServlet {
 
 		Reserve reserve = new Reserve(petID, userId, reserveDateTime);
 		ReserveDAO dao1 = new ReserveDAO();
+		
+		if(dao1.existsReserveByPetID(petID)) {
+			session.removeAttribute("reserveDate");
+			session.removeAttribute("reservePetID");
+			session.removeAttribute("reserveFacilityID");
+
+			session.setAttribute("errorMsg", "申し訳ありません。先ほど他の方の予約が完了したため、このペットは予約できません。");
+
+			response.sendRedirect("PetDetailServlet?petID=" + petID);
+			return;
+		}
+		
 		boolean result = dao1.insertReserve(reserve);
 		
 		System.out.println("insert result = " + result);
@@ -61,7 +73,7 @@ public class ReserveCompleteServlet extends HttpServlet {
 			dispatcher.forward(request, response);
 
 		}else {
-			request.setAttribute("errorMsg", "同じ日時にすでに予約があります。もう一度日付を選択してください。");
+			request.setAttribute("errorMsg", "すでに予約中の見学があります。新しい予約は、現在の予約が完了またはキャンセルされた後に可能です。");
 
 			RequestDispatcher dispatcher =
 					request.getRequestDispatcher("/WEB-INF/jsp/reserve.jsp");

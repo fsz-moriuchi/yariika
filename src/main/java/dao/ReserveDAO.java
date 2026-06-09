@@ -69,7 +69,30 @@ public class ReserveDAO {
 			return reservedTimeList;
 
 		}
+	public boolean existsReserveByPetID(int petID) {
+		try {
+			Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
+		} catch (ClassNotFoundException e) {
+			throw new IllegalStateException("JDBCドライバを読み込めませんでした");
+		}
+		try (Connection conn = DButil.getConnection()) {
 
+			String sql = "SELECT COUNT(*) AS CNT FROM Reserve WHERE petID = ?";
+			PreparedStatement pStmt = conn.prepareStatement(sql);
+
+			pStmt.setInt(1, petID);
+			
+			ResultSet rs = pStmt.executeQuery();
+
+			if (rs.next()) {
+				return rs.getInt("CNT") > 0;
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return false;
 	}
-
+}
 
