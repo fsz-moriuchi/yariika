@@ -16,9 +16,7 @@
 	<br>
 	<a href="ReserveConfirmServlet">予約確認へ</a>
 	<br>
-	<a href="PetListServlet">ペット一覧へ</a>
-	<br>
-	<a href="PetRegisterServlet">ペット登録へ</a>
+	<a href="StoreServlet">ペット一覧へ</a>
 	<br>
 	<a href="HomeServlet">もどる</a>
 	<br>

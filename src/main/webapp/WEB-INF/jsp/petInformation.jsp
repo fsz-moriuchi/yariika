@@ -2,7 +2,7 @@
     pageEncoding="UTF-8"%>
     
     <%@ taglib prefix="c" uri="jakarta.tags.core"%>
-    
+
 <%
 String colorText = "";
 if(request.getAttribute("petDetail") != null){
@@ -30,28 +30,32 @@ if(request.getAttribute("petDetail") != null){
 
 1.カテゴリー：
 <label>
-	<input type="radio" name="category" value="dog" ${not empty petDetail and petDetail.category == "dog"?"checked":""} required  >犬
+	<input type="radio" name="categoryId" value="1" ${not empty petDetail and petDetail.categoryId == 1?"checked":""} required  >犬
 </label>
 <label>
-	<input type="radio" name="category" value="cat" ${not empty petDetail and petDetail.category == "cat"?"checked":""}>猫<br>
+	<input type="radio" name="categoryId" value="2" ${not empty petDetail and petDetail.categoryId == 2?"checked":""}>猫<br>
 </label>
-
-2.名前：
+<br>
+2.店舗ID：${loginFacilityId}
+<input type="hidden" name="facilityId" value="${loginFacilityId}">
+<br>
+<br>
+3.名前：
 <label>
 	<input type="text" name="name" value="${empty petDetail ? '' : petDetail.name}" autocomplete="off"><br>
 </label>
-3.性別：
+4.性別：
 <label>
 	<input type="radio" name="gender" value="male" ${not empty petDetail and petDetail.gender == "male"?"checked":"" }>男の子
 </label>
 <label>
 	<input type="radio" name="gender" value="female" ${not empty petDetail and petDetail.gender == "female"?"checked":"" }>女の子<br>
 </label>
-4.年齢：
+5.年齢：
 <label>
 	<input type="number" name="age" min="0" value="${empty petDetail ? '' : petDetail.age}" required autocomplete="off"><br>
 </label>
-5.色と柄：<br>
+6.色と柄：<br>
 <label>
 	<input type="checkbox" name="color" value="white" <%= colorText.contains("white") ? "checked" : "" %>>白
 </label>
@@ -82,7 +86,7 @@ if(request.getAttribute("petDetail") != null){
 <label>
 	<input type="checkbox" name="color" value="shortHair" <%= colorText.contains("shortHair") ? "checked" : "" %>>短毛<br>
 </label>
-6.サイズ：
+7.サイズ：
 <label>
 	<input type="radio" name="pet_size" value="small" ${not empty petDetail and petDetail.pet_size == "small"?"checked":"" }>小型
 </label>
@@ -92,7 +96,7 @@ if(request.getAttribute("petDetail") != null){
 <label>
 	<input type="radio" name="pet_size" value="large" ${not empty petDetail and petDetail.pet_size == "large"?"checked":"" }>大型<br>
 </label>
-7.ワクチン：
+8.ワクチン：
 <label>
 	<input type="radio" name="vaccine" value="vaccineDone" ${not empty petDetail and petDetail.vaccine == "vaccineDone"?"checked":"" }>接種済み
 </label>
