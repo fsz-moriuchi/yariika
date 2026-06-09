@@ -1,28 +1,26 @@
 package dao;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.time.LocalTime;
 
 import model.FacilityInformation;
+import util.DButil;
 
 public class FacilityInformationDAO {
-	private final String JDBC_URL = "jdbc:sqlserver://localhost\\\\\\\\SQLEXPRESS:61371;databaseName=master;integratedSecurity=true;encrypt=true;trustServerCertificate=true;";
-	
-	public FacilityInformation findByFacilityID(String facilityID){
+
+	public FacilityInformation findByFacilityID(String facilityID) {
 		FacilityInformation facilityInformation = null;
-		
+
 		try {
 			Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
 		} catch (ClassNotFoundException e) {
 			throw new IllegalStateException("JDBCドライバを読み込めませんでした");
 		}
 
-		try (Connection conn = DriverManager.getConnection(JDBC_URL)) {
-		
+		try (Connection conn = DButil.getConnection()) {
+
 			String sql = "SELECT facilityInformationID, FACILITY_ID, facilityName, tel, address, mail, openTime, closeTime, closedDay FROM FacilityInformation WHERE FACILITY_ID = ?";
 			PreparedStatement pStmt = conn.prepareStatement(sql);
 			pStmt.setString(1, facilityID);
@@ -39,13 +37,13 @@ public class FacilityInformationDAO {
 				LocalTime openTime = rs.getTime("openTime").toLocalTime();
 				LocalTime closeTime = rs.getTime("closeTime").toLocalTime();
 				String closedDay = rs.getString("closedDay");
-				facilityInformation = new FacilityInformation(facilityInformationID, FACILITY_ID, facilityName, tel, adderss, mail, openTime, closeTime, closedDay);
+				facilityInformation = new FacilityInformation(facilityInformationID, FACILITY_ID, facilityName, tel,
+						adderss, mail, openTime, closeTime, closedDay);
 			}
-		} catch (SQLException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 			return null;
 		}
 		return facilityInformation;
 	}
 }
-	
