@@ -10,7 +10,7 @@
 </head>
 <body>
 <h1>プロフィール</h1>
-<c:out value="${petDetail.category}"/><br>
+<c:out value="${petDetail.categoryId}"/><br>
 <c:choose>
 <c:when test="${not empty petDetail.name}">
 <c:out value="${petDetail.name}"/>
@@ -19,6 +19,7 @@
 名付けてください！
 </c:otherwise>
 </c:choose><br>
+<c:out value="${petDetail.facilityId}"/><br>
 <c:out value="${petDetail.gender}"/><br>
 <c:out value="${petDetail.age}"/><br>
 <c:out value="${petDetail.color}"/><br>

@@ -26,6 +26,11 @@ public class PetRegisterServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		HttpSession session = request.getSession();
+		String loginFacilityId = (String)session.getAttribute("facilityId");
+		
+		request.setAttribute("loginFacilityId", loginFacilityId);
+		
 	    RequestDispatcher dispatcher =request.getRequestDispatcher("WEB-INF/jsp/petInformation.jsp");
 	    dispatcher.forward(request, response);
 	}
@@ -35,9 +40,10 @@ public class PetRegisterServlet extends HttpServlet {
 		HttpSession session = request.getSession();
 
 		String action = request.getParameter("action");
+		String facilityId = request.getParameter("facilityId");
 //新規ペット登録	
 		if("アンケートへ".equals(action)) {
-			String category = request.getParameter("category");
+			int categoryId = Integer.parseInt(request.getParameter("categoryId"));
 			String name = request.getParameter("name");
 			String gender = request.getParameter("gender");
 			int age = Integer.parseInt(request.getParameter("age"));
@@ -59,12 +65,15 @@ public class PetRegisterServlet extends HttpServlet {
 			String commentText = request.getParameter("commentText");
 					
 					
-			Pet pet = new Pet(facilityId,category);
+			Pet pet = new Pet(facilityId,categoryId);
 			PetInformation petInformation = new PetInformation(0, name, gender, age, colorText, pet_size, vaccine, price, commentText);
-			
 			session.setAttribute("pet",pet);
 			session.setAttribute("petInformation",petInformation);
 	
+			System.out.println("PetRegisterServlet: pet = " + pet);
+			System.out.println("PetRegisterServlet: petInformation = " + petInformation);
+			System.out.println("PetRegisterServlet: facilityId = " + facilityId);
+			System.out.println("PetRegisterServlet: categoryId = " + categoryId);
 			
 			response.sendRedirect("SurveyServlet");
 
@@ -73,9 +82,9 @@ public class PetRegisterServlet extends HttpServlet {
 //既存ペット情報更新	
 		else if("更新".equals(action)) {
 			int petID = Integer.parseInt(request.getParameter("petID"));
-			String category = request.getParameter("category");
 			String name = request.getParameter("name");
 			String gender = request.getParameter("gender");
+			int categoryId = Integer.parseInt(request.getParameter("categoryId"));
 			int age = Integer.parseInt(request.getParameter("age"));
 			
 			String[] colorArray  = request.getParameterValues("color");
@@ -93,11 +102,11 @@ public class PetRegisterServlet extends HttpServlet {
 			int price = Integer.parseInt(request.getParameter("price"));
 			String commentText = request.getParameter("commentText");
 			
-			Pet pet = new Pet(facilityId,category);
+			Pet pet = new Pet(facilityId,categoryId);
 			pet.setPetID(petID);
 			PetListDAO dao = new PetListDAO();
 			PetInformation petInformation = new PetInformation(petID, name, gender, age, colorText, pet_size, vaccine, price, commentText);
-			
+						
 			boolean petResult = dao.updatePet(pet);
 			boolean petInformationResult = dao.updatePetInformation(petInformation);
 			
@@ -112,11 +121,11 @@ public class PetRegisterServlet extends HttpServlet {
 		else if("アンケート修正".equals(action)) {
 
 		    int petID = Integer.parseInt(request.getParameter("petID"));
-			String category = request.getParameter("category");
 			String name = request.getParameter("name");
 			String gender = request.getParameter("gender");
 			int age = Integer.parseInt(request.getParameter("age"));
-			
+			int categoryId = Integer.parseInt(request.getParameter("categoryId"));
+
 			String[] colorArray  = request.getParameterValues("color");
 			String colorText = "";
 			if(colorArray != null) {
@@ -141,7 +150,7 @@ public class PetRegisterServlet extends HttpServlet {
 		    List<Question> questionList = qDao.findAllQuestion();
 		    List<Choice> allChoiceList = cDao.findAllChoices();
 		   
-		    Pet pet = new Pet(facilityId,category);
+		    Pet pet = new Pet(facilityId,categoryId);
 			pet.setPetID(petID);
 			dao.updatePet(pet);
 		    dao.updatePetInformation(petInformation);

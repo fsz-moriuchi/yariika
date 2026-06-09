@@ -26,10 +26,11 @@ public class PetListDAO {
 
 		try (Connection conn = DButil.getConnection()) {
 
-			String sql = "INSERT INTO Pet(category) OUTPUT INSERTED.petID VALUES(?)";
+			String sql = "INSERT INTO Pet(FACILITY_ID,CATEGORY_ID) OUTPUT INSERTED.petID VALUES(?,?)";
 			PreparedStatement pStmt = conn.prepareStatement(sql);
 
-			pStmt.setString(1, pet.getCategory());
+			pStmt.setString(1, pet.getFacilityId());
+			pStmt.setInt(2, pet.getCategoryId());
 
 			ResultSet rs = pStmt.executeQuery();
 			if (rs.next()) {
@@ -110,10 +111,11 @@ public class PetListDAO {
 		}
 		try (Connection conn = DButil.getConnection()) {
 
-			String sql = "UPDATE Pet SET category=? WHERE petID = ?";
+			String sql = "UPDATE Pet SET FACILITY_ID=?,CATEGORY_ID=? WHERE petID = ?";
 			PreparedStatement pStmt = conn.prepareStatement(sql);
-			pStmt.setString(1, pet.getCategory());
-			pStmt.setInt(2, pet.getPetID());
+			pStmt.setString(1, pet.getFacilityId());
+			pStmt.setInt(2, pet.getCategoryId());
+			pStmt.setInt(3, pet.getPetID());
 			
 			int result = pStmt.executeUpdate();
 			return result == 1;
@@ -215,18 +217,19 @@ public class PetListDAO {
 
 		try (Connection conn = DButil.getConnection()) {
 
-			String sql = "SELECT P.petID, P.category, PI.gender, PI.age, PI.price FROM Pet P JOIN PetInformation PI ON P.petID = PI.petID ORDER BY P.petID";
+			String sql = "SELECT P.petID, P.FACILITY_ID, P.CATEGORY_ID, PI.gender, PI.age, PI.price FROM Pet P JOIN PetInformation PI ON P.petID = PI.petID ORDER BY P.petID";
 			PreparedStatement pStmt = conn.prepareStatement(sql);
 
 			ResultSet rs = pStmt.executeQuery();
 
 			while (rs.next()) {
 				int petID = rs.getInt("petID");
-				String category = rs.getString("category");
+				String facilityId = rs.getString("FACILITY_ID");
+				int categoryId = rs.getInt("CATEGORY_ID");
 				String gender = rs.getString("gender");
 				int age = rs.getInt("age");
 				int price = rs.getInt("price");
-				PetInformationView petInformationView = new PetInformationView(petID, category, gender, age, price);
+				PetInformationView petInformationView = new PetInformationView(petID,facilityId, categoryId, gender, age, price);
 				petList.add(petInformationView);
 			}
 		} catch (Exception e) {
@@ -248,14 +251,15 @@ public class PetListDAO {
 
 		try (Connection conn = DButil.getConnection()) {
 
-			String sql = "SELECT P.petID, P.category, PI.petInformationID, PI.name, PI.gender, PI.age, PI.color, PI.pet_size, PI.vaccine, PI.price, PI.commentText FROM Pet P JOIN PetInformation PI ON P.petID = PI.petID WHERE P.petID = ?";
+			String sql = "SELECT P.petID, P.FACILITY_ID,P.CATEGORY_ID, PI.petInformationID, PI.name, PI.gender, PI.age, PI.color, PI.pet_size, PI.vaccine, PI.price, PI.commentText FROM Pet P JOIN PetInformation PI ON P.petID = PI.petID WHERE P.petID = ?";
 			PreparedStatement pStmt = conn.prepareStatement(sql);
 			pStmt.setInt(1, petID);
 
 			ResultSet rs = pStmt.executeQuery();
 
 			while (rs.next()) {
-				String category = rs.getString("category");
+				int categoryId = rs.getInt("CATEGORY_ID");
+				String facilityId = rs.getString("FACILITY_ID");
 				int petInformationID = rs.getInt("petInformationID");
 				String name = rs.getString("name");
 				String gender = rs.getString("gender");
@@ -265,7 +269,7 @@ public class PetListDAO {
 				String vaccine = rs.getString("vaccine");
 				int price = rs.getInt("price");
 				String commentText = rs.getString("commentText");
-				petDetail = new PetDetail(petID, category, petInformationID, name, gender, age, color, pet_size,
+				petDetail = new PetDetail(petID, facilityId,categoryId, petInformationID, name, gender, age, color, pet_size,
 						vaccine, price, commentText);
 			}
 		} catch (Exception e) {
@@ -301,6 +305,40 @@ public class PetListDAO {
 			e.printStackTrace();
 		}
 		return petSurveyList;
+	}
+	public List<PetInformationView> showListByFacility(String facilityId) {
+		List<PetInformationView> facilityList = new ArrayList<>();
+
+		try {
+			Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
+		} catch (ClassNotFoundException e) {
+			throw new IllegalStateException(
+					"JDBCドライバは読み込めませんでした");
+		}
+
+		try (Connection conn = DButil.getConnection()) {
+
+			String sql = "SELECT P.petID, P.FACILITY_ID, P.CATEGORY_ID, PI.gender, PI.age, PI.price FROM Pet P JOIN PetInformation PI ON P.petID = PI.petID WHERE P.FACILITY_ID = ? ORDER BY P.petID";
+			PreparedStatement pStmt = conn.prepareStatement(sql);
+			pStmt.setString(1, facilityId);
+			ResultSet rs = pStmt.executeQuery();
+
+			while (rs.next()) {
+				int petID = rs.getInt("petID");
+				String facilityId1 = rs.getString("FACILITY_ID");
+				int categoryId = rs.getInt("CATEGORY_ID");
+				String gender = rs.getString("gender");
+				int age = rs.getInt("age");
+				int price = rs.getInt("price");
+				PetInformationView petInformationView = new PetInformationView(petID,facilityId1, categoryId, gender, age, price);
+				facilityList.add(petInformationView);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+		return facilityList;
 
 	}
+
 }

@@ -2,14 +2,16 @@ package model;
 
 public class PetInformationView {
 	private int petID;
-	private String category;
+	private String facilityId;
+	private int categoryId;
 	private String gender;
 	private int age;
 	private int price;
 
-	public PetInformationView(int petID, String category, String gender, int age, int price) {
+	public PetInformationView(int petID, String facilityId,int categoryId, String gender, int age, int price) {
 		this.petID = petID;
-		this.category = category;
+		this.facilityId = facilityId;
+		this.categoryId = categoryId;
 		this.gender = gender;
 		this.age = age;
 		this.price = price;
@@ -18,9 +20,12 @@ public class PetInformationView {
 	public int getPetID() {
 		return petID;
 	}
+	public String getFacilityId() {
+		return facilityId;
+	}
 
-	public String getCategory() {
-		return category;
+	public int getCategoryId() {
+		return categoryId;
 	}
 
 	public String getGender() {
@@ -35,14 +40,14 @@ public class PetInformationView {
 		return price;
 	}
 	
-	public String getCategoryName() {
-		if(category == null) {
+	public String getCategoryIdName() {
+		if(categoryId < 1) {
 			return "";
 		}
-		switch(category){
-			case "dog" : return "犬";
-			case "cat": return "猫";
-			default : return category;
+		switch(categoryId){
+			case 1 : return "犬";
+			case 2: return "猫";
+			default : return "";
 		}
 	}
 	public String getGenderName() {

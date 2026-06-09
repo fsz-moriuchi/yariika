@@ -9,7 +9,8 @@
 <title>petManagement</title>
 </head>
 <body>
-<h1>ペット情報管理</h1>
+
+<h1><c:out value="${facilityId}"/> : ペット情報管理</h1>
 
 <form action="PetRegisterServlet" method="get">
 	<input type="submit" value="新規ペット情報作成">
@@ -20,10 +21,11 @@
 <th>写真</th><th>ペットID</th><th>種類</th><th>性別</th><th>年齢</th><th>生体価格</th><th>操作</th>
 </tr>
 
-<c:forEach var="pet" items="${petList}">
+
 
 <tr>
-<td>写真</td><td>${pet.petID}</td><td>${pet.categoryName}</td><td>${pet.genderName}</td><td>${pet.age}</td><td>${pet.price}</td>
+<c:forEach var="pet" items="${facilityList}">
+<td>写真</td><td>${pet.petID}</td><td>${pet.categoryIdName}</td><td>${pet.genderName}</td><td>${pet.age}</td><td>${pet.price}</td>
 <td>
 <form action="PetEditServlet" method="get">
 	<input type="hidden" name="petID" value="${pet.petID}">
@@ -34,5 +36,10 @@
 
 </c:forEach>
 </table>
+
+<form action="HomeServlet" method="get">
+<input type="submit" value="戻る">
+</form>
+
 </body>
 </html>

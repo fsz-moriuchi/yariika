@@ -9,6 +9,7 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 
 import dao.PetListDAO;
 import model.PetDetail;
@@ -21,15 +22,18 @@ public class PetEditServlet extends HttpServlet {
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		request.setCharacterEncoding("UTF-8");
-
+		HttpSession session = request.getSession();
+		String loginFacilityId = (String)session.getAttribute("facilityId");
 		int petID = Integer.parseInt(request.getParameter("petID"));
-
 
 		PetListDAO dao = new PetListDAO();
 		PetDetail petDetail = dao.showPetDetail(petID);
+		
 		List<PetSurvey> petSurveyList = dao.showPetSurvey(petID);
+		
 		request.setAttribute("petDetail", petDetail);
 		request.setAttribute("petSurveyList", petSurveyList);
+		request.setAttribute("loginFacilityId", loginFacilityId);
 
 		RequestDispatcher dispatcher = request.getRequestDispatcher("WEB-INF/jsp/petInformation.jsp");
 		dispatcher.forward(request, response);
