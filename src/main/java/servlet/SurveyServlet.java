@@ -60,6 +60,11 @@ public class SurveyServlet extends HttpServlet {
 		
 		PetListDAO dao = new PetListDAO();
 		int petID = dao.createPet(pet);
+		if(petID == -1) {
+		    response.setContentType("text/html; charset=UTF-8");
+		    response.getWriter().println("ペット基本情報の登録に失敗しました。");
+		    return;
+		}
 		petInformation.setPetID(petID);
 		boolean petInformationResult = dao.createPetInformation(petInformation);
 		boolean petSurveyResult = true;
