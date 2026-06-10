@@ -88,18 +88,18 @@ public class PetListDAO {
 
 		try (Connection conn = DButil.getConnection()) {
 
-			String sql = "SELECT P.petID, P.CATEGORY_ID, PI.gender, PI.age, PI.price FROM Pet P JOIN PetInformation PI ON P.petID = PI.petID ORDER BY P.petID";
+			String sql = "SELECT P.petID, C.CATEGORY_NAME, PI.gender, PI.age, PI.price FROM Pet P JOIN PetInformation PI ON P.petID = PI.petID JOIN Category C ON P.CATEGORY_ID = C.CATEGORY_ID ORDER BY P.petID;";
 			PreparedStatement pStmt = conn.prepareStatement(sql);
 
 			ResultSet rs = pStmt.executeQuery();
 
 			while (rs.next()) {
-				int petID = rs.getInt("petID");
-				int categoryID = rs.getInt("CATEGORY_ID");
+				int petID = rs.getInt("petID"); 
+				String categoryName = rs.getString("CATEGORY_NAME");
 				String gender = rs.getString("gender");
 				int age = rs.getInt("age");
 				int price = rs.getInt("price");
-				PetInformationView petInformationView = new PetInformationView(petID, categoryID, gender, age, price);
+				PetInformationView petInformationView = new PetInformationView(petID, categoryName, gender, age, price);
 				petList.add(petInformationView);
 			}
 		} catch (Exception e) {
@@ -121,7 +121,7 @@ public class PetListDAO {
 
 		try (Connection conn = DButil.getConnection()) {
 
-			String sql = "SELECT P.petID, P.FACILITY_ID , P.CATEGORY_ID, PI.petInformationID, PI.name, PI.gender, PI.age, PI.color, PI.pet_size, PI.vaccine, PI.price, PI.commentText FROM Pet P JOIN PetInformation PI ON P.petID = PI.petID WHERE P.petID = ?";
+			String sql = "SELECT P.petID, P.FACILITY_ID, C.CATEGORY_NAME, PI.petInformationID, PI.name, PI.gender, PI.age, PI.color, PI.pet_size, PI.vaccine, PI.price, PI.commentText FROM Pet P JOIN PetInformation PI ON P.petID = PI.petID JOIN Category C ON P.CATEGORY_ID = C.CATEGORY_ID WHERE P.petID = ?;";
 			PreparedStatement pStmt = conn.prepareStatement(sql);
 			pStmt.setInt(1, petID);
 
@@ -129,7 +129,7 @@ public class PetListDAO {
 
 			while (rs.next()) {
 				String facilityID = rs.getString("FACILITY_ID");
-				int categoryID = rs.getInt("CATEGORY_ID");
+				String categoryName = rs.getString("CATEGORY_NAME");
 				int petInformationID = rs.getInt("petInformationID");
 				String name = rs.getString("name");
 				String gender = rs.getString("gender");
@@ -139,7 +139,7 @@ public class PetListDAO {
 				String vaccine = rs.getString("vaccine");
 				int price = rs.getInt("price");
 				String commentText = rs.getString("commentText");
-				petDetail = new PetDetail(petID, facilityID ,categoryID, petInformationID, name, gender, age, color, pet_size,
+				petDetail = new PetDetail(petID, facilityID ,categoryName, petInformationID, name, gender, age, color, pet_size,
 						vaccine, price, commentText);
 			}
 		} catch (Exception e) {

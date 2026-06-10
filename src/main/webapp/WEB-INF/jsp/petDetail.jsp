@@ -10,7 +10,7 @@
 </head>
 <body>
 <h1>プロフィール</h1>
-<c:out value="${petDetail.category}"/><br>
+<c:out value="${petDetail.categoryName}"/><br>
 <c:choose>
 <c:when test="${not empty petDetail.name}">
 <c:out value="${petDetail.name}"/>
