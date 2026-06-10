@@ -6,6 +6,7 @@ import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
 
+import model.FavoritePet;
 import model.Pet;
 import model.PetDetail;
 import model.PetInformation;
@@ -329,6 +330,7 @@ public class PetListDAO {
 		return petSurveyList;
 	}
 
+	//お気に入りペット[追加点（森内）]
 	public List<PetInformationView> showListByFacility(String facilityId) {
 		List<PetInformationView> facilityList = new ArrayList<>();
 
@@ -363,6 +365,51 @@ public class PetListDAO {
 		}
 		return facilityList;
 
+	}
+
+	public List<FavoritePet> showFavoritePet() {
+
+		List<FavoritePet> list = new ArrayList<>();
+
+		try (Connection conn = DButil.getConnection()) {
+
+			String sql = "SELECT FI.facilityName,"
+					+ " P.petID,"
+					+ " PI.name,"
+					+ " PI.gender,"
+					+ " PI.age,"
+					+ " PI.price,"
+					+ " PI.imagePath "
+					+ "FROM FacilityInformation FI "
+					+ "JOIN Pet P "
+					+ "ON FI.FAVORITE_PET_ID = P.petID "
+					+ "JOIN PetInformation PI "
+					+ "ON P.petID = PI.petID "
+					+ "WHERE FI.FAVORITE_PET_ID IS NOT NULL";
+
+			PreparedStatement pStmt = conn.prepareStatement(sql);
+
+			ResultSet rs = pStmt.executeQuery();
+
+			while (rs.next()) {
+
+				FavoritePet pet = new FavoritePet(
+						rs.getString("facilityName"),
+						rs.getInt("petID"),
+						rs.getString("name"),
+						rs.getString("gender"),
+						rs.getInt("age"),
+						rs.getInt("price"),
+						rs.getString("imagePath"));
+
+				list.add(pet);
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return list;
 	}
 
 }
