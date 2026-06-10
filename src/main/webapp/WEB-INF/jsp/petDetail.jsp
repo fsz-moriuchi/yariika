@@ -28,7 +28,8 @@
 <c:out value="${petDetail.price}"/><br>
 <c:out value="${petDetail.commentText}"/><br>
 
-<a href="QuizServlet">予約する</a>
+<a href="QuizWarningServlet?petID=${petDetail.petID}">予約する</a>
+
 <a href="HomeServlet">ホームに戻る</a>
 </body>
 </html>

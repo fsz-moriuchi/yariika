@@ -22,12 +22,12 @@ public class PetDetailServlet extends HttpServlet {
 
 		request.setCharacterEncoding("UTF-8");
 
-		int petID = Integer.parseInt(request.getParameter("petID"));
-
+		Integer petID = Integer.parseInt(request.getParameter("petID"));
 		request.setAttribute("petID", petID);
-
+		
 		PetListDAO dao = new PetListDAO();
 		PetDetail petDetail = dao.showPetDetail(petID);
+		request.setAttribute("petDetail", petDetail); 
 		
 		//追加
 		HttpSession session = request.getSession();

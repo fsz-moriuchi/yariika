@@ -60,6 +60,7 @@ public class SurveyServlet extends HttpServlet {
 		
 		PetListDAO dao = new PetListDAO();
 		int petID = dao.createPet(pet);
+		
 		petInformation.setPetID(petID);
 		boolean petInformationResult = dao.createPetInformation(petInformation);
 		boolean petSurveyResult = true;
