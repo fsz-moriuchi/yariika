@@ -23,6 +23,7 @@ public class PetDetailServlet extends HttpServlet {
 
 		request.setCharacterEncoding("UTF-8");
 
+		
 		int petID = Integer.parseInt(request.getParameter("petID"));
 
 		PetListDAO dao1 = new PetListDAO();

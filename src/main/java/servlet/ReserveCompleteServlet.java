@@ -26,6 +26,7 @@ public class ReserveCompleteServlet extends HttpServlet {
 			throws ServletException, IOException {
 
 		request.setCharacterEncoding("UTF-8");
+
 		HttpSession session = request.getSession();
 		String reserveDateStr = (String) session.getAttribute("reserveDate");
 		String userId = (String) session.getAttribute("userId");
@@ -33,6 +34,17 @@ public class ReserveCompleteServlet extends HttpServlet {
 		String facilityID = (String) session.getAttribute("reserveFacilityID");
 
 		String reserveTimeStr = request.getParameter("reserveTime");
+
+		if (reserveDateStr == null || userId == null || petID == null || facilityID == null || reserveTimeStr == null) {
+			session.removeAttribute("reserveDate");
+			session.removeAttribute("reservePetID");
+			session.removeAttribute("reserveFacilityID");
+
+			session.setAttribute("errorMsg", "申し訳ありません。先ほど他の方の予約が完了したため、予約に失敗しました。");
+
+			response.sendRedirect("ReserveCancelServlet");
+			return;
+		}
 		
 		LocalDate reserveDate = LocalDate.parse(reserveDateStr);
 		LocalTime reserveTime = LocalTime.parse(reserveTimeStr);
@@ -42,8 +54,8 @@ public class ReserveCompleteServlet extends HttpServlet {
 
 		Reserve reserve = new Reserve(petID, userId, reserveDateTime);
 		ReserveDAO dao1 = new ReserveDAO();
-		
-		if(dao1.existsReserveByPetID(petID)) {
+
+		if (dao1.existsReserveByPetID(petID)) {
 			session.removeAttribute("reserveDate");
 			session.removeAttribute("reservePetID");
 			session.removeAttribute("reserveFacilityID");
@@ -53,13 +65,13 @@ public class ReserveCompleteServlet extends HttpServlet {
 			response.sendRedirect("PetDetailServlet?petID=" + petID);
 			return;
 		}
-		
+
 		boolean result = dao1.insertReserve(reserve);
-		
+
 		System.out.println("insert result = " + result);
-		
+
 		if (result) {
-			FacilityInformationDAO  dao2 = new FacilityInformationDAO();
+			FacilityInformationDAO dao2 = new FacilityInformationDAO();
 			FacilityInformation facilityInformation = dao2.findByFacilityID(facilityID);
 			request.setAttribute("reserveDate", reserveDate);
 			request.setAttribute("reserveTime", reserveTime);
@@ -72,13 +84,17 @@ public class ReserveCompleteServlet extends HttpServlet {
 			RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/jsp/reserveComplete.jsp");
 			dispatcher.forward(request, response);
 
-		}else {
-			request.setAttribute("errorMsg", "すでに予約中の見学があります。新しい予約は、現在の予約が完了またはキャンセルされた後に可能です。");
+		} else {
+			session.removeAttribute("reserveDate");
+			session.removeAttribute("reservePetID");
+			session.removeAttribute("reserveFacilityID");
 
-			RequestDispatcher dispatcher =
-					request.getRequestDispatcher("/WEB-INF/jsp/reserve.jsp");
-			dispatcher.forward(request, response);
+			if (dao1.existsReserveByPetID(petID)) {
+				session.setAttribute("errorMsg", "申し訳ありません。先ほど他の方の予約が完了したため、このペットは予約できません。");
+				response.sendRedirect("PetDetailServlet?petID=" + petID);
+				return;
+			}
+
 		}
-
 	}
 }

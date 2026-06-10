@@ -16,6 +16,11 @@ public class ReserveCancelServlet extends HttpServlet {
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
+		request.setCharacterEncoding("UTF-8");
+		
+		String errorMsg = request.getParameter("errorMsg");
+		request.setAttribute("errorMsg", errorMsg);
+		
 		HttpSession session = request.getSession();
 		session.removeAttribute("reserveDate");
 		session.removeAttribute("reservePetID");

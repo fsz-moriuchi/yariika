@@ -24,6 +24,7 @@ public class HomeServlet extends HttpServlet {
 		PetListDAO dao = new PetListDAO();
 		List<PetInformationView> petList = dao.showList();
 		
+		
 		request.setAttribute("petList", petList); 
 		
 		RequestDispatcher dispatcher = request.getRequestDispatcher("WEB-INF/jsp/home.jsp");

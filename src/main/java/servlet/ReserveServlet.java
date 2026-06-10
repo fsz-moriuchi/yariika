@@ -48,13 +48,17 @@ public class ReserveServlet extends HttpServlet {
 
 		Integer petID = (Integer)session.getAttribute("reservePetID");
 		String facilityID = (String) session.getAttribute("reserveFacilityID");
+		String userId = (String)session.getAttribute("userId");
 
 		String reserveDateStr = request.getParameter("reserveDateStr");
 		
 		if (petID == null || facilityID == null) {
-			request.setAttribute("errorMsg", "予約情報が見つかりませんでした。もう一度ペット詳細画面から予約してください。");
+			request.setAttribute("errorMsg", "申し訳ありません。先ほど他の方の予約が完了したため、このペットは予約できません。");
 			request.getRequestDispatcher("/WEB-INF/jsp/reserve.jsp").forward(request, response);
 			return;
+		}else if(userId == null) {
+			request.setAttribute("errorMsg", "予約情報が見つかりませんでした。もう一度ペット詳細画面から予約してください。");
+			request.getRequestDispatcher("/WEB-INF/jsp/reserve.jsp").forward(request, response);
 		}
 
 		FacilityInformationDAO dao1 = new FacilityInformationDAO();

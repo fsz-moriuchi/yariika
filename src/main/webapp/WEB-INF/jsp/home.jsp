@@ -11,6 +11,9 @@
 <a href="MyPageServlet">マイページへ</a><br>
 <a href="FacilityPageServlet">施設専用ページへ</a><br>
 <h1>ペット一覧</h1>
+<c:if test="${not empty errorMsg}">
+	<p><c:out value="${errorMsg}" /></p>
+</c:if>
 <c:forEach var="pet" items="${petList}">
 種類:<c:out value="${pet.categoryName}" />
 性別:<c:out value="${pet.gender}" />
