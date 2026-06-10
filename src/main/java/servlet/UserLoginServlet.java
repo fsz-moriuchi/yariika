@@ -44,7 +44,6 @@ public class UserLoginServlet extends HttpServlet {
 			//追加
 			User user = bo.getUser(login);
 			session.setAttribute("user", user);
-
 			response.sendRedirect("HomeServlet");
 		} else {
 			request.setAttribute("errorMsg", "ログインに失敗しました");

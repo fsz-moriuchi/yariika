@@ -15,7 +15,7 @@ import util.DButil;
 
 public class PetListDAO {
 
-//（店舗）create 新規ペット作成
+	//（店舗）create 新規ペット作成
 	public int createPet(Pet pet) {
 
 		try {
@@ -29,8 +29,8 @@ public class PetListDAO {
 			String sql = "INSERT INTO Pet(FACILITY_ID,CATEGORY_ID) OUTPUT INSERTED.petID VALUES(?,?)";
 			PreparedStatement pStmt = conn.prepareStatement(sql);
 
-			pStmt.setString(1, pet.getFacilityId());
-			pStmt.setInt(2, pet.getCategoryId());
+			pStmt.setString(1, pet.getFacilityID());
+			pStmt.setInt(2, pet.getCategoryID());
 
 			ResultSet rs = pStmt.executeQuery();
 			if (rs.next()) {
@@ -42,6 +42,7 @@ public class PetListDAO {
 		}
 		return -1;
 	}
+
 	//新規インフォメーショ
 	public boolean createPetInformation(PetInformation petInformation) {
 		try {
@@ -74,6 +75,7 @@ public class PetListDAO {
 		}
 		return true;
 	}
+
 	//新規アンケート
 	public boolean createPetSurvey(PetSurvey petSurvey) {
 		try {
@@ -89,7 +91,7 @@ public class PetListDAO {
 
 			pStmt.setInt(1, petSurvey.getPetID());
 			pStmt.setInt(2, petSurvey.getQuestionID());
-			pStmt.setInt(3,petSurvey.getSurveyChoiceID());
+			pStmt.setInt(3, petSurvey.getSurveyChoiceID());
 
 			int result = pStmt.executeUpdate();
 			return result == 1;
@@ -98,11 +100,10 @@ public class PetListDAO {
 			e.printStackTrace();
 			return false;
 		}
-		
+
 	}
-	
-	
-//（店舗）update ペット情報修正
+
+	//（店舗）update ペット情報修正
 	public boolean updatePet(Pet pet) {
 		try {
 			Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
@@ -113,19 +114,20 @@ public class PetListDAO {
 
 			String sql = "UPDATE Pet SET FACILITY_ID=?,CATEGORY_ID=? WHERE petID = ?";
 			PreparedStatement pStmt = conn.prepareStatement(sql);
-			pStmt.setString(1, pet.getFacilityId());
-			pStmt.setInt(2, pet.getCategoryId());
+			pStmt.setString(1, pet.getFacilityID());
+			pStmt.setInt(2, pet.getCategoryID());
 			pStmt.setInt(3, pet.getPetID());
-			
+
 			int result = pStmt.executeUpdate();
 			return result == 1;
-			
+
 		} catch (Exception e) {
 			e.printStackTrace();
 			return false;
 		}
-	
+
 	}
+
 	public boolean updatePetInformation(PetInformation petInformation) {
 		try {
 			Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
@@ -136,26 +138,26 @@ public class PetListDAO {
 
 			String sql = "UPDATE PetInformation SET name=?,gender=?,age=?,color=?,pet_size=?,vaccine=?,price=?,commentText=? WHERE petID = ?";
 			PreparedStatement pStmt = conn.prepareStatement(sql);
-	        pStmt.setString(1, petInformation.getName());
-	        pStmt.setString(2, petInformation.getGender());
-	        pStmt.setInt(3, petInformation.getAge());
-	        pStmt.setString(4, petInformation.getColor());
-	        pStmt.setString(5, petInformation.getPet_size());
-	        pStmt.setString(6, petInformation.getVaccine());
-	        pStmt.setInt(7, petInformation.getPrice());
-	        pStmt.setString(8, petInformation.getCommentText());
-	        pStmt.setInt(9, petInformation.getPetID());
-			
+			pStmt.setString(1, petInformation.getName());
+			pStmt.setString(2, petInformation.getGender());
+			pStmt.setInt(3, petInformation.getAge());
+			pStmt.setString(4, petInformation.getColor());
+			pStmt.setString(5, petInformation.getPet_size());
+			pStmt.setString(6, petInformation.getVaccine());
+			pStmt.setInt(7, petInformation.getPrice());
+			pStmt.setString(8, petInformation.getCommentText());
+			pStmt.setInt(9, petInformation.getPetID());
+
 			int result = pStmt.executeUpdate();
 			return result == 1;
-			
+
 		} catch (Exception e) {
 			e.printStackTrace();
 			return false;
 		}
 	}
-	
-	public boolean updatePetSurvey(int petID,int questionID,int surveyChoiceID) {
+
+	public boolean updatePetSurvey(int petID, int questionID, int surveyChoiceID) {
 		try {
 			Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
 		} catch (ClassNotFoundException e) {
@@ -169,7 +171,7 @@ public class PetListDAO {
 
 			pStmt.setInt(2, petID);
 			pStmt.setInt(3, questionID);
-			pStmt.setInt(1,surveyChoiceID);
+			pStmt.setInt(1, surveyChoiceID);
 
 			int result = pStmt.executeUpdate();
 			return result == 1;
@@ -178,10 +180,10 @@ public class PetListDAO {
 			e.printStackTrace();
 			return false;
 		}
-		
+
 	}
-		
-//（店舗）delete ペット情報削除
+
+	//（店舗）delete ペット情報削除
 	public boolean deletePet(int petID) {
 		try {
 			Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
@@ -189,22 +191,21 @@ public class PetListDAO {
 			throw new IllegalStateException("JDBCドライバを読み込めませんでした");
 		}
 		try (Connection conn = DButil.getConnection()) {
-			
+
 			String sql = "DELETE FROM Pet WHERE petID = ?";
 			PreparedStatement pStmt = conn.prepareStatement(sql);
 			pStmt.setInt(1, petID);
 			int result = pStmt.executeUpdate();
-			
+
 			return result == 1;
-			
+
 		} catch (Exception e) {
 			e.printStackTrace();
 			return false;
 		}
 	}
-	
 
-//（顧客＆店舗）show ペット
+	//（顧客＆店舗）show ペット
 	public List<PetInformationView> showList() {
 		List<PetInformationView> petList = new ArrayList<>();
 
@@ -218,6 +219,7 @@ public class PetListDAO {
 		try (Connection conn = DButil.getConnection()) {
 
 			String sql = "SELECT P.petID, P.FACILITY_ID, P.CATEGORY_ID, PI.gender, PI.age, PI.price FROM Pet P JOIN PetInformation PI ON P.petID = PI.petID ORDER BY P.petID";
+
 			PreparedStatement pStmt = conn.prepareStatement(sql);
 
 			ResultSet rs = pStmt.executeQuery();
@@ -226,10 +228,12 @@ public class PetListDAO {
 				int petID = rs.getInt("petID");
 				String facilityId = rs.getString("FACILITY_ID");
 				int categoryId = rs.getInt("CATEGORY_ID");
+
 				String gender = rs.getString("gender");
 				int age = rs.getInt("age");
 				int price = rs.getInt("price");
-				PetInformationView petInformationView = new PetInformationView(petID,facilityId, categoryId, gender, age, price);
+				PetInformationView petInformationView = new PetInformationView(petID, facilityId, categoryId, gender,
+						age, price);
 				petList.add(petInformationView);
 			}
 		} catch (Exception e) {
@@ -251,15 +255,18 @@ public class PetListDAO {
 
 		try (Connection conn = DButil.getConnection()) {
 
-			String sql = "SELECT P.petID, P.FACILITY_ID,P.CATEGORY_ID, PI.petInformationID, PI.name, PI.gender, PI.age, PI.color, PI.pet_size, PI.vaccine, PI.price, PI.commentText FROM Pet P JOIN PetInformation PI ON P.petID = PI.petID WHERE P.petID = ?";
+			String sql = "SELECT P.petID, P.FACILITY_ID, P.CATEGORY_ID, C.CATEGORY_NAME, PI.petInformationID, PI.name, PI.gender, PI.age, PI.color, PI.pet_size, PI.vaccine, PI.price, PI.commentText FROM Pet P JOIN PetInformation PI ON P.petID = PI.petID JOIN Category C ON P.CATEGORY_ID = C.CATEGORY_ID WHERE P.petID = ?";
+
 			PreparedStatement pStmt = conn.prepareStatement(sql);
 			pStmt.setInt(1, petID);
 
 			ResultSet rs = pStmt.executeQuery();
 
 			while (rs.next()) {
+
 				int categoryId = rs.getInt("CATEGORY_ID");
-				String facilityId = rs.getString("FACILITY_ID");
+				String facilityID = rs.getString("FACILITY_ID");
+				String categoryName = rs.getString("CATEGORY_NAME");
 				int petInformationID = rs.getInt("petInformationID");
 				String name = rs.getString("name");
 				String gender = rs.getString("gender");
@@ -269,8 +276,22 @@ public class PetListDAO {
 				String vaccine = rs.getString("vaccine");
 				int price = rs.getInt("price");
 				String commentText = rs.getString("commentText");
-				petDetail = new PetDetail(petID, facilityId,categoryId, petInformationID, name, gender, age, color, pet_size,
-						vaccine, price, commentText);
+
+				petDetail = new PetDetail(
+						petID,
+						categoryId,
+						facilityID,
+						categoryName,
+						petInformationID,
+						name,
+						gender,
+						age,
+						color,
+						pet_size,
+						vaccine,
+						price,
+						commentText);
+
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -278,7 +299,8 @@ public class PetListDAO {
 		}
 		return petDetail;
 	}
-	public List<PetSurvey> showPetSurvey(int petID){
+
+	public List<PetSurvey> showPetSurvey(int petID) {
 		List<PetSurvey> petSurveyList = new ArrayList<>();
 
 		try {
@@ -298,7 +320,7 @@ public class PetListDAO {
 			while (rs.next()) {
 				int questionID = rs.getInt("questionID");
 				int surveyChoiceID = rs.getInt("surveyChoiceID");
-				PetSurvey petSurvey = new PetSurvey(petID,questionID,surveyChoiceID);
+				PetSurvey petSurvey = new PetSurvey(petID, questionID, surveyChoiceID);
 				petSurveyList.add(petSurvey);
 			}
 		} catch (Exception e) {
@@ -306,6 +328,7 @@ public class PetListDAO {
 		}
 		return petSurveyList;
 	}
+
 	public List<PetInformationView> showListByFacility(String facilityId) {
 		List<PetInformationView> facilityList = new ArrayList<>();
 
@@ -330,7 +353,8 @@ public class PetListDAO {
 				String gender = rs.getString("gender");
 				int age = rs.getInt("age");
 				int price = rs.getInt("price");
-				PetInformationView petInformationView = new PetInformationView(petID,facilityId1, categoryId, gender, age, price);
+				PetInformationView petInformationView = new PetInformationView(petID, facilityId1, categoryId, gender,
+						age, price);
 				facilityList.add(petInformationView);
 			}
 		} catch (Exception e) {

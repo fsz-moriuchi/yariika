@@ -36,10 +36,19 @@
 <%--クイズ結果の合否判定 --%>
 <c:choose>
 <c:when test="${percent>=70}">
+
 <h3>合格</h3>
-<form action="ReserveServlet" method="get">
-<button type="submit">予約へ進む</button>
-</form>
+
+<c:choose>
+<c:when test="${reserved}">
+<p>★このペットは現在予約済みです★</p>
+</c:when>
+<c:otherwise>
+<a href="QuizServlet">予約する</a><br>
+</c:otherwise>
+</c:choose>
+
+
 </c:when>
 <c:otherwise>
 <h3>不合格</h3>

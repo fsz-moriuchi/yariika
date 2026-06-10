@@ -12,7 +12,7 @@
 <a href="FacilityPageServlet">施設専用ページへ</a><br>
 <h1>ペット一覧</h1>
 <c:forEach var="pet" items="${petList}">
-種類:<c:out value="${pet.categoryId}" />
+種類:<c:out value="${pet.categoryName}" />
 性別:<c:out value="${pet.gender}" />
 年齢:<c:out value="${pet.age}" />
 値段:<c:out value="${pet.price}" />円

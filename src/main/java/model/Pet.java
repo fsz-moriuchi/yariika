@@ -3,36 +3,32 @@ package model;
 public class Pet {
 
 	private int petID;
-	private String facilityId;
-	private int categoryId;
+	private String facilityID;
+	private int categoryID;
 
-
-	public Pet(){};
-	public Pet(String facilityId,int categoryId) {
-		this.facilityId = facilityId;
-		this.categoryId = categoryId;
+	public Pet(String facilityID, int categoryID) {
+		this.facilityID = facilityID;
+		this.categoryID = categoryID;
 	}
 
-	public int getCategoryId() {
-		return categoryId;
+	public int getCategoryID() {
+		return categoryID;
+	}
+
+	public String getFacilityID() {
+		return facilityID;
 	}
 
 	public int getPetID() {
 		return petID;
 	}
 
-	public void setCategoryId(int categoryId) {
-		this.categoryId = categoryId;
+	public void setCategoryID(int categoryID) {
+		this.categoryID = categoryID;
 	}
 
 	public void setPetID(int petID) {
 		this.petID = petID;
-	}
-	public String getFacilityId() {
-		return facilityId;
-	}
-	public void setFacilityId(String facilityId) {
-		this.facilityId = facilityId;
 	}
 
 }

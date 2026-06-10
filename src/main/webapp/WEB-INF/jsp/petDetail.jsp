@@ -10,7 +10,7 @@
 </head>
 <body>
 <h1>プロフィール</h1>
-<c:out value="${petDetail.categoryId}"/><br>
+<c:out value="${petDetail.categoryName}"/><br>
 <c:choose>
 <c:when test="${not empty petDetail.name}">
 <c:out value="${petDetail.name}"/>
@@ -19,7 +19,7 @@
 名付けてください！
 </c:otherwise>
 </c:choose><br>
-<c:out value="${petDetail.facilityId}"/><br>
+<c:out value="${petDetail.facilityID}"/><br>
 <c:out value="${petDetail.gender}"/><br>
 <c:out value="${petDetail.age}"/><br>
 <c:out value="${petDetail.color}"/><br>
@@ -28,7 +28,14 @@
 <c:out value="${petDetail.price}"/><br>
 <c:out value="${petDetail.commentText}"/><br>
 
-<a href="QuizServlet">予約する</a>
+<c:choose>
+<c:when test="${reserved}">
+<p>★このペットは現在予約済みです★</p>
+</c:when>
+<c:otherwise>
+<a href="ReserveServlet">予約する</a><br>
+</c:otherwise>
+</c:choose>
 <a href="HomeServlet">ホームに戻る</a>
 </body>
 </html>

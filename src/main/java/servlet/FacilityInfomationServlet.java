@@ -1,6 +1,7 @@
 package servlet;
 
 import java.io.IOException;
+import java.time.LocalTime;
 
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletException;
@@ -35,9 +36,12 @@ public class FacilityInfomationServlet extends HttpServlet {
 		String tel = request.getParameter("tel");
 		String address = request.getParameter("address");
 		String mail = request.getParameter("mail");
-		String openTime = request.getParameter("openTime");
-		String closeTime = request.getParameter("closeTime");
+		String openTimeStr = request.getParameter("openTime");
+		String closeTimeStr = request.getParameter("closeTime");
 		String[] closedDays = request.getParameterValues("closedDay");
+
+		LocalTime openTime = LocalTime.parse(openTimeStr);
+		LocalTime closeTime = LocalTime.parse(closeTimeStr);
 
 		String closedDay = "";
 		if (closedDays != null) {
@@ -46,9 +50,17 @@ public class FacilityInfomationServlet extends HttpServlet {
 		//テーブルに登録
 		FacilityInformation facilityInfo = new FacilityInformation(facilityId, facilityName, tel, address, mail,
 				openTime, closeTime, closedDay);
+		
 		FacilityInfomationDAO dao = new FacilityInfomationDAO();
+		FacilityInformation oldInfo = dao.findByFacilityId(facilityId);
 
-		boolean result = dao.insert(facilityInfo);
+		boolean result;
+
+		if (oldInfo == null) {
+		    result = dao.insert(facilityInfo);
+		} else {
+		    result = dao.update(facilityInfo);
+		}
 
 		if (result) {
 			response.sendRedirect("FacilityInformationCompleteServlet");
@@ -57,6 +69,7 @@ public class FacilityInfomationServlet extends HttpServlet {
 			RequestDispatcher dispatcher = request.getRequestDispatcher("WEB-INF/jsp/facilityinfomation.jsp");
 			dispatcher.forward(request, response);
 		}
+		
 	}
 
 }

@@ -3,6 +3,7 @@ package dao;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,8 +35,8 @@ public class FacilityInfomationDAO {
 			pStmt.setString(3, facilityInfo.getTel());
 			pStmt.setString(4, facilityInfo.getAddress());
 			pStmt.setString(5, facilityInfo.getMail());
-			pStmt.setString(6, facilityInfo.getOpenTime());
-			pStmt.setString(7, facilityInfo.getCloseTime());
+			pStmt.setTime(6, java.sql.Time.valueOf(facilityInfo.getOpenTime()));
+			pStmt.setTime(7, java.sql.Time.valueOf(facilityInfo.getCloseTime()));
 			pStmt.setString(8, facilityInfo.getClosedDay());
 
 			int count = pStmt.executeUpdate();
@@ -49,33 +50,45 @@ public class FacilityInfomationDAO {
 	}
 
 	public FacilityInformation findByFacilityId(String facilityId) {
+
 		try {
 			Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
 		} catch (ClassNotFoundException e) {
 			throw new IllegalStateException("JDBCドライバを読み込めませんでした");
 		}
-		try (Connection conn = DButil.getConnection()) {
-			String sql = "SELECT * FROM FacilityInformation "
-					+ "WHERE FACILITY_ID = ?";
-			PreparedStatement pStmt = conn.prepareStatement(sql);
 
+		try (Connection conn = DButil.getConnection()) {
+
+			String sql = "SELECT * FROM FacilityInformation WHERE FACILITY_ID = ?";
+
+			PreparedStatement pStmt = conn.prepareStatement(sql);
 			pStmt.setString(1, facilityId);
+
 			ResultSet rs = pStmt.executeQuery();
 
 			if (rs.next()) {
-				return new FacilityInformation(
-						rs.getString("FACILITY_ID"),
-						rs.getString("facilityName"),
-						rs.getString("tel"),
-						rs.getString("address"),
-						rs.getString("mail"),
-						rs.getString("openTime"),
-						rs.getString("closeTime"),
-						rs.getString("closedDay"));
+
+			    LocalTime openTime =
+			            rs.getTime("openTime").toLocalTime();
+
+			    LocalTime closeTime =
+			            rs.getTime("closeTime").toLocalTime();
+
+			    return new FacilityInformation(
+			            rs.getString("FACILITY_ID"),
+			            rs.getString("facilityName"),
+			            rs.getString("tel"),
+			            rs.getString("address"),
+			            rs.getString("mail"),
+			            openTime,
+			            closeTime,
+			            rs.getString("closedDay"));
 			}
+
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+
 		return null;
 	}
 
@@ -102,8 +115,9 @@ public class FacilityInfomationDAO {
 			pStmt.setString(2, facilityInfo.getTel());
 			pStmt.setString(3, facilityInfo.getAddress());
 			pStmt.setString(4, facilityInfo.getMail());
-			pStmt.setString(5, facilityInfo.getOpenTime());
-			pStmt.setString(6, facilityInfo.getCloseTime());
+
+			pStmt.setTime(5, java.sql.Time.valueOf(facilityInfo.getOpenTime()));
+			pStmt.setTime(6, java.sql.Time.valueOf(facilityInfo.getCloseTime()));
 			pStmt.setString(7, facilityInfo.getClosedDay());
 			pStmt.setString(8, facilityInfo.getFacilityId());
 
@@ -115,34 +129,35 @@ public class FacilityInfomationDAO {
 
 		return false;
 	}
-	public List<Facility> findAllFacility(){
+
+	public List<Facility> findAllFacility() {
 		List<Facility> allFacilityList = new ArrayList<>();
 
 		try {
-		Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
+			Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
 		} catch (ClassNotFoundException e) {
 			throw new IllegalStateException("JDBCドライバを読み込めませんでした");
-			}
+		}
 
 		try (Connection conn = DButil.getConnection()) {
 
-		String sql = "SELECT FACILITY_ID, PASSWORD_HASH FROM FACILITIES ORDER BY FACILITY_ID";
-		PreparedStatement pStmt = conn.prepareStatement(sql);
+			String sql = "SELECT FACILITY_ID, PASSWORD_HASH FROM FACILITIES ORDER BY FACILITY_ID";
+			PreparedStatement pStmt = conn.prepareStatement(sql);
 
-		ResultSet rs = pStmt.executeQuery();
+			ResultSet rs = pStmt.executeQuery();
 
-		while (rs.next()) {
-		String facilityId = rs.getString("FACILITY_ID");
-		String passwordHash = rs.getString("PASSWORD_HASH");
+			while (rs.next()) {
+				String facilityId = rs.getString("FACILITY_ID");
+				String passwordHash = rs.getString("PASSWORD_HASH");
 
-		Facility facility = new Facility(facilityId, passwordHash);
-		allFacilityList.add(facility);
-		}
+				Facility facility = new Facility(facilityId, passwordHash);
+				allFacilityList.add(facility);
+			}
 
 		} catch (Exception e) {
 			e.printStackTrace();
-		    }
+		}
 		return allFacilityList;
-		
+
 	}
 }

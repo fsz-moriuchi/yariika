@@ -1,6 +1,7 @@
 package servlet;
 
 import java.io.IOException;
+import java.time.LocalTime;
 
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletException;
@@ -40,14 +41,18 @@ public class FacilityInformationEditServlet extends HttpServlet {
 
 		String facilityId = (String) session.getAttribute("facilityId");
 
+		LocalTime openTime = LocalTime.parse(request.getParameter("openTime"));
+		LocalTime closeTime = LocalTime.parse(request.getParameter("closeTime"));
+		
+		
 		FacilityInformation facilityInfo = new FacilityInformation(
 				facilityId,
 				request.getParameter("facilityName"),
 				request.getParameter("tel"),
 				request.getParameter("address"),
 				request.getParameter("mail"),
-				request.getParameter("openTime"),
-				request.getParameter("closeTime"),
+				openTime,
+				closeTime,
 				request.getParameter("closedDay"));
 
 		FacilityInfomationDAO dao = new FacilityInfomationDAO();

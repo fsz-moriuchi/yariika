@@ -37,7 +37,7 @@ public class QuizAnswerServlet extends HttpServlet {
 		
 		User login = (User) session.getAttribute("user");
 		if (login == null) {
-		    response.sendRedirect("LoginServlet");
+		    response.sendRedirect("UserLoginServlet");
 		    return;
 		}
 		String userId = login.getUserId();
@@ -91,7 +91,8 @@ public class QuizAnswerServlet extends HttpServlet {
 		Collections.reverse(resultList);
 		// JSPに渡す
 		request.setAttribute("resultList", resultList);
-		
+		Boolean reserved = (Boolean) session.getAttribute("reserved");
+		request.setAttribute("reserved", reserved);
 		
 		RequestDispatcher dispatcher = request.getRequestDispatcher("WEB-INF/jsp/quizResult.jsp");
 		dispatcher.forward(request, response);

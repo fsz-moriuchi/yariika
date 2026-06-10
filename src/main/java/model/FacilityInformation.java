@@ -1,91 +1,122 @@
 package model;
 
+import java.time.LocalTime;
+
 public class FacilityInformation {
 
-	private String facilityId;
-	private String facilityName;
-	private String tel;
-	private String address;
-	private String mail;
-	private String openTime;
-	private String closeTime;
-	private String closedDay;
+    private String facilityId;
+    private String facilityName;
+    private String tel;
+    private String address;
+    private String mail;
+    private LocalTime openTime;
+    private LocalTime closeTime;
+    private String closedDay;
 
-	public FacilityInformation(String facilityId, String facilityName,
-			String tel, String address, String mail,
-			String openTime, String closeTime, String closedDay) {
+    // 登録・更新用
+    public FacilityInformation(
+            String facilityId,
+            String facilityName,
+            String tel,
+            String address,
+            String mail,
+            LocalTime openTime,
+            LocalTime closeTime,
+            String closedDay) {
 
-		this.facilityId = facilityId;
-		this.facilityName = facilityName;
-		this.tel = tel;
-		this.address = address;
-		this.mail = mail;
-		this.openTime = openTime;
-		this.closeTime = closeTime;
-		this.closedDay = closedDay;
-	}
+        this.facilityId = facilityId;
+        this.facilityName = facilityName;
+        this.tel = tel;
+        this.address = address;
+        this.mail = mail;
+        this.openTime = openTime;
+        this.closeTime = closeTime;
+        this.closedDay = closedDay;
+    }
 
-	public String getFacilityId() {
-		return facilityId;
-	}
+    // DB取得用
+    public FacilityInformation(
+            int facilityInformationID,
+            String facilityId,
+            String facilityName,
+            String tel,
+            String address,
+            String mail,
+            LocalTime openTime,
+            LocalTime closeTime,
+            String closedDay) {
 
-	public void setFacilityId(String facilityId) {
-		this.facilityId = facilityId;
-	}
+        this.facilityId = facilityId;
+        this.facilityName = facilityName;
+        this.tel = tel;
+        this.address = address;
+        this.mail = mail;
+        this.openTime = openTime;
+        this.closeTime = closeTime;
+        this.closedDay = closedDay;
+    }
 
-	public String getFacilityName() {
-		return facilityName;
-	}
+    public String getFacilityId() {
+        return facilityId;
+    }
 
-	public void setFacilityName(String facilityName) {
-		this.facilityName = facilityName;
-	}
+    public void setFacilityId(String facilityId) {
+        this.facilityId = facilityId;
+    }
 
-	public String getTel() {
-		return tel;
-	}
+    public String getFacilityName() {
+        return facilityName;
+    }
 
-	public void setTel(String tel) {
-		this.tel = tel;
-	}
+    public void setFacilityName(String facilityName) {
+        this.facilityName = facilityName;
+    }
 
-	public String getAddress() {
-		return address;
-	}
+    public String getTel() {
+        return tel;
+    }
 
-	public void setAddress(String address) {
-		this.address = address;
-	}
+    public void setTel(String tel) {
+        this.tel = tel;
+    }
 
-	public String getMail() {
-		return mail;
-	}
+    public String getAddress() {
+        return address;
+    }
 
-	public void setMail(String mail) {
-		this.mail = mail;
-	}
+    public void setAddress(String address) {
+        this.address = address;
+    }
 
-	public String getOpenTime() {
-		return openTime;
-	}
+    public String getMail() {
+        return mail;
+    }
 
-	public void setOpenTime(String openTime) {
-		this.openTime = openTime;
-	}
+    public void setMail(String mail) {
+        this.mail = mail;
+    }
 
-	public String getCloseTime() {
-		return closeTime;
-	}
+    public LocalTime getOpenTime() {
+        return openTime;
+    }
 
-	public void setCloseTime(String closeTime) {
-		this.closeTime = closeTime;
-	}
+    public void setOpenTime(LocalTime openTime) {
+        this.openTime = openTime;
+    }
 
-	public String getClosedDay() {
-		return closedDay;
-	}
+    public LocalTime getCloseTime() {
+        return closeTime;
+    }
 
-	public void setClosedDay(String closedDay) {
-		this.closedDay = closedDay;
-	}
+    public void setCloseTime(LocalTime closeTime) {
+        this.closeTime = closeTime;
+    }
+
+    public String getClosedDay() {
+        return closedDay;
+    }
+
+    public void setClosedDay(String closedDay) {
+        this.closedDay = closedDay;
+    }
 }

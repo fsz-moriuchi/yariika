@@ -11,6 +11,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
 import dao.PetListDAO;
+import dao.ReserveDAO;
 import model.PetDetail;
 
 @WebServlet("/PetDetailServlet")
@@ -25,12 +26,25 @@ public class PetDetailServlet extends HttpServlet {
 		int petID = Integer.parseInt(request.getParameter("petID"));
 
 		request.setAttribute("petID", petID);
-
+		
 		PetListDAO dao = new PetListDAO();
 		PetDetail petDetail = dao.showPetDetail(petID);
 		
-		//追加
+		///////////////////コンフリ部分////////////////////
+		String facilityID = petDetail.getFacilityID();
+		ReserveDAO dao2 = new ReserveDAO();
+		boolean reserved = dao2.existsReserveByPetID(petID);
+
+		request.setAttribute("petID", petID);
+		request.setAttribute("reserved", reserved);
 		HttpSession session = request.getSession();
+		session.setAttribute("reservePetID", petID);
+		session.setAttribute("reserveFacilityID", facilityID); 
+		session.setAttribute("reserved", reserved);
+		////////////////////////////////////////////
+		
+		//追加
+		session.setAttribute("categoryName", petDetail.getCategoryName());
 		session.setAttribute("categoryId", petDetail.getCategoryId());
 		
 		request.setAttribute("petDetail", petDetail);

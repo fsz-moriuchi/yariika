@@ -3,8 +3,9 @@ package model;
 public class PetDetail {
 	private int petID;
 	private int categoryId;
+	private String facilityID;
+	private String categoryName;
 	private int petInformationID;
-	private String facilityId;
 	private String name;
 	private String gender;
 	private int age;
@@ -14,11 +15,25 @@ public class PetDetail {
 	private int price;
 	private String commentText;
 
-	public PetDetail(int petID, String facilityId,int categoryId, int petInformationID, String name, String gender, int age,
-			String color, String pet_size, String vaccine, int price, String commentText) {
+	public PetDetail(
+			int petID,
+			int categoryId,
+			String facilityID,
+			String categoryName,
+			int petInformationID,
+			String name,
+			String gender,
+			int age,
+			String color,
+			String pet_size,
+			String vaccine,
+			int price,
+			String commentText) {
+
 		this.petID = petID;
-		this.facilityId = facilityId;
 		this.categoryId = categoryId;
+		this.facilityID = facilityID;
+		this.categoryName = categoryName;
 		this.petInformationID = petInformationID;
 		this.name = name;
 		this.gender = gender;
@@ -33,12 +48,17 @@ public class PetDetail {
 	public int getPetID() {
 		return petID;
 	}
-	public String getFacilityId() {
-		return facilityId;
+	
+	public int getCategoryId() {
+	    return categoryId;
 	}
 
-	public int getCategoryId() {
-		return categoryId;
+	public String getFacilityID() {
+		return facilityID;
+	}
+
+	public String getCategoryName() {
+		return categoryName;
 	}
 
 	public int getPetInformationID() {
@@ -76,25 +96,34 @@ public class PetDetail {
 	public String getCommentText() {
 		return commentText;
 	}
+
 	public String getPetSizeName() {
-		if(pet_size == null) {
+		if (pet_size == null) {
 			return "";
 		}
-		switch(pet_size){
-			case "small" : return "小型";
-			case "medium": return "中型";
-			case "large": return "大型";
-			default : return pet_size;
+		switch (pet_size) {
+		case "small":
+			return "小型";
+		case "medium":
+			return "中型";
+		case "large":
+			return "大型";
+		default:
+			return pet_size;
 		}
 	}
+
 	public String getVaccineName() {
-		if(vaccine == null) {
+		if (vaccine == null) {
 			return "";
 		}
-		switch(vaccine){
-			case "vaccineDone" : return "接種済み";
-			case "vaccineYet": return "未接種";
-			default : return vaccine;
+		switch (vaccine) {
+		case "vaccineDone":
+			return "接種済み";
+		case "vaccineYet":
+			return "未接種";
+		default:
+			return vaccine;
 		}
 	}
 }

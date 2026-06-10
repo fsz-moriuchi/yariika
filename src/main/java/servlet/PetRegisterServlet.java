@@ -41,7 +41,7 @@ public class PetRegisterServlet extends HttpServlet {
 
 		String action = request.getParameter("action");
 		String facilityId = request.getParameter("facilityId");
-//新規ペット登録	
+		//新規ペット登録	
 		if("アンケートへ".equals(action)) {
 			int categoryId = Integer.parseInt(request.getParameter("categoryId"));
 			String name = request.getParameter("name");
@@ -76,8 +76,8 @@ public class PetRegisterServlet extends HttpServlet {
 			System.out.println("PetRegisterServlet: categoryId = " + categoryId);
 			
 			response.sendRedirect("SurveyServlet");
-
 		}
+
 
 //既存ペット情報更新	
 		else if("更新".equals(action)) {
