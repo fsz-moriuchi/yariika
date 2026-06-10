@@ -64,5 +64,31 @@ public class FacilitiesDAO {
 		}
 		return true;
 	}
+	//パスワード変更
+		public boolean updateFacilityPassword(Facility facility){
+			try {
+				Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
+			} catch (ClassNotFoundException e) {
+				throw new IllegalStateException("JBDCドライバを読み込めませんでした");
+			}
+			try (Connection conn = DButil.getConnection()) {
+
+				String sql = "UPDATE FACILITIES SET PASSWORD_HASH = ? WHERE FACILITY_ID = ?";
+				PreparedStatement pStmt = conn.prepareStatement(sql);
+
+				pStmt.setString(1, facility.getPasswordHash());
+				pStmt.setString(2, facility.getFacilityId());
+				
+
+				int result = pStmt.executeUpdate();
+				if (result != 1) {
+					return false;
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+				return false;
+			}
+			return true;
+		}
 
 }

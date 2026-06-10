@@ -147,7 +147,7 @@ public class PetRegisterServlet extends HttpServlet {
 			PetInformation petInformation = new PetInformation(petID, name, gender, age, colorText, pet_size, vaccine, price, commentText);
 
 		    List<PetSurvey> petSurveyList = dao.showPetSurvey(petID);
-		    List<Question> questionList = qDao.findAllQuestion();
+		    List<Question> petQuestionList = qDao.findAllQuestion();
 		    List<Choice> allChoiceList = cDao.findAllChoices();
 		   
 		    Pet pet = new Pet(facilityId,categoryId);
@@ -157,7 +157,7 @@ public class PetRegisterServlet extends HttpServlet {
 
 		    request.setAttribute("petID", petID);
 		    request.setAttribute("petSurveyList", petSurveyList);
-		    request.setAttribute("questionList", questionList);
+		    request.setAttribute("petQuestionList", petQuestionList);
 		    request.setAttribute("allChoiceList", allChoiceList);
 
 		    RequestDispatcher dispatcher =request.getRequestDispatcher("WEB-INF/jsp/petSurvey.jsp");

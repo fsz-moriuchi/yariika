@@ -1,6 +1,7 @@
 package servlet;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import jakarta.servlet.RequestDispatcher;
@@ -24,15 +25,23 @@ import model.Question;
 public class SurveyServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
-
+//PetSurveyServlet
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
 		QuestionSurveyDAO Qdao = new QuestionSurveyDAO();
 		SurveyChoiceDAO Cdao = new SurveyChoiceDAO();
 		List<Question> questionList = Qdao.findAllQuestion();
+		List<Question> petQuestionList = new ArrayList<>();
+		
+		for(Question petQ : questionList) {
+			if(petQ.getQuestionID()<=10) {
+				petQuestionList.add(petQ);
+			}
+		}
+		
 		List<Choice> allChoiceList = Cdao.findAllChoices();
 		
-		request.setAttribute("questionList", questionList);
+		request.setAttribute("petQuestionList", petQuestionList);
 		request.setAttribute("allChoiceList", allChoiceList);
 		
 		RequestDispatcher dispatcher = request.getRequestDispatcher("WEB-INF/jsp/petSurvey.jsp");
@@ -67,7 +76,7 @@ public class SurveyServlet extends HttpServlet {
 		boolean petInformationResult = dao.createPetInformation(petInformation);
 		boolean petSurveyResult = true;
 		
-		for(int qID =1;qID <=6;qID++) {
+		for(int qID =1;qID <=10;qID++) {
 			int surveyChoiceID =Integer.parseInt(request.getParameter("q" + qID));
 			PetSurvey petSurvey =new PetSurvey(petID,qID,surveyChoiceID);
 			if(!dao.createPetSurvey(petSurvey)) {
@@ -93,7 +102,7 @@ public class SurveyServlet extends HttpServlet {
 			int petID = Integer.parseInt(nowPetID);
 			PetListDAO dao = new PetListDAO();
 			boolean petSurveyResult = true;
-			for(int qID =1;qID <=6;qID++) {
+			for(int qID =1;qID <=10;qID++) {
 				int surveyChoiceID =Integer.parseInt(request.getParameter("q" + qID));
 				if(!dao.updatePetSurvey(petID,qID,surveyChoiceID)) {
 					petSurveyResult = false;

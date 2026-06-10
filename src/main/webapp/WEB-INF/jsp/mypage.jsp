@@ -17,6 +17,10 @@
 <button type="submit">個人情報確認</button>
 </form>
 
+<form action="PasswordEditServlet" method="get">
+<button type="submit">パスワード変更</button>
+</form>
+
 <c:choose>
 <c:when test="${empty userSurveyList}">
 	<form action="UserSuveyServlet" method="get">

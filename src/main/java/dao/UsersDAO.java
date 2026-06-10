@@ -148,4 +148,31 @@ public class UsersDAO {
 		return userSurveyList;
 
 		}
+	
+//パスワード変更
+	public boolean updateUserPassword(User user){
+		try {
+			Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
+		} catch (ClassNotFoundException e) {
+			throw new IllegalStateException("JBDCドライバを読み込めませんでした");
+		}
+		try (Connection conn = DButil.getConnection()) {
+
+			String sql = "UPDATE USERS SET PASSWORD_HASH = ? WHERE USER_ID = ?";
+			PreparedStatement pStmt = conn.prepareStatement(sql);
+
+			pStmt.setString(1, user.getPasswordHash());
+			pStmt.setString(2, user.getUserId());
+			
+
+			int result = pStmt.executeUpdate();
+			if (result != 1) {
+				return false;
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		}
+		return true;
+	}
 }

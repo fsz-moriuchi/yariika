@@ -22,7 +22,7 @@ import model.UserSurvey;
 public class UserSuveyServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
-
+//UserSurveyServlet
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		request.setCharacterEncoding("UTF-8");
 		HttpSession session = request.getSession();
@@ -52,7 +52,7 @@ public class UserSuveyServlet extends HttpServlet {
 //新規アンケート登録
 		if("登録".equals(action)) {
 			boolean userSurveyResult = true;
-			for(int qID = 1; qID <=6 ; qID++) {
+			for(int qID = 1; qID <=14 ; qID++) {
 				int surveyChoiceID = Integer.parseInt(request.getParameter("q"+qID));
 				UserSurvey userSurvey = new UserSurvey(userId,qID,surveyChoiceID);
 				if(!dao.createUserSurvey(userSurvey)) {
@@ -71,7 +71,7 @@ public class UserSuveyServlet extends HttpServlet {
 //アンケート内容修正
 		else if("更新".equals(action)){
 			boolean userSurveyResult = true;			
-			for(int qID =1;qID <=6;qID++) {
+			for(int qID =1;qID <=14;qID++) {
 				int surveyChoiceID =Integer.parseInt(request.getParameter("q" + qID));
 				if(!dao.updateUserSurvey(userId,qID,surveyChoiceID)) {
 					userSurveyResult = false;

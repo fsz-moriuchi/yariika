@@ -8,7 +8,7 @@
     <%@ taglib prefix="c" uri="jakarta.tags.core"%>
     
     <%
-    List<Question> questionList =(List<Question>)request.getAttribute("questionList");
+    List<Question> petQuestionList =(List<Question>)request.getAttribute("petQuestionList");
     List<Choice> allChoiceList =(List<Choice>)request.getAttribute("allChoiceList");
     List<PetSurvey> petSurveyList =(List<PetSurvey>)request.getAttribute("petSurveyList");
     %>
@@ -25,7 +25,7 @@
 
 
 <form action="SurveyServlet" method="post">
-<%for(Question q : questionList) {%>
+<%for(Question q : petQuestionList) {%>
 <%=q.getQuestionID() %>.	<%=q.getPetQuestion() %> <br>
 <%for(Choice c : allChoiceList) {%>
 <% if(c.getQuestionID() == q.getQuestionID()){%>
