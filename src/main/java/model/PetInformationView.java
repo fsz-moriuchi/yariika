@@ -2,14 +2,14 @@ package model;
 
 public class PetInformationView {
 	private int petID;
-	private String category;
+	private int categoryID;
 	private String gender;
 	private int age;
 	private int price;
 
-	public PetInformationView(int petID, String category, String gender, int age, int price) {
+	public PetInformationView(int petID, int categoryID, String gender, int age, int price) {
 		this.petID = petID;
-		this.category = category;
+		this.categoryID = categoryID;
 		this.gender = gender;
 		this.age = age;
 		this.price = price;
@@ -19,8 +19,8 @@ public class PetInformationView {
 		return petID;
 	}
 
-	public String getCategory() {
-		return category;
+	public int getCategoryID() {
+		return categoryID;
 	}
 
 	public String getGender() {

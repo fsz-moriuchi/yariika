@@ -4,18 +4,18 @@ public class Pet {
 
 	private int petID;
 	private String facilityID;
-	private String category;
+	private int categoryID;
 
 	public Pet() {
 	};
 
-	public Pet(int petID, String facilityID , String category) {
+	public Pet(int petID, String facilityID , int categoryID) {
 		this.petID = petID;
-		this.category = category;
+		this.categoryID = categoryID;
 	}
 
-	public String getCategory() {
-		return category;
+	public int getCategoryID() {
+		return categoryID;
 	}
 	
 	public String getFacilityID() {
@@ -26,8 +26,8 @@ public class Pet {
 		return petID;
 	}
 
-	public void setCategory(String category) {
-		this.category = category;
+	public void setCategoryID(int categoryID) {
+		this.categoryID = categoryID;
 	}
 
 	public void setPetID(int petID) {

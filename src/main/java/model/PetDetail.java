@@ -3,7 +3,7 @@ package model;
 public class PetDetail {
 	private int petID;
 	private String facilityID;
-	private String category;
+	private int categoryID;
 	private int petInformationID;
 	private String name;
 	private String gender;
@@ -14,11 +14,11 @@ public class PetDetail {
 	private int price;
 	private String commentText;
 
-	public PetDetail(int petID, String facilityID , String category, int petInformationID, String name, String gender, int age,
+	public PetDetail(int petID, String facilityID , int categoryID, int petInformationID, String name, String gender, int age,
 			String color, String pet_size, String vaccine, int price, String commentText) {
 		this.petID = petID;
 		this.facilityID = facilityID;
-		this.category = category;
+		this.categoryID = categoryID;
 		this.petInformationID = petInformationID;
 		this.name = name;
 		this.gender = gender;
@@ -38,8 +38,8 @@ public class PetDetail {
 		return facilityID;
 	}
 
-	public String getCategory() {
-		return category;
+	public int getCategoryID() {
+		return categoryID;
 	}
 
 	public int getPetInformationID() {
