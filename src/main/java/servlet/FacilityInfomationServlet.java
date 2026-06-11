@@ -38,18 +38,14 @@ public class FacilityInfomationServlet extends HttpServlet {
 		String mail = request.getParameter("mail");
 		String openTimeStr = request.getParameter("openTime");
 		String closeTimeStr = request.getParameter("closeTime");
-		String[] closedDays = request.getParameterValues("closedDay");
 
 		LocalTime openTime = LocalTime.parse(openTimeStr);
 		LocalTime closeTime = LocalTime.parse(closeTimeStr);
 
-		String closedDay = "";
-		if (closedDays != null) {
-			closedDay = String.join(",", closedDays);
-		}
+		
 		//テーブルに登録
 		FacilityInformation facilityInfo = new FacilityInformation(facilityId, facilityName, tel, address, mail,
-				openTime, closeTime, closedDay);
+				openTime, closeTime);
 		
 		FacilityInfomationDAO dao = new FacilityInfomationDAO();
 		FacilityInformation oldInfo = dao.findByFacilityId(facilityId);

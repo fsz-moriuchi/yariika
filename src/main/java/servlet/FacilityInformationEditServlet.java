@@ -11,6 +11,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
+import dao.FacilityClosedDayDAO;
 import dao.FacilityInfomationDAO;
 import model.FacilityInformation;
 
@@ -37,14 +38,17 @@ public class FacilityInformationEditServlet extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 
-		HttpSession session = request.getSession();
+		request.setCharacterEncoding("UTF-8");
 
+		HttpSession session = request.getSession();
 		String facilityId = (String) session.getAttribute("facilityId");
 
 		LocalTime openTime = LocalTime.parse(request.getParameter("openTime"));
+
 		LocalTime closeTime = LocalTime.parse(request.getParameter("closeTime"));
-		
-		
+
+		String[] closedDays = request.getParameterValues("closedDay");
+
 		FacilityInformation facilityInfo = new FacilityInformation(
 				facilityId,
 				request.getParameter("facilityName"),
@@ -52,20 +56,54 @@ public class FacilityInformationEditServlet extends HttpServlet {
 				request.getParameter("address"),
 				request.getParameter("mail"),
 				openTime,
-				closeTime,
-				request.getParameter("closedDay"));
+				closeTime);
 
-		FacilityInfomationDAO dao = new FacilityInfomationDAO();
+		// 施設情報を更新
+		FacilityInfomationDAO facilityDAO = new FacilityInfomationDAO();
 
-		boolean result = dao.update(facilityInfo);
+		boolean facilityUpdateResult = facilityDAO.update(facilityInfo);
+
+		// 既存の定休日を削除
+		FacilityClosedDayDAO closedDayDAO = new FacilityClosedDayDAO();
+
+		boolean closedDayDeleteResult = closedDayDAO.deleteByFacilityID(facilityId);
+
+		// 定休日の登録結果
+		boolean closedDayInsertResult = true;
+
+		/*
+		 * 削除に成功し、定休日が1つ以上選択されている場合のみ登録する。
+		 * 何も選択されていない場合は、削除だけ行って
+		 * 「定休日なし」として扱う。
+		 */
+		if (closedDayDeleteResult && closedDays != null) {
+
+			for (String closedDay : closedDays) {
+
+				boolean insertResult = closedDayDAO.insertByFacilityID(
+						facilityId,
+						closedDay);
+
+				if (!insertResult) {
+					closedDayInsertResult = false;
+					break;
+				}
+			}
+		}
+
 		
-		if (result) {
+		// すべて成功したか判定
+		if (facilityUpdateResult
+				&& closedDayDeleteResult
+				&& closedDayInsertResult) {
+
 			response.sendRedirect(
 					"FacilityInfomationConfirmServlet");
+
 		} else {
+
 			response.sendRedirect(
-					"FacilityInformationEditServlet");
+					"FacilityInformationConfirmServlet");
 		}
 	}
-
 }

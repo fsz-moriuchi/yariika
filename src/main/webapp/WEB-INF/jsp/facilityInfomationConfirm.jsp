@@ -36,7 +36,24 @@
 		</tr>
 		<tr>
 			<th>定休日</th>
-			<td>${facilityInfo.closedDay}</td>
+			<td><c:choose>
+					<c:when test="${not empty facilityClosedDayList}">
+						<c:forEach var="closedDay" items="${facilityClosedDayList}" varStatus="status">
+			<c:choose>
+						<c:when test="${closedDay == 'MONDAY'}">月曜日</c:when>
+						<c:when test="${closedDay == 'TUESDAY'}">火曜日</c:when>
+						<c:when test="${closedDay == 'WEDNESDAY'}">水曜日</c:when>
+						<c:when test="${closedDay == 'THURSDAY'}">木曜日</c:when>
+						<c:when test="${closedDay == 'FRIDAY'}">金曜日</c:when>
+						<c:when test="${closedDay == 'SATURDAY'}">土曜日</c:when>
+						<c:when test="${closedDay == 'SUNDAY'}">日曜日</c:when>
+					</c:choose>
+					<c:if test="${not status.last}">、</c:if>
+				</c:forEach></c:when>
+					<c:otherwise>
+				定休日なし
+			</c:otherwise>
+				</c:choose></td>
 		</tr>
 	</table>
 	<br>
