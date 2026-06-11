@@ -14,6 +14,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
+import dao.FacilityClosedDayDAO;
 import dao.FacilityInformationDAO;
 import dao.ReserveDAO;
 import model.FacilityInformation;
@@ -63,7 +64,6 @@ public class ReserveServlet extends HttpServlet {
 
 		LocalTime openTime = facilityInformation.getOpenTime();
 		LocalTime closeTime = facilityInformation.getCloseTime();
-		String closedDay = facilityInformation.getClosedDay();
 		
 		LocalTime lastTime = closeTime.minusMinutes(30);
 		LocalTime time = openTime;
@@ -75,6 +75,11 @@ public class ReserveServlet extends HttpServlet {
 		ReserveDAO dao2 = new ReserveDAO();
 		List<LocalTime> reservedTimeList = dao2.findByFacilityAndDate(facilityID, reserveDate);
 		
+		FacilityClosedDayDAO dao3 = new FacilityClosedDayDAO();
+		List<String> closedDayList = dao3.findByFacilityID(facilityID);
+		
+		
+		
 		if(reserveDate.isBefore(minDate) || reserveDate.isAfter(maxDate)) {
 			request.setAttribute("errorMsg", "予約日は3日後から1週間後までの範囲で選択してください。");
 			request.setAttribute("minDate", minDate);
@@ -84,8 +89,9 @@ public class ReserveServlet extends HttpServlet {
 			dispatcher.forward(request, response);
 			return;
 		}
-
-		if (!reserveDate.getDayOfWeek().name().equals(closedDay)) {
+		
+		//休日の曜日の判定
+		if (!closedDayList.contains(reserveDate.getDayOfWeek().toString())) {
 			while (!time.isAfter(lastTime)) {
 				if (!reservedTimeList.contains(time)) {
 					timeList.add(time.toString());
@@ -100,7 +106,9 @@ public class ReserveServlet extends HttpServlet {
 		request.setAttribute("facilityID", facilityID);
 		request.setAttribute("reserveDate", reserveDate);
 		request.setAttribute("timeList", timeList);
-
+		request.setAttribute("minDate", minDate);
+		request.setAttribute("maxDate", maxDate);
+		
 		session.setAttribute("reserveDate", reserveDateStr);
 		
 
