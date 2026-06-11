@@ -98,7 +98,10 @@
 	</p>
 
 	<hr>
-
+	
+	<%--メッセージ機能の追加--%>
+	<a href="MessageServlet">メッセージを送る</a>
+	
 	<c:choose>
 		<c:when test="${reserved}">
 			<h3>★このペットは現在予約済みです★</h3>
