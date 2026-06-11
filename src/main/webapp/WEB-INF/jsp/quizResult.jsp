@@ -45,7 +45,7 @@
 <p>★このペットは現在予約済みです★</p>
 </c:when>
 <c:otherwise>
-<a href="QuizServlet">予約する</a><br>
+<a href="ReserveServlet">予約する</a><br>
 </c:otherwise>
 </c:choose>
 

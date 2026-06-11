@@ -105,7 +105,7 @@
 		</c:when>
 
 		<c:otherwise>
-			<a href="ReserveServlet">予約する</a>
+			<a href="QuizWarningServlet?petID=${petDetail.petID}">予約する</a>
 			<br>
 			<br>
 		</c:otherwise>
