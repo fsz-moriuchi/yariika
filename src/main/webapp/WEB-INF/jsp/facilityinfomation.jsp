@@ -22,12 +22,12 @@
 		<br> 5.開店時間<br> <input type="time" name="openTime" required><br>
 		<br> 6.閉店時間<br> <input type="time" name="closeTime" required><br>
 		<br> 7.定休日 
-		<input type="checkbox" name="closedDay" value="月曜日">月曜日
-		<input type="checkbox" name="closedDay" value="火曜日">火曜日
-		<input type="checkbox" name="closedDay" value="水曜日">水曜日
-		<input type="checkbox" name="closedDay" value="木曜日">木曜日
-		<input type="checkbox" name="closedDay" value="金曜日">金曜日
-		<input type="checkbox" name="closedDay" value="土曜日">土曜日
+		<input type="checkbox" name="closedDay" value="MONDAY">月曜日
+		<input type="checkbox" name="closedDay" value="TUESDAY">火曜日
+		<input type="checkbox" name="closedDay" value="WEDNESDAY">水曜日
+		<input type="checkbox" name="closedDay" value="THURSDAY">木曜日
+		<input type="checkbox" name="closedDay" value="FRIDAY">金曜日
+		<input type="checkbox" name="closedDay" value="SATURDAY">土曜日
 		<input type="checkbox" name="closedDay" value="SUNDAY">日曜日
 		<br><br>
 		<br> <input type="submit" value="登録">
