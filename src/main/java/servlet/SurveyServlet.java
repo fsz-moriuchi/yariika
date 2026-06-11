@@ -1,6 +1,7 @@
 package servlet;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import jakarta.servlet.RequestDispatcher;
@@ -24,15 +25,23 @@ import model.Question;
 public class SurveyServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
-
+//PetSurveyServlet
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
 		QuestionSurveyDAO Qdao = new QuestionSurveyDAO();
 		SurveyChoiceDAO Cdao = new SurveyChoiceDAO();
 		List<Question> questionList = Qdao.findAllQuestion();
+		List<Question> petQuestionList = new ArrayList<>();
+		
+		for(Question petQ : questionList) {
+			if(petQ.getQuestionID()<=10) {
+				petQuestionList.add(petQ);
+			}
+		}
+		
 		List<Choice> allChoiceList = Cdao.findAllChoices();
 		
-		request.setAttribute("questionList", questionList);
+		request.setAttribute("petQuestionList", petQuestionList);
 		request.setAttribute("allChoiceList", allChoiceList);
 		
 		RequestDispatcher dispatcher = request.getRequestDispatcher("WEB-INF/jsp/petSurvey.jsp");
@@ -44,9 +53,7 @@ public class SurveyServlet extends HttpServlet {
 		request.setCharacterEncoding("UTF-8");
 		HttpSession session = request.getSession();
 		String nowPetID = request.getParameter("petID");
-		System.out.println("SurveyServlet: nowPetID = " + nowPetID);
-		System.out.println("SurveyServlet: pet = " + session.getAttribute("pet"));
-		System.out.println("SurveyServlet: petInformation = " + session.getAttribute("petInformation"));
+
 //新規入力
 		if(nowPetID == null || nowPetID.isEmpty()) {
 		Pet pet = (Pet)session.getAttribute("pet");
@@ -61,11 +68,19 @@ public class SurveyServlet extends HttpServlet {
 		PetListDAO dao = new PetListDAO();
 		int petID = dao.createPet(pet);
 		
+		//追加
+		if(petID == -1) {
+		    response.setContentType("text/html; charset=UTF-8");
+		    response.getWriter().println("ペット情報の登録に失敗しました。");
+		    return;
+		}
+		//ここまで
+		
 		petInformation.setPetID(petID);
 		boolean petInformationResult = dao.createPetInformation(petInformation);
 		boolean petSurveyResult = true;
 		
-		for(int qID =1;qID <=6;qID++) {
+		for(int qID =1;qID <=10;qID++) {
 			int surveyChoiceID =Integer.parseInt(request.getParameter("q" + qID));
 			PetSurvey petSurvey =new PetSurvey(petID,qID,surveyChoiceID);
 			if(!dao.createPetSurvey(petSurvey)) {
@@ -76,12 +91,8 @@ public class SurveyServlet extends HttpServlet {
 		session.removeAttribute("pet");
 		session.removeAttribute("petInformation");
 
-		if(petID == -1) {
-		    response.setContentType("text/html; charset=UTF-8");
-		    response.getWriter().println("ペット基本情報の登録に失敗しました。店舗IDを確認してください。");
-		    return;
-		}
-		if(petID != -1 && petInformationResult && petSurveyResult) {
+
+		if(petInformationResult && petSurveyResult) {
 		RequestDispatcher dispatcher = request.getRequestDispatcher("WEB-INF/jsp/petRegisterSuccess.jsp");
 		dispatcher.forward(request, response);
 		}else {
@@ -95,7 +106,7 @@ public class SurveyServlet extends HttpServlet {
 			int petID = Integer.parseInt(nowPetID);
 			PetListDAO dao = new PetListDAO();
 			boolean petSurveyResult = true;
-			for(int qID =1;qID <=6;qID++) {
+			for(int qID =1;qID <=10;qID++) {
 				int surveyChoiceID =Integer.parseInt(request.getParameter("q" + qID));
 				if(!dao.updatePetSurvey(petID,qID,surveyChoiceID)) {
 					petSurveyResult = false;
@@ -107,7 +118,7 @@ public class SurveyServlet extends HttpServlet {
 			dispatcher.forward(request, response);
 			}else {
 				response.setContentType("text/html; charset=UTF-8");
-				 response.getWriter().println("更新失敗");
+				response.getWriter().println("更新失敗");
 			}
 			}
 	}

@@ -14,6 +14,8 @@
 	</c:if>
 	<a href="FacilityInfomationConfirmServlet">施設情報の確認・変更へ</a>
 	<br>
+	<a href="PasswordEditServlet">パスワード変更</a>
+	<br>
 	<a href="ReserveConfirmServlet">予約確認へ</a>
 	<br>
 	<a href="StoreServlet">ペット一覧へ</a>

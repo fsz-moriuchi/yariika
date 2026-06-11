@@ -104,15 +104,30 @@ public class UsersDAO {
 
 		try (Connection conn = DButil.getConnection()) {
 
-			String sql = "UPDATE UserSurvey SET SurveyChoiceID = ? WHERE USER_ID = ? AND QuestionID = ?";
-			PreparedStatement pStmt = conn.prepareStatement(sql);
+			String updateSql = "UPDATE UserSurvey SET SurveyChoiceID = ? WHERE USER_ID = ? AND QuestionID = ?";
+			PreparedStatement updatepStmt = conn.prepareStatement(updateSql);
 
-			pStmt.setInt(1,surveyChoiceID);
-			pStmt.setString(2, userId);
-			pStmt.setInt(3, questionID);
+			updatepStmt.setInt(1,surveyChoiceID);
+			updatepStmt.setString(2, userId);
+			updatepStmt.setInt(3, questionID);
+			int updateResult = updatepStmt.executeUpdate();
+			
+			//既存問題があれば更新成功
+			if(updateResult == 1) {
+				return true;
+			}
+			
+			//アンケート新規問題があるとき　insert new question
+			String insertSql = "INSERT INTO UserSurvey (USER_ID, QuestionID, SurveyChoiceID) VALUES(?, ?, ?)";
+			PreparedStatement insertpStmt = conn.prepareStatement(insertSql);
+			
+			insertpStmt.setString(1, userId);
+			insertpStmt.setInt(2, questionID);
+			insertpStmt.setInt(3,surveyChoiceID);
 
-			int result = pStmt.executeUpdate();
-			return result == 1;
+			int insertResult = insertpStmt.executeUpdate();
+
+			return insertResult == 1;
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -148,4 +163,31 @@ public class UsersDAO {
 		return userSurveyList;
 
 		}
+	
+//パスワード変更
+	public boolean updateUserPassword(User user){
+		try {
+			Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
+		} catch (ClassNotFoundException e) {
+			throw new IllegalStateException("JBDCドライバを読み込めませんでした");
+		}
+		try (Connection conn = DButil.getConnection()) {
+
+			String sql = "UPDATE USERS SET PASSWORD_HASH = ? WHERE USER_ID = ?";
+			PreparedStatement pStmt = conn.prepareStatement(sql);
+
+			pStmt.setString(1, user.getPasswordHash());
+			pStmt.setString(2, user.getUserId());
+			
+
+			int result = pStmt.executeUpdate();
+			if (result != 1) {
+				return false;
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		}
+		return true;
+	}
 }

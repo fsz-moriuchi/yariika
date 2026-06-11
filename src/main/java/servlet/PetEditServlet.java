@@ -1,6 +1,7 @@
 package servlet;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import jakarta.servlet.RequestDispatcher;
@@ -12,8 +13,12 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
 import dao.PetListDAO;
+import dao.QuestionSurveyDAO;
+import dao.SurveyChoiceDAO;
+import model.Choice;
 import model.PetDetail;
 import model.PetSurvey;
+import model.Question;
 
 @WebServlet("/PetEditServlet")
 public class PetEditServlet extends HttpServlet {
@@ -41,7 +46,31 @@ public class PetEditServlet extends HttpServlet {
 	
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		
+	    request.setCharacterEncoding("UTF-8");
 
+	    int petID = Integer.parseInt(request.getParameter("petID"));
+
+	    PetListDAO dao = new PetListDAO();
+	    QuestionSurveyDAO qDao = new QuestionSurveyDAO();
+	    SurveyChoiceDAO cDao = new SurveyChoiceDAO();
+
+	    List<PetSurvey> petSurveyList = dao.showPetSurvey(petID);
+	    List<Question> questionList = qDao.findAllQuestion();
+	    List<Question> petQuestionList = new ArrayList<>();
+	    for(Question petQ:questionList) {
+	    	if(petQ.getQuestionID() <=10) {
+	    		petQuestionList.add(petQ);
+	    	}
+	    }List<Choice> allChoiceList = cDao.findAllChoices();
+		
+		request.setAttribute("petQuestionList", petQuestionList);
+		request.setAttribute("allChoiceList", allChoiceList);
+		request.setAttribute("petSurveyList", petSurveyList);
+		request.setAttribute("petID", petID);
+		
+		RequestDispatcher dispatcher = request.getRequestDispatcher("WEB-INF/jsp/petSurveyConfirm.jsp");
+		dispatcher.forward(request, response);
 	}
 
 }
