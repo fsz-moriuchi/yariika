@@ -11,6 +11,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
+import dao.FacilityInformationDAO;
 import dao.PetListDAO;
 import model.PetInformationView;
 
@@ -18,21 +19,27 @@ import model.PetInformationView;
 public class StoreServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
+	protected void doGet(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
 
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		
 		HttpSession session = request.getSession();
-		String facilityId = (String)session.getAttribute("facilityId");
-		
-		PetListDAO dao = new PetListDAO();
-		List<PetInformationView>facilityList = dao.showListByFacility(facilityId);
+		String facilityId = (String) session.getAttribute("facilityId");
 
-		request.setAttribute("facilityList",facilityList);
+		PetListDAO dao = new PetListDAO();
+		List<PetInformationView> facilityList = dao.showListByFacility(facilityId);
+
+		FacilityInformationDAO infoDao = new FacilityInformationDAO();
+
+		Integer favoritePetId = infoDao.findFavoritePetId(facilityId);
+
+		request.setAttribute("facilityList", facilityList);
+		request.setAttribute("favoritePetId", favoritePetId);
 		RequestDispatcher dispatcher = request.getRequestDispatcher("WEB-INF/jsp/petManagement.jsp");
 		dispatcher.forward(request, response);
 	}
 
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	protected void doPost(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
 
 	}
 

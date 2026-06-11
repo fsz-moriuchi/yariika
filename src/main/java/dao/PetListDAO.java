@@ -255,19 +255,40 @@ public class PetListDAO {
 		}
 
 		try (Connection conn = DButil.getConnection()) {
-
-			String sql = "SELECT P.petID, P.FACILITY_ID, P.CATEGORY_ID, C.CATEGORY_NAME, PI.petInformationID, PI.name, PI.gender, PI.age, PI.color, PI.pet_size, PI.vaccine, PI.price, PI.commentText FROM Pet P JOIN PetInformation PI ON P.petID = PI.petID JOIN Category C ON P.CATEGORY_ID = C.CATEGORY_ID WHERE P.petID = ?";
-
+			String sql =
+					"SELECT " +
+					"P.petID, " +
+					"P.CATEGORY_ID, " +
+					"P.FACILITY_ID, " +
+					"C.CATEGORY_NAME, " +
+					"PI.petInformationID, " +
+					"PI.name, " +
+					"PI.gender, " +
+					"PI.age, " +
+					"PI.color, " +
+					"PI.pet_size, " +
+					"PI.vaccine, " +
+					"PI.price, " +
+					"PI.commentText, " +
+					"PI.imagePath, " +
+					"FI.facilityName, " +
+					"FI.address, " +
+					"FI.tel " +
+					"FROM Pet P " +
+					"JOIN PetInformation PI ON P.petID = PI.petID " +
+					"JOIN Category C ON P.CATEGORY_ID = C.CATEGORY_ID " +
+					"JOIN FacilityInformation FI ON P.FACILITY_ID = FI.FACILITY_ID " +
+					"WHERE P.petID = ?";
 			PreparedStatement pStmt = conn.prepareStatement(sql);
 			pStmt.setInt(1, petID);
 
 			ResultSet rs = pStmt.executeQuery();
 
-			while (rs.next()) {
-
+			while (rs.next()) {				
 				int categoryId = rs.getInt("CATEGORY_ID");
 				String facilityID = rs.getString("FACILITY_ID");
 				String categoryName = rs.getString("CATEGORY_NAME");
+
 				int petInformationID = rs.getInt("petInformationID");
 				String name = rs.getString("name");
 				String gender = rs.getString("gender");
@@ -278,21 +299,30 @@ public class PetListDAO {
 				int price = rs.getInt("price");
 				String commentText = rs.getString("commentText");
 
-				petDetail = new PetDetail(
-						petID,
-						categoryId,
-						facilityID,
-						categoryName,
-						petInformationID,
-						name,
-						gender,
-						age,
-						color,
-						pet_size,
-						vaccine,
-						price,
-						commentText);
+				String imagePath = rs.getString("imagePath");
 
+				String facilityName = rs.getString("facilityName");
+				String address = rs.getString("address");
+				String tel = rs.getString("tel");
+
+				petDetail = new PetDetail(
+				        petID,
+				        categoryId,
+				        facilityID,
+				        categoryName,
+				        petInformationID,
+				        name,
+				        gender,
+				        age,
+				        color,
+				        pet_size,
+				        vaccine,
+				        price,
+				        commentText,
+				        imagePath,
+				        facilityName,
+				        address,
+				        tel);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

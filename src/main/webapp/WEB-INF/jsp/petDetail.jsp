@@ -1,41 +1,117 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
-    pageEncoding="UTF-8"%>
-    <%@ taglib prefix="c" uri="jakarta.tags.core"%>
-    
+	pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="jakarta.tags.core"%>
+
 <!DOCTYPE html>
 <html>
 <head>
 <meta charset="UTF-8">
 <title>ペット詳細画面</title>
 </head>
-<body>
-<h1>プロフィール</h1>
-<c:out value="${petDetail.categoryName}"/><br>
-<c:choose>
-<c:when test="${not empty petDetail.name}">
-<c:out value="${petDetail.name}"/>
-</c:when>
-<c:otherwise>
-名付けてください！
-</c:otherwise>
-</c:choose><br>
-<c:out value="${petDetail.facilityID}"/><br>
-<c:out value="${petDetail.gender}"/><br>
-<c:out value="${petDetail.age}"/><br>
-<c:out value="${petDetail.color}"/><br>
-<c:out value="${petDetail.pet_size}"/><br>
-<c:out value="${petDetail.vaccine}"/><br>
-<c:out value="${petDetail.price}"/><br>
-<c:out value="${petDetail.commentText}"/><br>
 
-<c:choose>
-<c:when test="${reserved}">
-<p>★このペットは現在予約済みです★</p>
-</c:when>
-<c:otherwise>
-<a href="ReserveServlet">予約する</a><br>
-</c:otherwise>
-</c:choose>
-<a href="HomeServlet">ホームに戻る</a>
+<body>
+
+	<h1>プロフィール</h1>
+
+	<c:if test="${not empty petDetail.imagePath}">
+		<img src="${pageContext.request.contextPath}/${petDetail.imagePath}"
+			width="300">
+	</c:if>
+
+	<hr>
+
+	<p>
+		種類：
+		<c:out value="${petDetail.categoryName}" />
+	</p>
+
+	<p>
+		名前：
+		<c:choose>
+			<c:when test="${not empty petDetail.name}">
+				<c:out value="${petDetail.name}" />
+			</c:when>
+
+			<c:otherwise>
+        名付けてください！
+    </c:otherwise>
+		</c:choose>
+	</p>
+
+	<p>
+		性別：
+		<c:out value="${petDetail.gender}" />
+	</p>
+
+	<p>
+		年齢：
+		<c:out value="${petDetail.age}" />
+		歳
+	</p>
+
+	<p>
+		毛色：
+		<c:out value="${petDetail.color}" />
+	</p>
+
+	<p>
+		サイズ：
+		<c:out value="${petDetail.petSizeName}" />
+	</p>
+
+	<p>
+		ワクチン：
+		<c:out value="${petDetail.vaccineName}" />
+	</p>
+
+	<p>
+		価格：
+		<c:out value="${petDetail.price}" />
+		円
+	</p>
+
+	<hr>
+
+	<h2>紹介文</h2>
+
+	<p>
+		<c:out value="${petDetail.commentText}" />
+	</p>
+
+	<hr>
+
+	<h2>施設情報</h2>
+
+	<p>
+		施設名：
+		<c:out value="${petDetail.facilityName}" />
+	</p>
+
+	<p>
+		住所：
+		<c:out value="${petDetail.address}" />
+	</p>
+
+	<p>
+		電話番号：
+		<c:out value="${petDetail.tel}" />
+	</p>
+
+	<hr>
+
+	<c:choose>
+		<c:when test="${reserved}">
+			<h3>★このペットは現在予約済みです★</h3>
+		</c:when>
+
+		<c:otherwise>
+			<a href="ReserveServlet">予約する</a>
+			<br>
+			<br>
+		</c:otherwise>
+	</c:choose>
+
+	<a href="HomeServlet">ホームに戻る</a>
+
 </body>
 </html>

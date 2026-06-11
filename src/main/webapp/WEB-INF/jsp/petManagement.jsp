@@ -31,6 +31,20 @@
 	<input type="hidden" name="petID" value="${pet.petID}">
 	<input type="submit" value="修正">
 </form>
+<c:choose>
+
+    <c:when test="${pet.petID == favoritePetId}">
+        ★現在おすすめ中
+    </c:when>
+
+    <c:otherwise>
+        <form action="FavoritePetServlet" method="post">
+            <input type="hidden" name="petID" value="${pet.petID}">
+            <input type="submit" value="★おすすめに設定">
+        </form>
+    </c:otherwise>
+
+</c:choose>
 </td>
 </tr>
 

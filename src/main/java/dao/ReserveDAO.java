@@ -39,36 +39,45 @@ public class ReserveDAO {
 		return true;
 	}
 	
-	public List<LocalTime> findByFacilityAndDate(String facilityID, LocalDate reserveDate){
-			List<LocalTime> reservedTimeList = new ArrayList<>();
+	public List<LocalTime> findByFacilityAndDate(String facilityID, LocalDate reserveDate) {
+	    List<LocalTime> reservedTimeList = new ArrayList<>();
 
-			try {
-				Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
-			} catch (ClassNotFoundException e) {
-				throw new IllegalStateException(
-						"JDBCドライバは読み込めませんでした");
-			}
+	    try {
+	        Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
+	    } catch (ClassNotFoundException e) {
+	        throw new IllegalStateException("JDBCドライバは読み込めませんでした");
+	    }
 
-			try (Connection conn = DButil.getConnection()) {
+	    try (Connection conn = DButil.getConnection()) {
 
-				String sql = "SELECT R.reserveTime FROM Reserve R JOIN Pet P ON P.petID = R.petID WHERE P.FACILITY_ID = ? AND CAST(R.reserveTime AS DATE) = ?";
-				PreparedStatement pStmt = conn.prepareStatement(sql);
-				pStmt.setString(1, facilityID);
-				pStmt.setDate(2, java.sql.Date.valueOf(reserveDate));
+	        String sql =
+	            "SELECT R.reserveTime " +
+	            "FROM Reserve R " +
+	            "JOIN Pet P ON P.petID = R.petID " +
+	            "WHERE P.FACILITY_ID = ? " +
+	            "AND CAST(R.reserveTime AS DATE) = ?";
 
-				ResultSet rs = pStmt.executeQuery();
+	        PreparedStatement pStmt = conn.prepareStatement(sql);
+	        pStmt.setString(1, facilityID);
+	        pStmt.setDate(2, java.sql.Date.valueOf(reserveDate));
 
-				while (rs.next()) {
-					LocalTime reservaTime = rs.getTimestamp("reserveTime").toLocalDateTime().toLocalTime();
-					reservedTimeList.add(reservaTime);
-				}
-			} catch (Exception e) {
-				e.printStackTrace();
-				return null;
-			}
-			return reservedTimeList;
+	        ResultSet rs = pStmt.executeQuery();
 
-		}
+	        while (rs.next()) {
+	            LocalTime reserveTime =
+	                    rs.getTimestamp("reserveTime")
+	                      .toLocalDateTime()
+	                      .toLocalTime();
+
+	            reservedTimeList.add(reserveTime);
+	        }
+
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    }
+
+	    return reservedTimeList;
+	}
 	public boolean existsReserveByPetID(int petID) {
 		try {
 			Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
