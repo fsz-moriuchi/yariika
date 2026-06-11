@@ -23,10 +23,21 @@
 	</p>
 </c:if>
 
-<button type="button" onclick="history.back()">キャンセル</button>	
-<input type="submit" value="パスワードを変更して再ログイン">
+<input type="submit" value="パスワードを変更、再度ログイン">
 </form>
+<c:choose>
+	<c:when test="${not empty sessionScope.userId}">
+		<form action="MyPageServlet" method="get">
+			<button type="submit">キャンセル</button>
+		</form>
+	</c:when>
 
+	<c:when test="${not empty sessionScope.facilityId}">
+		<form action="FacilityPageServlet" method="get">
+			<button type="submit">キャンセル</button>
+		</form>
+	</c:when>
+</c:choose>
 
 </body>
 </html>
