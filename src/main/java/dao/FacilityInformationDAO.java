@@ -21,7 +21,7 @@ public class FacilityInformationDAO {
 
 		try (Connection conn = DButil.getConnection()) {
 
-			String sql = "SELECT facilityInformationID, FACILITY_ID, facilityName, tel, address, mail, openTime, closeTime, closedDay FROM FacilityInformation WHERE FACILITY_ID = ?";
+			String sql = "SELECT facilityInformationID, FACILITY_ID, facilityName, tel, address, mail, openTime, closeTime FROM FacilityInformation WHERE FACILITY_ID = ?";
 			PreparedStatement pStmt = conn.prepareStatement(sql);
 			pStmt.setString(1, facilityID);
 
@@ -29,14 +29,12 @@ public class FacilityInformationDAO {
 
 			if (rs.next()) {
 				int facilityInformationID = rs.getInt("facilityInformationID");
-				String FACILITY_ID = rs.getString("FACILITY_ID");
 				String facilityName = rs.getString("facilityName");
 				String tel = rs.getString("tel");
 				String address = rs.getString("address");
 				String mail = rs.getString("mail");
 				LocalTime openTime = rs.getTime("openTime").toLocalTime();
 				LocalTime closeTime = rs.getTime("closeTime").toLocalTime();
-				String closedDay = rs.getString("closedDay");
 				facilityInformation = new FacilityInformation(
 				        facilityInformationID,
 				        facilityID,
@@ -45,8 +43,7 @@ public class FacilityInformationDAO {
 				        address,
 				        mail,
 				        openTime,
-				        closeTime,
-				        closedDay);
+				        closeTime);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

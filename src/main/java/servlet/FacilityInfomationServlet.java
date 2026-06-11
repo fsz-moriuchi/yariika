@@ -11,6 +11,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
+import dao.FacilityClosedDayDAO;
 import dao.FacilityInfomationDAO;
 import model.FacilityInformation;
 
@@ -38,28 +39,33 @@ public class FacilityInfomationServlet extends HttpServlet {
 		String mail = request.getParameter("mail");
 		String openTimeStr = request.getParameter("openTime");
 		String closeTimeStr = request.getParameter("closeTime");
-		String[] closedDays = request.getParameterValues("closedDay");
 
 		LocalTime openTime = LocalTime.parse(openTimeStr);
 		LocalTime closeTime = LocalTime.parse(closeTimeStr);
 
-		String closedDay = "";
+		String[] closedDays = request.getParameterValues("closedDay");
+
 		if (closedDays != null) {
-			closedDay = String.join(",", closedDays);
+			for (String closedDay : closedDays) {
+				//休日をテーブルに登録
+				FacilityClosedDayDAO dao2 = new FacilityClosedDayDAO();
+				boolean result =dao2.insertByFacilityID(facilityId, closedDay);
+			}
 		}
+
 		//テーブルに登録
 		FacilityInformation facilityInfo = new FacilityInformation(facilityId, facilityName, tel, address, mail,
-				openTime, closeTime, closedDay);
-		
-		FacilityInfomationDAO dao = new FacilityInfomationDAO();
-		FacilityInformation oldInfo = dao.findByFacilityId(facilityId);
+				openTime, closeTime);
+
+		FacilityInfomationDAO dao1 = new FacilityInfomationDAO();
+		FacilityInformation oldInfo = dao1.findByFacilityId(facilityId);
 
 		boolean result;
 
 		if (oldInfo == null) {
-		    result = dao.insert(facilityInfo);
+			result = dao1.insert(facilityInfo);
 		} else {
-		    result = dao.update(facilityInfo);
+			result = dao1.update(facilityInfo);
 		}
 
 		if (result) {
@@ -69,7 +75,7 @@ public class FacilityInfomationServlet extends HttpServlet {
 			RequestDispatcher dispatcher = request.getRequestDispatcher("WEB-INF/jsp/facilityinfomation.jsp");
 			dispatcher.forward(request, response);
 		}
-		
+
 	}
 
 }

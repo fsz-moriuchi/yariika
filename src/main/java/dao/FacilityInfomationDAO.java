@@ -25,8 +25,8 @@ public class FacilityInfomationDAO {
 
 			String sql = "INSERT INTO FacilityInformation "
 					+ "(FACILITY_ID, facilityName, tel, address, mail, "
-					+ "openTime, closeTime, closedDay) "
-					+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+					+ "openTime, closeTime) "
+					+ "VALUES (?, ?, ?, ?, ?, ?, ?)";
 
 			PreparedStatement pStmt = conn.prepareStatement(sql);
 
@@ -37,7 +37,6 @@ public class FacilityInfomationDAO {
 			pStmt.setString(5, facilityInfo.getMail());
 			pStmt.setTime(6, java.sql.Time.valueOf(facilityInfo.getOpenTime()));
 			pStmt.setTime(7, java.sql.Time.valueOf(facilityInfo.getCloseTime()));
-			pStmt.setString(8, facilityInfo.getClosedDay());
 
 			int count = pStmt.executeUpdate();
 
@@ -81,8 +80,7 @@ public class FacilityInfomationDAO {
 			            rs.getString("address"),
 			            rs.getString("mail"),
 			            openTime,
-			            closeTime,
-			            rs.getString("closedDay"));
+			            closeTime);
 			}
 
 		} catch (Exception e) {
@@ -105,8 +103,7 @@ public class FacilityInfomationDAO {
 					+ "address=?,"
 					+ "mail=?,"
 					+ "openTime=?,"
-					+ "closeTime=?,"
-					+ "closedDay=? "
+					+ "closeTime=? "
 					+ "WHERE FACILITY_ID=?";
 
 			PreparedStatement pStmt = conn.prepareStatement(sql);
@@ -118,8 +115,7 @@ public class FacilityInfomationDAO {
 
 			pStmt.setTime(5, java.sql.Time.valueOf(facilityInfo.getOpenTime()));
 			pStmt.setTime(6, java.sql.Time.valueOf(facilityInfo.getCloseTime()));
-			pStmt.setString(7, facilityInfo.getClosedDay());
-			pStmt.setString(8, facilityInfo.getFacilityId());
+			pStmt.setString(7, facilityInfo.getFacilityId());
 
 			return pStmt.executeUpdate() == 1;
 

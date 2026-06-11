@@ -11,7 +11,6 @@ public class FacilityInformation {
     private String mail;
     private LocalTime openTime;
     private LocalTime closeTime;
-    private String closedDay;
 
     // 登録・更新用
     public FacilityInformation(
@@ -21,8 +20,7 @@ public class FacilityInformation {
             String address,
             String mail,
             LocalTime openTime,
-            LocalTime closeTime,
-            String closedDay) {
+            LocalTime closeTime) {
 
         this.facilityId = facilityId;
         this.facilityName = facilityName;
@@ -31,7 +29,6 @@ public class FacilityInformation {
         this.mail = mail;
         this.openTime = openTime;
         this.closeTime = closeTime;
-        this.closedDay = closedDay;
     }
 
     // DB取得用
@@ -43,8 +40,7 @@ public class FacilityInformation {
             String address,
             String mail,
             LocalTime openTime,
-            LocalTime closeTime,
-            String closedDay) {
+            LocalTime closeTime) {
 
         this.facilityId = facilityId;
         this.facilityName = facilityName;
@@ -53,7 +49,6 @@ public class FacilityInformation {
         this.mail = mail;
         this.openTime = openTime;
         this.closeTime = closeTime;
-        this.closedDay = closedDay;
     }
 
     public String getFacilityId() {
@@ -112,11 +107,4 @@ public class FacilityInformation {
         this.closeTime = closeTime;
     }
 
-    public String getClosedDay() {
-        return closedDay;
-    }
-
-    public void setClosedDay(String closedDay) {
-        this.closedDay = closedDay;
-    }
 }
