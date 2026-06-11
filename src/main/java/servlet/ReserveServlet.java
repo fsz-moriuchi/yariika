@@ -53,6 +53,8 @@ public class ReserveServlet extends HttpServlet {
 		
 		if (petID == null || facilityID == null) {
 			request.setAttribute("errorMsg", "予約情報が見つかりませんでした。もう一度ペット詳細画面から予約してください。");
+			request.setAttribute("minDate", minDate);
+			request.setAttribute("maxDate", maxDate);
 			request.getRequestDispatcher("/WEB-INF/jsp/reserve.jsp").forward(request, response);
 			return;
 		}

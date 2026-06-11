@@ -31,8 +31,23 @@ public class ReserveCompleteServlet extends HttpServlet {
 		String userId = (String) session.getAttribute("userId");
 		Integer petID = (Integer) session.getAttribute("reservePetID");
 		String facilityID = (String) session.getAttribute("reserveFacilityID");
+		
 
 		String reserveTimeStr = request.getParameter("reserveTime");
+		
+		
+		if (reserveDateStr == null || userId == null || petID == null || facilityID == null || reserveTimeStr == null) {
+			session.removeAttribute("reserveDate");
+			session.removeAttribute("reservePetID");
+			session.removeAttribute("reserveFacilityID");
+
+			request.setAttribute("errorMsg", "予約情報が確認できませんでした。もう一度ペット詳細画面から予約してください。");
+
+			RequestDispatcher dispatcher =
+					request.getRequestDispatcher("/WEB-INF/jsp/reserveError.jsp");
+			dispatcher.forward(request, response);
+			return;
+		}
 		
 		LocalDate reserveDate = LocalDate.parse(reserveDateStr);
 		LocalTime reserveTime = LocalTime.parse(reserveTimeStr);
@@ -48,9 +63,11 @@ public class ReserveCompleteServlet extends HttpServlet {
 			session.removeAttribute("reservePetID");
 			session.removeAttribute("reserveFacilityID");
 
-			session.setAttribute("errorMsg", "申し訳ありません。先ほど他の方の予約が完了したため、このペットは予約できません。");
+			request.setAttribute("errorMsg", "予約処理を完了できませんでした。すでに予約中の見学がある、または他の方の予約が先に完了した可能性があります。");
 
-			response.sendRedirect("PetDetailServlet?petID=" + petID);
+			RequestDispatcher dispatcher =
+					request.getRequestDispatcher("/WEB-INF/jsp/reserveError.jsp");
+			dispatcher.forward(request, response);
 			return;
 		}
 		
@@ -65,19 +82,21 @@ public class ReserveCompleteServlet extends HttpServlet {
 			request.setAttribute("reserveTime", reserveTime);
 			request.setAttribute("facilityInformation", facilityInformation);
 
-			session.removeAttribute("reserveDate");
-			session.removeAttribute("reservePetID");
-			session.removeAttribute("reserveFacilityID");
 
 			RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/jsp/reserveComplete.jsp");
 			dispatcher.forward(request, response);
 
 		}else {
-			request.setAttribute("errorMsg", "すでに予約中の見学があります。新しい予約は、現在の予約が完了またはキャンセルされた後に可能です。");
+			session.removeAttribute("reserveDate");
+			session.removeAttribute("reservePetID");
+			session.removeAttribute("reserveFacilityID");
+
+			request.setAttribute("errorMsg", "予約処理を完了できませんでした。すでに予約中の見学がある、または他の方の予約が先に完了した可能性があります。");
 
 			RequestDispatcher dispatcher =
-					request.getRequestDispatcher("/WEB-INF/jsp/reserve.jsp");
+					request.getRequestDispatcher("/WEB-INF/jsp/reserveError.jsp");
 			dispatcher.forward(request, response);
+			return;
 		}
 
 	}
