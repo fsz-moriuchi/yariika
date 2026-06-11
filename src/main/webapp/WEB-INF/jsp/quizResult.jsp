@@ -10,6 +10,7 @@
 
 
 <body>
+<h1>クイズ結果</h1>
 <%--クイズ結果一覧表示 --%>
 <c:forEach var="qr" items="${resultList}">
 <p>問題：${qr.question}</p>

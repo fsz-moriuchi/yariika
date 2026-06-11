@@ -33,7 +33,13 @@ if(request.getAttribute("petDetail") != null){
 	<input type="radio" name="categoryId" value="1" ${not empty petDetail and petDetail.categoryId == 1?"checked":""} required  >犬
 </label>
 <label>
-	<input type="radio" name="categoryId" value="2" ${not empty petDetail and petDetail.categoryId == 2?"checked":""}>猫<br>
+	<input type="radio" name="categoryId" value="2" ${not empty petDetail and petDetail.categoryId == 2?"checked":""}>猫
+</label>
+<label>
+	<input type="radio" name="categoryId" value="3" ${not empty petDetail and petDetail.categoryId == 3?"checked":""}>鳥
+</label>
+<label>
+	<input type="radio" name="categoryId" value="4" ${not empty petDetail and petDetail.categoryId == 4?"checked":""}>小動物<br>
 </label>
 <br>
 2.店舗ID：${loginFacilityId}

@@ -54,11 +54,16 @@ public class PetInformationView {
 		if (categoryId < 1) {
 			return "";
 		}
+
 		switch (categoryId) {
 		case 1:
 			return "犬";
 		case 2:
 			return "猫";
+		case 3:
+			return "鳥";
+		case 4:
+			return "小動物";
 		default:
 			return "";
 		}

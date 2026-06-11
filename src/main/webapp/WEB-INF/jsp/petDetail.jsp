@@ -112,6 +112,5 @@
 	</c:choose>
 
 	<a href="HomeServlet">ホームに戻る</a>
-
 </body>
 </html>
