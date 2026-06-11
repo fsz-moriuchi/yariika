@@ -1,92 +1,156 @@
-
---ユーザー関連テーブル
-
---[顧客テーブル]
-CREATE TABLE USERS(	
-USER_ID VARCHAR(50) PRIMARY KEY,
-PASSWORD_HASH VARCHAR(255) NOT NULL
+--LOGIN------------------------------------
+--[Category]--
+CREATE TABLE Category (
+    CATEGORY_ID INT PRIMARY KEY,
+    CATEGORY_NAME VARCHAR(50)
 );
---[施設テーブル]
+--[USERテーブル]--
+CREATE TABLE USERS(
+    USER_ID VARCHAR(50) PRIMARY KEY,
+    PASSWORD_HASH VARCHAR(255) NOT NULL
+);
+--[FACILITIESテーブル]--
 CREATE TABLE FACILITIES(
-FACILITY_ID VARCHAR(50) PRIMARY KEY,
-PASSWORD_HASH VARCHAR(255) NOT NULL
+    FACILITY_ID VARCHAR(50) PRIMARY KEY,
+    PASSWORD_HASH VARCHAR(255) NOT NULL
 );
-
---pet関連テーブル
-
---[ペットテーブル]
+--[PETテーブル]--
 CREATE TABLE Pet (
-    petID INTEGER PRIMARY KEY,
-    category VARCHAR(50)
+    petID INTEGER PRIMARY KEY IDENTITY(1,1),
+    FACILITY_ID VARCHAR(50) NOT NULL,
+    CATEGORY_ID INTEGER NOT NULL,
+    
+FOREIGN KEY (FACILITY_ID)REFERENCES FACILITIES(FACILITY_ID),
+FOREIGN KEY (CATEGORY_ID)REFERENCES Category(CATEGORY_ID)
 );
---[ペット情報テーブル]
+-------------------------------------------
+--[UserInfoテーブル]--
+CREATE TABLE UserInfo(
+    USER_INFO_ID INT IDENTITY(1, 1) PRIMARY KEY,
+    USER_ID VARCHAR(50) NOT NULL UNIQUE,
+    USER_NAME VARCHAR(20),
+    USER_GENDER VARCHAR(10),
+    USER_BIRTHDAY DATE,
+    USER_TEL VARCHAR(20),
+    USER_MAIL VARCHAR(100),
+    USER_ADDRESS VARCHAR(200),
+
+    FOREIGN KEY (USER_ID)
+        REFERENCES USERS(USER_ID)
+);
+--[FacilityInfoテーブル]--
+CREATE TABLE FacilityInformation (
+    facilityInformationID INT IDENTITY(1,1) PRIMARY KEY,
+
+    FACILITY_ID VARCHAR(50) NOT NULL UNIQUE,
+
+    facilityName VARCHAR(100) NOT NULL,
+    tel VARCHAR(20),
+    address VARCHAR(255),
+    mail VARCHAR(100),
+    openTime TIME NOT NULL,
+    closeTime TIME NOT NULL,
+    closedDay VARCHAR(20),
+    
+    FAVORITE_PET_ID INT NULL,
+
+    FOREIGN KEY (FACILITY_ID)
+        REFERENCES FACILITIES(FACILITY_ID),
+    FOREIGN KEY (FAVORITE_PET_ID) 
+        REFERENCES Pet(petID)
+);
+--[PetInfoテーブル]--
 CREATE TABLE PetInformation (
-    petInformationID INTEGER PRIMARY KEY,
+    petInformationID INTEGER PRIMARY KEY IDENTITY(1,1),
     petID INTEGER NOT NULL,
     name VARCHAR(100),
     gender VARCHAR(50),
     age INTEGER,
-    color VARCHAR(50),
-    pet_size INTEGER,
+    color VARCHAR(300),
+    pet_size VARCHAR(50),
     vaccine VARCHAR(50),
     price INTEGER,
-    comment VARCHAR(300),
+    commentText VARCHAR(300),
+    
+    imagePath VARCHAR(255),
  
     FOREIGN KEY (petID)
-        REFERENCES Pet(petID)
+        REFERENCES Pet(petID) 
+            ON DELETE CASCADE
 );
-
---アンケート関連テーブル
-
---[問題テーブル]
+-------------------------------------------
+--[クイズテーブル]--
+CREATE TABLE PetQuiz (
+QUIZ_ID INT PRIMARY KEY,
+QUESTION VARCHAR(300),
+CHOICE1 VARCHAR(100),
+CHOICE2 VARCHAR(100),
+CHOICE3 VARCHAR(100),
+CHOICE4 VARCHAR(100),
+ANSWER INT NOT NULL,
+CATEGORY_ID INT NOT NULL,
+FOREIGN KEY (CATEGORY_ID)
+        REFERENCES Category(CATEGORY_ID)
+);
+--[クイズ結果テーブル]--
+CREATE TABLE QuizAnswer(
+    QUIZ_ANSWER_ID INT IDENTITY(1,1) PRIMARY KEY,
+    USER_ID VARCHAR(50) NOT NULL,
+    QUIZ_ID INT NOT NULL,
+    USER_ANSWER INT NOT NULL,
+    QUIZ_SESSION_ID VARCHAR(50),
+    FOREIGN KEY (USER_ID)
+        REFERENCES USERS(USER_ID),
+    FOREIGN KEY (QUIZ_ID)
+        REFERENCES PetQuiz(QUIZ_ID)
+);
+-------------------------------------------
+--[アンケート問題テーブル]--
 CREATE TABLE QuestionSurvey (
 QuestionID INTEGER PRIMARY KEY,
 userQuestion VARCHAR(300) NOT NULL,
 petQuestion VARCHAR(300) NOT NULL
 );
---[選択肢テーブル]
+--[アンケート選択テーブル]--
 CREATE TABLE SurveyChoice(
 SurveyChoiceID INTEGER PRIMARY KEY,
 QuestionID INTEGER NOT NULL,
 Choice VARCHAR(300) NOT NULL,
 FOREIGN KEY (QuestionID) REFERENCES QuestionSurvey(QuestionID)
 );
---[ペットアンケートテーブル]
-CREATE TABLE PetSurvey(
-PetSurveyID INTEGER PRIMARY KEY,
-SurveyChoiceID INTEGER NOT NULL,
-QuestionID INTEGER NOT NULL,
-FOREIGN KEY (QuestionID) REFERENCES QuestionSurvey(QuestionID),
-FOREIGN KEY (SurveyChoiceID) REFERENCES SurveyChoice(SurveyChoiceID)
+--[アンケート結果テーブル(Pet)]--
+CREATE TABLE PetSurvey (
+    PetSurveyID INTEGER PRIMARY KEY IDENTITY(1,1),
+    petID INTEGER NOT NULL,
+    QuestionID INTEGER NOT NULL,
+    SurveyChoiceID INTEGER NOT NULL,
+ 
+FOREIGN KEY (petID)REFERENCES Pet(petID)ON DELETE CASCADE,
+FOREIGN KEY (QuestionID)REFERENCES QuestionSurvey(QuestionID),
+FOREIGN KEY (SurveyChoiceID)REFERENCES SurveyChoice(SurveyChoiceID),
+UNIQUE (petID, QuestionID)
 );
---[顧客アンケートテーブル]
+--[アンケート結果テーブル(User)]--
 CREATE TABLE UserSurvey(
-UserSurveyID INTEGER PRIMARY KEY,
-SurveyChoiceID INTEGER NOT NULL,
-QuestionID INTEGER NOT NULL,
+    UserSurveyID INTEGER PRIMARY KEY IDENTITY(1,1),
+    USER_ID VARCHAR(50) NOT NULL,
+    QuestionID INTEGER NOT NULL,
+    SurveyChoiceID INTEGER NOT NULL,
+ 
+FOREIGN KEY (USER_ID) REFERENCES USERS(USER_ID),
 FOREIGN KEY (QuestionID) REFERENCES QuestionSurvey(QuestionID),
-FOREIGN KEY (SurveyChoiceID) REFERENCES SurveyChoice(SurveyChoiceID)
+FOREIGN KEY (SurveyChoiceID) REFERENCES SurveyChoice(SurveyChoiceID),
+UNIQUE (USER_ID, QuestionID)
 );
-
---クイズ関連テーブル
-
---犬クイズテーブル
-CREATE TABLE DogQuiz (
-DOG_QUIZ_ID INT PRIMARY KEY,
-QUESTION VARCHAR(300),
-CHOICE1 VARCHAR(100),
-CHOICE2 VARCHAR(100),
-CHOICE3 VARCHAR(100),
-CHOICE4 VARCHAR(100),
-ANSWER INT
+-------------------------------------------
+--[予約テーブル]--
+CREATE TABLE Reserve(
+    reservationID INT IDENTITY(1,1) PRIMARY KEY,
+    petID INT NOT NULL UNIQUE,
+    USER_ID VARCHAR(50) NOT NULL UNIQUE,
+    reserveTime DATETIME NOT NULL,
+ 
+    FOREIGN KEY (petID) REFERENCES Pet(petID),
+    FOREIGN KEY (USER_ID) REFERENCES USERS(USER_ID)
 );
---猫クイズテーブル
-CREATE TABLE CatQuiz(
-CAT_QUIZ_ID INT PRIMARY KEY,
-QUESTION VARCHAR(300),
-CHOICE1 VARCHAR(100),
-CHOICE2 VARCHAR(100),
-CHOICE3 VARCHAR(100),
-CHOICE4 VARCHAR(100),
-ANSWER INT
-);
+-------------------------------------------
