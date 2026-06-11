@@ -65,6 +65,7 @@ public class UserSuveyServlet extends HttpServlet {
 			    RequestDispatcher dispatcher =request.getRequestDispatcher("WEB-INF/jsp/userSurveySuccess.jsp");
 			    dispatcher.forward(request, response);
 			}else{
+				response.setContentType("text/html; charset=UTF-8");
 			    response.getWriter().println("登録失敗");
 			}
 		}
@@ -82,6 +83,7 @@ public class UserSuveyServlet extends HttpServlet {
 			RequestDispatcher dispatcher = request.getRequestDispatcher("WEB-INF/jsp/userUpdateSuccess.jsp");
 			dispatcher.forward(request, response);
 			}else {
+				response.setContentType("text/html; charset=UTF-8");
 				response.getWriter().println("更新失敗");
 			}
 

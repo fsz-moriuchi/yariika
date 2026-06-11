@@ -1,6 +1,7 @@
 package servlet;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import jakarta.servlet.RequestDispatcher;
@@ -70,11 +71,6 @@ public class PetRegisterServlet extends HttpServlet {
 			session.setAttribute("pet",pet);
 			session.setAttribute("petInformation",petInformation);
 	
-			System.out.println("PetRegisterServlet: pet = " + pet);
-			System.out.println("PetRegisterServlet: petInformation = " + petInformation);
-			System.out.println("PetRegisterServlet: facilityId = " + facilityId);
-			System.out.println("PetRegisterServlet: categoryId = " + categoryId);
-			
 			response.sendRedirect("SurveyServlet");
 
 		}
@@ -113,7 +109,8 @@ public class PetRegisterServlet extends HttpServlet {
 			if(petResult && petInformationResult ) {
 			    RequestDispatcher dispatcher =request.getRequestDispatcher("WEB-INF/jsp/petUpdateSuccess.jsp");
 			    dispatcher.forward(request, response);
-				} else {
+			} else {
+					response.setContentType("text/html; charset=UTF-8");
 					response.getWriter().println("更新失敗");
 				}
 			}
@@ -147,7 +144,13 @@ public class PetRegisterServlet extends HttpServlet {
 			PetInformation petInformation = new PetInformation(petID, name, gender, age, colorText, pet_size, vaccine, price, commentText);
 
 		    List<PetSurvey> petSurveyList = dao.showPetSurvey(petID);
-		    List<Question> petQuestionList = qDao.findAllQuestion();
+		    List<Question> questionList = qDao.findAllQuestion();
+		    List<Question> petQuestionList = new ArrayList<>();
+		    for(Question petQ:questionList) {
+		    	if(petQ.getQuestionID() <=10) {
+		    		petQuestionList.add(petQ);
+		    	}
+		    }
 		    List<Choice> allChoiceList = cDao.findAllChoices();
 		   
 		    Pet pet = new Pet(facilityId,categoryId);
@@ -175,6 +178,7 @@ public class PetRegisterServlet extends HttpServlet {
 			RequestDispatcher dispatcher = request.getRequestDispatcher("WEB-INF/jsp/petDeleteSuccess.jsp");
 			dispatcher.forward(request, response);
 			}else {
+				response.setContentType("text/html; charset=UTF-8");
 				response.getWriter().println("削除失敗");
 			}
 		}

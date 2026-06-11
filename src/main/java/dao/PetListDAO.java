@@ -156,6 +156,7 @@ public class PetListDAO {
 	}
 	
 	public boolean updatePetSurvey(int petID,int questionID,int surveyChoiceID) {
+
 		try {
 			Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
 		} catch (ClassNotFoundException e) {
@@ -164,22 +165,37 @@ public class PetListDAO {
 
 		try (Connection conn = DButil.getConnection()) {
 
-			String sql = "UPDATE PetSurvey SET surveyChoiceID = ? WHERE petID = ? AND questionID = ?";
-			PreparedStatement pStmt = conn.prepareStatement(sql);
+			String updateSql = "UPDATE PetSurvey SET SurveyChoiceID = ? WHERE petID = ? AND QuestionID = ?";
+			PreparedStatement updatepStmt = conn.prepareStatement(updateSql);
 
-			pStmt.setInt(2, petID);
-			pStmt.setInt(3, questionID);
-			pStmt.setInt(1,surveyChoiceID);
+			updatepStmt.setInt(1,surveyChoiceID);
+			updatepStmt.setInt(2, petID);
+			updatepStmt.setInt(3, questionID);
+			int updateResult = updatepStmt.executeUpdate();
+				
+			//既存問題があれば更新成功
+			if(updateResult == 1) {
+				return true;
+			}
+				
+			//アンケート新規問題があるとき　insert new question
+			String insertSql = "INSERT INTO PetSurvey (petID, QuestionID, SurveyChoiceID) VALUES(?, ?, ?)";
+			PreparedStatement insertpStmt = conn.prepareStatement(insertSql);
+				
+			insertpStmt.setInt(1, petID);
+			insertpStmt.setInt(2, questionID);
+			insertpStmt.setInt(3,surveyChoiceID);
 
-			int result = pStmt.executeUpdate();
-			return result == 1;
+			int insertResult = insertpStmt.executeUpdate();
+			
+			return insertResult == 1;
 
-		} catch (Exception e) {
-			e.printStackTrace();
-			return false;
+			} catch (Exception e) {
+				e.printStackTrace();
+				return false;
+			}
 		}
-		
-	}
+
 		
 //（店舗）delete ペット情報削除
 	public boolean deletePet(int petID) {

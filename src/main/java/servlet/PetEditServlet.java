@@ -1,6 +1,7 @@
 package servlet;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import jakarta.servlet.RequestDispatcher;
@@ -56,9 +57,14 @@ public class PetEditServlet extends HttpServlet {
 
 	    List<PetSurvey> petSurveyList = dao.showPetSurvey(petID);
 	    List<Question> questionList = qDao.findAllQuestion();
-	    List<Choice> allChoiceList = cDao.findAllChoices();
+	    List<Question> petQuestionList = new ArrayList<>();
+	    for(Question petQ:questionList) {
+	    	if(petQ.getQuestionID() <=10) {
+	    		petQuestionList.add(petQ);
+	    	}
+	    }List<Choice> allChoiceList = cDao.findAllChoices();
 		
-		request.setAttribute("questionList", questionList);
+		request.setAttribute("petQuestionList", petQuestionList);
 		request.setAttribute("allChoiceList", allChoiceList);
 		request.setAttribute("petSurveyList", petSurveyList);
 		request.setAttribute("petID", petID);
