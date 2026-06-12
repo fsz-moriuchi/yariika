@@ -40,6 +40,11 @@ public class FavoriteDAO {
 
 	//お気に入り済みか判定
 	public boolean isFavorite(String userId, int petID) {
+		try {
+			Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
+		} catch (ClassNotFoundException e) {
+			throw new IllegalStateException("JDBCドライバを読み込めませんでした");
+		}
 
 		try (Connection conn = DButil.getConnection()) {
 
@@ -62,6 +67,11 @@ public class FavoriteDAO {
 
 	//お気に入り解除
 	public boolean deleteFavorite(String userId, int petID) {
+		try {
+			Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
+		} catch (ClassNotFoundException e) {
+			throw new IllegalStateException("JDBCドライバを読み込めませんでした");
+		}
 
 		try (Connection conn = DButil.getConnection()) {
 
@@ -85,6 +95,12 @@ public class FavoriteDAO {
 	//	お気に入り一覧表示
 	public List<FavoriteView> showFavoriteList(String userId) {
 		List<FavoriteView> favoriteList = new ArrayList<>();
+		try {
+			Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
+		} catch (ClassNotFoundException e) {
+			throw new IllegalStateException("JDBCドライバを読み込めませんでした");
+		}
+
 		try (Connection conn = DButil.getConnection()) {
 			String sql = """
 					SELECT
@@ -118,20 +134,27 @@ public class FavoriteDAO {
 		}
 		return favoriteList;
 	}
+
 	//お気に入りカウント
 	public int countFavorite(int petID) {
-	    try (Connection conn = DButil.getConnection()) {
-	        String sql ="SELECT COUNT(*) AS cnt FROM Favorite WHERE petID=?";
-	        PreparedStatement pStmt = conn.prepareStatement(sql);
-	        pStmt.setInt(1, petID);
-	        ResultSet rs = pStmt.executeQuery();
-	        if (rs.next()) {
-	            return rs.getInt("cnt");
-	        }
-	    } catch (Exception e) {
-	        e.printStackTrace();
-	    }
-	    return 0;
+		try {
+			Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
+		} catch (ClassNotFoundException e) {
+			throw new IllegalStateException("JDBCドライバを読み込めませんでした");
+		}
+
+		try (Connection conn = DButil.getConnection()) {
+			String sql = "SELECT COUNT(*) AS cnt FROM Favorite WHERE petID=?";
+			PreparedStatement pStmt = conn.prepareStatement(sql);
+			pStmt.setInt(1, petID);
+			ResultSet rs = pStmt.executeQuery();
+			if (rs.next()) {
+				return rs.getInt("cnt");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return 0;
 	}
 
 }

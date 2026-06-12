@@ -1,21 +1,17 @@
 package model;
 
-public class FavoritePet {
+//所属ペット一覧用
+public class FacilityPetView {
 
-	private String facilityName;
 	private int petID;
 	private String name;
 	private String gender;
 	private int age;
 	private int price;
 	private String imagePath;
-	private int matchRate;
-	private String facilityID;
 
-	public FavoritePet(
+	public FacilityPetView(
 			int petID,
-			String facilityID,
-			String facilityName,
 			String name,
 			String gender,
 			int age,
@@ -23,17 +19,11 @@ public class FavoritePet {
 			String imagePath) {
 
 		this.petID = petID;
-		this.facilityID = facilityID;
-		this.facilityName = facilityName;
 		this.name = name;
 		this.gender = gender;
 		this.age = age;
 		this.price = price;
 		this.imagePath = imagePath;
-	}
-
-	public String getFacilityName() {
-		return facilityName;
 	}
 
 	public int getPetID() {
@@ -60,19 +50,17 @@ public class FavoritePet {
 		return imagePath;
 	}
 
-	public int getMatchRate() {
-		return matchRate;
+	public String getGenderName() {
+
+		if ("male".equals(gender)) {
+			return "男の子";
+		}
+
+		if ("female".equals(gender)) {
+			return "女の子";
+		}
+
+		return "";
 	}
 
-	public void setMatchRate(int matchRate) {
-		this.matchRate = matchRate;
-	}
-
-	public String getFacilityID() {
-		return facilityID;
-	}
-
-	public void setFacilityID(String facilityID) {
-		this.facilityID = facilityID;
-	}
 }

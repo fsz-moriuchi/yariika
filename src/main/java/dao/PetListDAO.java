@@ -456,37 +456,45 @@ public class PetListDAO {
 
 		try (Connection conn = DButil.getConnection()) {
 
-			String sql = "SELECT FI.facilityName,"
-					+ " P.petID,"
-					+ " PI.name,"
-					+ " PI.gender,"
-					+ " PI.age,"
-					+ " PI.price,"
-					+ " PI.imagePath "
-					+ "FROM FacilityInformation FI "
-					+ "JOIN Pet P "
-					+ "ON FI.FAVORITE_PET_ID = P.petID "
-					+ "JOIN PetInformation PI "
-					+ "ON P.petID = PI.petID "
-					+ "WHERE FI.FAVORITE_PET_ID IS NOT NULL";
+			String sql = """
+					SELECT
+					    P.petID,
+					    FI.FACILITY_ID,
+					    FI.facilityName,
+					    PI.name,
+					    PI.gender,
+					    PI.age,
+					    PI.price,
+					    PI.imagePath
+					FROM FacilityInformation FI
+					JOIN Pet P
+					    ON FI.FAVORITE_PET_ID = P.petID
+					JOIN PetInformation PI
+					    ON P.petID = PI.petID
+					""";
 
 			PreparedStatement pStmt = conn.prepareStatement(sql);
 			ResultSet rs = pStmt.executeQuery();
 
 			while (rs.next()) {
+
 				FavoritePet pet = new FavoritePet(
-						rs.getString("facilityName"),
 						rs.getInt("petID"),
+						rs.getString("FACILITY_ID"),
+						rs.getString("facilityName"),
 						rs.getString("name"),
 						rs.getString("gender"),
 						rs.getInt("age"),
 						rs.getInt("price"),
 						rs.getString("imagePath"));
+
 				list.add(pet);
 			}
+
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+
 		return list;
 	}
 
