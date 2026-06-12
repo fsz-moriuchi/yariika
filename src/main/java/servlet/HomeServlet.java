@@ -50,8 +50,16 @@ public class HomeServlet extends HttpServlet {
 		}
 		if ("matchRateDesc".equals(sort)) {
 			favoritePetList.sort((p1, p2) -> p2.getMatchRate() - p1.getMatchRate());
-		} else if ("matchRateAsc".equals(sort)) {
+		}else if ("matchRateAsc".equals(sort)) {
 			favoritePetList.sort((p1, p2) -> p1.getMatchRate() - p2.getMatchRate());
+		}else if ("priceDesc".equals(sort)) {
+			favoritePetList.sort((p1, p2) -> p2.getPrice() - p1.getPrice());
+		}else if ("priceAsc".equals(sort)) {
+			favoritePetList.sort((p1, p2) -> p1.getPrice() - p2.getPrice());
+		}else if ("ageDesc".equals(sort)) {
+			favoritePetList.sort((p1, p2) -> p2.getAge() - p1.getAge());
+		}else if ("ageAsc".equals(sort)) {
+			favoritePetList.sort((p1, p2) -> p1.getAge() - p2.getAge());
 		}
 		request.setAttribute("sort", sort);
 

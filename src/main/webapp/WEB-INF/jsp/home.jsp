@@ -23,6 +23,14 @@
 					${sort == "matchRateDesc" ? "selected" : ""}>マッチング度高い順</option>
 				<option value="matchRateAsc"
 					${sort == "matchRateAsc" ? "selected" : ""}>マッチング度低い順</option>
+				<option value="priceDesc"
+					${sort == "priceDesc" ? "selected" : ""}>価格高い順</option>
+				<option value="priceAsc"
+					${sort == "priceAsc" ? "selected" : ""}>価格低い順</option>
+				<option value="ageDesc"
+					${sort == "ageDesc" ? "selected" : ""}>年齢高い順</option>
+				<option value="ageAsc"
+					${sort == "ageAsc" ? "selected" : ""}>年齢低い順</option>
 			</select>
 			<button type="submit">並び替え</button>
 		</form>
