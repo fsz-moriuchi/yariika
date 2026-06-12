@@ -29,22 +29,36 @@
 			<th>生体価格</th>
 			<th>操作</th>
 		</tr>
-		<tr>
-			<c:forEach var="pet" items="${facilityList}">
-				<td>写真</td>
+
+		<c:forEach var="pet" items="${facilityList}">
+			<tr>
+
+				<td><c:choose>
+						<c:when test="${not empty pet.imagePath}">
+							<img src="${pageContext.request.contextPath}/${pet.imagePath}"
+								alt="ペット画像" width="120" height="120" style="object-fit: cover;">
+						</c:when>
+
+						<c:otherwise>
+                画像なし
+            </c:otherwise>
+					</c:choose></td>
+
 				<td>${pet.petID}</td>
 				<td>${pet.categoryIdName}</td>
 				<td>${pet.genderName}</td>
 				<td>${pet.age}</td>
 				<td>${pet.price}</td>
+
 				<td>
+
 					<form action="PetEditServlet" method="get">
 						<input type="hidden" name="petID" value="${pet.petID}"> <input
 							type="submit" value="修正">
 					</form> <c:choose>
 						<c:when test="${pet.petID == favoritePetId}">
-        						★現在おすすめ中
-    						</c:when>
+                ★現在おすすめ中
+            </c:when>
 
 						<c:otherwise>
 							<form action="FavoritePetServlet" method="post">
@@ -53,13 +67,15 @@
 							</form>
 						</c:otherwise>
 					</c:choose>
+
 					<form action="PetEditServlet" method="post">
 						<input type="hidden" name="petID" value="${pet.petID}"> <input
 							type="submit" value="アンケート確認">
 					</form>
-				</td>
-		</tr>
 
+				</td>
+
+			</tr>
 		</c:forEach>
 	</table>
 

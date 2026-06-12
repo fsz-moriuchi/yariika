@@ -11,12 +11,13 @@ public class PetInformation {
 	private String vaccine;
 	private int price;
 	private String commentText;
+	private String imagePath;
 
-	public PetInformation() {
-	};
+	public PetInformation(int petID, String name, String gender,
+			int age, String color, String pet_size,
+			String vaccine, int price, String commentText,
+			String imagePath) {
 
-	public PetInformation(int petID , String name, String gender, int age, String color,
-			String pet_size, String vaccine, int price, String commentText) {
 		this.petID = petID;
 		this.name = name;
 		this.gender = gender;
@@ -26,6 +27,7 @@ public class PetInformation {
 		this.vaccine = vaccine;
 		this.price = price;
 		this.commentText = commentText;
+		this.imagePath = imagePath;
 	}
 
 	public int getPetInformationID() {
@@ -107,6 +109,13 @@ public class PetInformation {
 	public void setCommentText(String commentText) {
 		this.commentText = commentText;
 	}
-	
 
+	// imagePathのgetter/setterを追加
+	public String getImagePath() {
+		return imagePath;
+	}
+
+	public void setImagePath(String imagePath) {
+		this.imagePath = imagePath;
+	}
 }

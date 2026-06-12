@@ -1,26 +1,36 @@
 package model;
 
 public class PetInformationView {
-	private int petID;
-	private String facilityId;
-	private int categoryId;
-	private String categoryName;
-	private String gender;
-	private int age;
-	private int price;
+    private int petID;
+    private String facilityId;
+    private int categoryId;
+    private String categoryName;
+    private String gender;
+    private int age;
+    private int price;
+    private String imagePath;
+    
+    public PetInformationView(
+            int petID,
+            String facilityId,
+            int categoryId,
+            String gender,
+            int age,
+            int price,
+            String imagePath) {
 
+        this.petID = petID;
+        this.facilityId = facilityId;
+        this.categoryId = categoryId;
+        this.gender = gender;
+        this.age = age;
+        this.price = price;
+        this.imagePath = imagePath;
+    }
 	public PetInformationView(int petID, String facilityId, int categoryId, String gender, int age, int price) {
 		this.petID = petID;
 		this.facilityId = facilityId;
 		this.categoryId = categoryId;
-		this.gender = gender;
-		this.age = age;
-		this.price = price;
-	}
-
-	public PetInformationView(int petID, String categoryName, String gender, int age, int price) {
-		this.petID = petID;
-		this.categoryName = categoryName;
 		this.gender = gender;
 		this.age = age;
 		this.price = price;
@@ -48,6 +58,10 @@ public class PetInformationView {
 
 	public int getPrice() {
 		return price;
+	}
+	
+	public String getImagePath() {
+	    return imagePath;
 	}
 
 	public String getCategoryIdName() {

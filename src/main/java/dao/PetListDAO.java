@@ -53,7 +53,8 @@ public class PetListDAO {
 		}
 		try (Connection conn = DButil.getConnection()) {
 
-			String sql = "INSERT INTO PetInformation( petID, name, gender, age, color, pet_size, vaccine, price, commentText) VALUES(?,?,?,?,?,?,?,?,?)";
+			String sql = "INSERT INTO PetInformation( petID, name, gender, age, color, pet_size, vaccine, price, commentText, imagePath) VALUES(?,?,?,?,?,?,?,?,?,?)";
+
 			PreparedStatement pStmt = conn.prepareStatement(sql);
 			pStmt.setInt(1, petInformation.getPetID());
 			pStmt.setString(2, petInformation.getName());
@@ -64,6 +65,7 @@ public class PetListDAO {
 			pStmt.setString(7, petInformation.getVaccine());
 			pStmt.setInt(8, petInformation.getPrice());
 			pStmt.setString(9, petInformation.getCommentText());
+			pStmt.setString(10, petInformation.getImagePath());
 
 			int result = pStmt.executeUpdate();
 			if (result != 1) {
@@ -104,7 +106,7 @@ public class PetListDAO {
 
 	}
 
-	//（店舗）update ペット情報修正
+	//（店舗）update ペット修正
 	public boolean updatePet(Pet pet) {
 		try {
 			Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
@@ -129,16 +131,24 @@ public class PetListDAO {
 
 	}
 
+	//ペット情報更新
 	public boolean updatePetInformation(PetInformation petInformation) {
+
 		try {
 			Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
 		} catch (ClassNotFoundException e) {
 			throw new IllegalStateException("JDBCドライバを読み込めませんでした");
 		}
+
 		try (Connection conn = DButil.getConnection()) {
 
-			String sql = "UPDATE PetInformation SET name=?,gender=?,age=?,color=?,pet_size=?,vaccine=?,price=?,commentText=? WHERE petID = ?";
+			String sql = "UPDATE PetInformation "
+					+ "SET name=?, gender=?, age=?, color=?, pet_size=?, vaccine=?, "
+					+ "price=?, commentText=?, imagePath=? "
+					+ "WHERE petID=?";
+
 			PreparedStatement pStmt = conn.prepareStatement(sql);
+
 			pStmt.setString(1, petInformation.getName());
 			pStmt.setString(2, petInformation.getGender());
 			pStmt.setInt(3, petInformation.getAge());
@@ -147,9 +157,11 @@ public class PetListDAO {
 			pStmt.setString(6, petInformation.getVaccine());
 			pStmt.setInt(7, petInformation.getPrice());
 			pStmt.setString(8, petInformation.getCommentText());
-			pStmt.setInt(9, petInformation.getPetID());
+			pStmt.setString(9, petInformation.getImagePath());
+			pStmt.setInt(10, petInformation.getPetID());
 
 			int result = pStmt.executeUpdate();
+
 			return result == 1;
 
 		} catch (Exception e) {
@@ -158,6 +170,7 @@ public class PetListDAO {
 		}
 	}
 
+	//アンケート更新
 	public boolean updatePetSurvey(int petID, int questionID, int surveyChoiceID) {
 
 		try {
@@ -201,17 +214,31 @@ public class PetListDAO {
 
 	//（店舗）delete ペット情報削除
 	public boolean deletePet(int petID) {
+
 		try {
 			Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
 		} catch (ClassNotFoundException e) {
 			throw new IllegalStateException("JDBCドライバを読み込めませんでした");
 		}
+
 		try (Connection conn = DButil.getConnection()) {
 
-			String sql = "DELETE FROM Pet WHERE petID = ?";
-			PreparedStatement pStmt = conn.prepareStatement(sql);
-			pStmt.setInt(1, petID);
-			int result = pStmt.executeUpdate();
+			// ★おすすめ解除
+			String sql1 = "UPDATE FacilityInformation " +
+					"SET FAVORITE_PET_ID = NULL " +
+					"WHERE FAVORITE_PET_ID = ?";
+
+			PreparedStatement pStmt1 = conn.prepareStatement(sql1);
+			pStmt1.setInt(1, petID);
+			pStmt1.executeUpdate();
+
+			// ペット削除
+			String sql2 = "DELETE FROM Pet WHERE petID = ?";
+
+			PreparedStatement pStmt2 = conn.prepareStatement(sql2);
+			pStmt2.setInt(1, petID);
+
+			int result = pStmt2.executeUpdate();
 
 			return result == 1;
 
@@ -260,6 +287,7 @@ public class PetListDAO {
 
 	}
 
+	//ペット詳細表示
 	public PetDetail showPetDetail(int petID) {
 		PetDetail petDetail = null;
 		try {
@@ -345,6 +373,7 @@ public class PetListDAO {
 		return petDetail;
 	}
 
+	//ペットアンケート表示
 	public List<PetSurvey> showPetSurvey(int petID) {
 		List<PetSurvey> petSurveyList = new ArrayList<>();
 
@@ -374,7 +403,7 @@ public class PetListDAO {
 		return petSurveyList;
 	}
 
-	//お気に入りペット[追加点（森内）]
+	//お気に入りペット
 	public List<PetInformationView> showListByFacility(String facilityId) {
 		List<PetInformationView> facilityList = new ArrayList<>();
 
@@ -387,7 +416,13 @@ public class PetListDAO {
 
 		try (Connection conn = DButil.getConnection()) {
 
-			String sql = "SELECT P.petID, P.FACILITY_ID, P.CATEGORY_ID, PI.gender, PI.age, PI.price FROM Pet P JOIN PetInformation PI ON P.petID = PI.petID WHERE P.FACILITY_ID = ? ORDER BY P.petID";
+			String sql = "SELECT P.petID, P.FACILITY_ID, P.CATEGORY_ID, " +
+					"PI.gender, PI.age, PI.price, PI.imagePath " +
+					"FROM Pet P " +
+					"JOIN PetInformation PI ON P.petID = PI.petID " +
+					"WHERE P.FACILITY_ID = ? " +
+					"ORDER BY P.petID";
+
 			PreparedStatement pStmt = conn.prepareStatement(sql);
 			pStmt.setString(1, facilityId);
 			ResultSet rs = pStmt.executeQuery();
@@ -399,8 +434,9 @@ public class PetListDAO {
 				String gender = rs.getString("gender");
 				int age = rs.getInt("age");
 				int price = rs.getInt("price");
+				String imagePath = rs.getString("imagePath");
 				PetInformationView petInformationView = new PetInformationView(petID, facilityId1, categoryId, gender,
-						age, price);
+						age, price, imagePath);
 				facilityList.add(petInformationView);
 			}
 		} catch (Exception e) {
@@ -411,6 +447,7 @@ public class PetListDAO {
 
 	}
 
+	//お気に入りペット表示
 	public List<FavoritePet> showFavoritePet() {
 
 		List<FavoritePet> list = new ArrayList<>();
@@ -432,11 +469,9 @@ public class PetListDAO {
 					+ "WHERE FI.FAVORITE_PET_ID IS NOT NULL";
 
 			PreparedStatement pStmt = conn.prepareStatement(sql);
-
 			ResultSet rs = pStmt.executeQuery();
 
 			while (rs.next()) {
-
 				FavoritePet pet = new FavoritePet(
 						rs.getString("facilityName"),
 						rs.getInt("petID"),
@@ -445,14 +480,11 @@ public class PetListDAO {
 						rs.getInt("age"),
 						rs.getInt("price"),
 						rs.getString("imagePath"));
-
 				list.add(pet);
 			}
-
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-
 		return list;
 	}
 

@@ -1,7 +1,8 @@
+
 --LOGIN------------------------------------
 --[Category]--
 CREATE TABLE Category (
-    CATEGORY_ID INT PRIMARY KEY,
+    CATEGORY_ID INT IDENTITY(1,1) PRIMARY KEY,
     CATEGORY_NAME VARCHAR(50)
 );
 --[USERテーブル]--
@@ -19,7 +20,6 @@ CREATE TABLE Pet (
     petID INTEGER PRIMARY KEY IDENTITY(1,1),
     FACILITY_ID VARCHAR(50) NOT NULL,
     CATEGORY_ID INTEGER NOT NULL,
-    
 FOREIGN KEY (FACILITY_ID)REFERENCES FACILITIES(FACILITY_ID),
 FOREIGN KEY (CATEGORY_ID)REFERENCES Category(CATEGORY_ID)
 );
@@ -34,29 +34,24 @@ CREATE TABLE UserInfo(
     USER_TEL VARCHAR(20),
     USER_MAIL VARCHAR(100),
     USER_ADDRESS VARCHAR(200),
-
     FOREIGN KEY (USER_ID)
         REFERENCES USERS(USER_ID)
 );
 --[FacilityInfoテーブル]--
 CREATE TABLE FacilityInformation (
     facilityInformationID INT IDENTITY(1,1) PRIMARY KEY,
-
     FACILITY_ID VARCHAR(50) NOT NULL UNIQUE,
-
     facilityName VARCHAR(100) NOT NULL,
     tel VARCHAR(20),
     address VARCHAR(255),
     mail VARCHAR(100),
     openTime TIME NOT NULL,
     closeTime TIME NOT NULL,
-    closedDay VARCHAR(20),
-    
     FAVORITE_PET_ID INT NULL,
-
+    
     FOREIGN KEY (FACILITY_ID)
         REFERENCES FACILITIES(FACILITY_ID),
-    FOREIGN KEY (FAVORITE_PET_ID) 
+    FOREIGN KEY (FAVORITE_PET_ID)
         REFERENCES Pet(petID)
 );
 --[PetInfoテーブル]--
@@ -71,12 +66,19 @@ CREATE TABLE PetInformation (
     vaccine VARCHAR(50),
     price INTEGER,
     commentText VARCHAR(300),
-    
     imagePath VARCHAR(255),
- 
     FOREIGN KEY (petID)
         REFERENCES Pet(petID) 
             ON DELETE CASCADE
+);
+--[休日テーブル]--
+CREATE TABLE FacilityClosedDay (
+    closedDayID INT IDENTITY(1,1) PRIMARY KEY,
+    FACILITY_ID VARCHAR(50) NOT NULL,
+    closedDay VARCHAR(20) NOT NULL,
+    FOREIGN KEY (FACILITY_ID)
+        REFERENCES FACILITIES(FACILITY_ID),
+        UNIQUE (FACILITY_ID, closedDay)
 );
 -------------------------------------------
 --[クイズテーブル]--
@@ -124,7 +126,6 @@ CREATE TABLE PetSurvey (
     petID INTEGER NOT NULL,
     QuestionID INTEGER NOT NULL,
     SurveyChoiceID INTEGER NOT NULL,
- 
 FOREIGN KEY (petID)REFERENCES Pet(petID)ON DELETE CASCADE,
 FOREIGN KEY (QuestionID)REFERENCES QuestionSurvey(QuestionID),
 FOREIGN KEY (SurveyChoiceID)REFERENCES SurveyChoice(SurveyChoiceID),
@@ -136,7 +137,6 @@ CREATE TABLE UserSurvey(
     USER_ID VARCHAR(50) NOT NULL,
     QuestionID INTEGER NOT NULL,
     SurveyChoiceID INTEGER NOT NULL,
- 
 FOREIGN KEY (USER_ID) REFERENCES USERS(USER_ID),
 FOREIGN KEY (QuestionID) REFERENCES QuestionSurvey(QuestionID),
 FOREIGN KEY (SurveyChoiceID) REFERENCES SurveyChoice(SurveyChoiceID),
@@ -149,8 +149,6 @@ CREATE TABLE Reserve(
     petID INT NOT NULL UNIQUE,
     USER_ID VARCHAR(50) NOT NULL UNIQUE,
     reserveTime DATETIME NOT NULL,
- 
     FOREIGN KEY (petID) REFERENCES Pet(petID),
     FOREIGN KEY (USER_ID) REFERENCES USERS(USER_ID)
 );
--------------------------------------------
