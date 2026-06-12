@@ -100,7 +100,8 @@
 	<hr>
 	
 	<%--メッセージ機能の追加--%>
-	<a href="MessageServlet">メッセージを送る</a>
+	<a href="MessageServlet?petID=${petDetail.petID}&facilityId=${petDetail.facilityID}">メッセージを送る</a>
+	<br>
 	
 	<c:choose>
 		<c:when test="${reserved}">
