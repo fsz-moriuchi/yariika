@@ -118,5 +118,20 @@ public class FavoriteDAO {
 		}
 		return favoriteList;
 	}
+	//お気に入りカウント
+	public int countFavorite(int petID) {
+	    try (Connection conn = DButil.getConnection()) {
+	        String sql ="SELECT COUNT(*) AS cnt FROM Favorite WHERE petID=?";
+	        PreparedStatement pStmt = conn.prepareStatement(sql);
+	        pStmt.setInt(1, petID);
+	        ResultSet rs = pStmt.executeQuery();
+	        if (rs.next()) {
+	            return rs.getInt("cnt");
+	        }
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    }
+	    return 0;
+	}
 
 }

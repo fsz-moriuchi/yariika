@@ -27,6 +27,7 @@
 			<th>性別</th>
 			<th>年齢</th>
 			<th>生体価格</th>
+			<th>お気に入り数</th>
 			<th>操作</th>
 		</tr>
 
@@ -49,7 +50,7 @@
 				<td>${pet.genderName}</td>
 				<td>${pet.age}</td>
 				<td>${pet.price}</td>
-
+				<td>${pet.favoriteCount}人</td>
 				<td>
 
 					<form action="PetEditServlet" method="get">

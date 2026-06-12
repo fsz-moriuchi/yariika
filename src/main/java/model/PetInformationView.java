@@ -1,32 +1,34 @@
 package model;
 
 public class PetInformationView {
-    private int petID;
-    private String facilityId;
-    private int categoryId;
-    private String categoryName;
-    private String gender;
-    private int age;
-    private int price;
-    private String imagePath;
-    
-    public PetInformationView(
-            int petID,
-            String facilityId,
-            int categoryId,
-            String gender,
-            int age,
-            int price,
-            String imagePath) {
+	private int petID;
+	private String facilityId;
+	private int categoryId;
+	private String categoryName;
+	private String gender;
+	private int age;
+	private int price;
+	private String imagePath;
+	private int favoriteCount;
 
-        this.petID = petID;
-        this.facilityId = facilityId;
-        this.categoryId = categoryId;
-        this.gender = gender;
-        this.age = age;
-        this.price = price;
-        this.imagePath = imagePath;
-    }
+	public PetInformationView(
+			int petID,
+			String facilityId,
+			int categoryId,
+			String gender,
+			int age,
+			int price,
+			String imagePath) {
+
+		this.petID = petID;
+		this.facilityId = facilityId;
+		this.categoryId = categoryId;
+		this.gender = gender;
+		this.age = age;
+		this.price = price;
+		this.imagePath = imagePath;
+	}
+
 	public PetInformationView(int petID, String facilityId, int categoryId, String gender, int age, int price) {
 		this.petID = petID;
 		this.facilityId = facilityId;
@@ -59,9 +61,17 @@ public class PetInformationView {
 	public int getPrice() {
 		return price;
 	}
-	
+
 	public String getImagePath() {
-	    return imagePath;
+		return imagePath;
+	}
+
+	public int getFavoriteCount() {
+		return favoriteCount;
+	}
+
+	public void setFavoriteCount(int favoriteCount) {
+		this.favoriteCount = favoriteCount;
 	}
 
 	public String getCategoryIdName() {

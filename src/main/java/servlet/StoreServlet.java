@@ -12,6 +12,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
 import dao.FacilityInformationDAO;
+import dao.FavoriteDAO;
 import dao.PetListDAO;
 import model.PetInformationView;
 
@@ -27,6 +28,13 @@ public class StoreServlet extends HttpServlet {
 
 		PetListDAO dao = new PetListDAO();
 		List<PetInformationView> facilityList = dao.showListByFacility(facilityId);
+
+		FavoriteDAO favoriteDAO = new FavoriteDAO();
+
+		for (PetInformationView pet : facilityList) {
+			int count = favoriteDAO.countFavorite(pet.getPetID());
+			pet.setFavoriteCount(count);
+		}
 
 		FacilityInformationDAO infoDao = new FacilityInformationDAO();
 
