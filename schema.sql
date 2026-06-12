@@ -1,4 +1,3 @@
-
 --LOGIN------------------------------------
 --[Category]--
 CREATE TABLE Category (
@@ -71,6 +70,7 @@ CREATE TABLE PetInformation (
         REFERENCES Pet(petID) 
             ON DELETE CASCADE
 );
+-------------------------------------------
 --[休日テーブル]--
 CREATE TABLE FacilityClosedDay (
     closedDayID INT IDENTITY(1,1) PRIMARY KEY,
@@ -79,6 +79,17 @@ CREATE TABLE FacilityClosedDay (
     FOREIGN KEY (FACILITY_ID)
         REFERENCES FACILITIES(FACILITY_ID),
         UNIQUE (FACILITY_ID, closedDay)
+);
+--[お気に入りテーブル]--
+CREATE TABLE Favorite (
+    favoriteID INT IDENTITY(1,1) PRIMARY KEY,
+    USER_ID VARCHAR(50) NOT NULL,
+    petID INT NOT NULL,
+    FOREIGN KEY (USER_ID)
+        REFERENCES USERS(USER_ID),
+    FOREIGN KEY (petID)
+        REFERENCES Pet(petID),
+    UNIQUE(USER_ID, petID)
 );
 -------------------------------------------
 --[クイズテーブル]--
@@ -152,3 +163,4 @@ CREATE TABLE Reserve(
     FOREIGN KEY (petID) REFERENCES Pet(petID),
     FOREIGN KEY (USER_ID) REFERENCES USERS(USER_ID)
 );
+-------------------------------------------
