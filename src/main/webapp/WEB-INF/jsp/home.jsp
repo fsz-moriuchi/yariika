@@ -12,6 +12,33 @@
 	<br>
 	<a href="FacilityPageServlet">施設専用ページへ</a>
 	<br>
+	
+	<h1>条件で探す</h1>
+	
+	<form action="HomeServlet" method="get">
+		<input type="hidden" name="clickSearch" value="true">
+	
+	カテゴリー：
+	<select name="categoryId">
+		<option value="">未指定</option>
+		<option value="1" ${selectedCategoryId == "1" ? "selected" : ""}>犬</option>
+		<option value="2" ${selectedCategoryId == "2" ? "selected" : ""}>猫</option>
+		<option value="3" ${selectedCategoryId == "3" ? "selected" : ""}>鳥</option>
+		<option value="4" ${selectedCategoryId == "4" ? "selected" : ""}>小動物</option>
+	</select>
+	<br>
+	性別
+	色柄
+	サイズ
+	年齢
+	価格
+	<button type="submit">検索</button>
+	</form>
+	
+	<form action="HomeServlet" method="get">
+		<button type="submit">クリア</button>
+	</form>
+
 	<h1>おすすめのペット</h1>
 
 	<c:if test="${not empty sessionScope.userId}">

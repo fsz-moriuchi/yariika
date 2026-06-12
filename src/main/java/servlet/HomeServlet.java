@@ -14,6 +14,7 @@ import jakarta.servlet.http.HttpSession;
 
 import dao.PetListDAO;
 import model.FavoritePet;
+import model.PetDetail;
 import model.PetInformationView;
 
 @WebServlet("/HomeServlet")
@@ -63,6 +64,30 @@ public class HomeServlet extends HttpServlet {
 		}
 		request.setAttribute("sort", sort);
 
+		//条件検索
+		String search = request.getParameter("search");
+		//検索ボタン押すとき
+		if("true".equals(search)) {
+			String categoryId = request.getParameter("categoryId");
+			String gender = request.getParameter("gender");
+			String[] colorArray = request.getParameterValues("color");
+			String pet_size = request.getParameter("pet_size");
+			String ageRange = request.getParameter("ageRange");
+			String priceRange = request.getParameter("priceRange");
+			
+			List<PetDetail> searchPetList = dao.searchAllPet(categoryId, gender, colorArray, pet_size, ageRange, priceRange);
+			request.setAttribute("clickSearch", true);
+			request.setAttribute("searchPetList", searchPetList);
+			//検索結果件数計算
+			request.setAttribute("searchResultCount", searchPetList.size());
+			//選択した条件をjspで残る
+			request.setAttribute("selectedCategoryId", categoryId);
+			request.setAttribute("selectedGender", gender);
+			request.setAttribute("selectedColorArray", colorArray);
+			request.setAttribute("selectedPet_size", pet_size);
+			request.setAttribute("selectedAgeRange", ageRange);
+			request.setAttribute("selectedPriceRange", priceRange);
+		}
 		RequestDispatcher dispatcher = request.getRequestDispatcher("WEB-INF/jsp/home.jsp");
 		dispatcher.forward(request, response);
 
