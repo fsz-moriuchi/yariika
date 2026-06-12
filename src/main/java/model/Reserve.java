@@ -1,6 +1,8 @@
 package model;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Locale;
 
 public class Reserve {
 	private int reservationID;
@@ -36,4 +38,17 @@ public class Reserve {
 	public LocalDateTime getReserveTime() {
 		return reserveTime;
 	}
+	 public String getFormattedReserveTime() {
+
+	        if (reserveTime == null) {
+	            return "";
+	        }
+
+	        DateTimeFormatter formatter =
+	                DateTimeFormatter.ofPattern(
+	                        "yyyy年M月d日（E）HH:mm",
+	                        Locale.JAPANESE);
+
+	        return reserveTime.format(formatter);
+	    }
 }

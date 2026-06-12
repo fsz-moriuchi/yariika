@@ -34,10 +34,10 @@
 		</c:otherwise>
 	</c:choose>
 
-
-	<form action="ReservationConfirmServlet" method="get">
+	<form action="ReserveCheckServlet" method="get">
 		<button type="submit">予約確認</button>
 	</form>
+
 
 	<form action="FavoriteListServlet" method="get">
 		<button type="submit">お気に入り一覧へ</button>
