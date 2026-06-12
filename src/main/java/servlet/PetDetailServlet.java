@@ -10,6 +10,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
+import dao.FavoriteDAO;
 import dao.PetListDAO;
 import dao.ReserveDAO;
 import model.PetDetail;
@@ -25,11 +26,11 @@ public class PetDetailServlet extends HttpServlet {
 
 		Integer petID = Integer.parseInt(request.getParameter("petID"));
 		request.setAttribute("petID", petID);
-		
+
 		PetListDAO dao = new PetListDAO();
 		PetDetail petDetail = dao.showPetDetail(petID);
-		request.setAttribute("petDetail", petDetail); 
-		
+		request.setAttribute("petDetail", petDetail);
+
 		///////////////////コンフリ部分////////////////////
 		String facilityID = petDetail.getFacilityID();
 		ReserveDAO dao2 = new ReserveDAO();
@@ -38,16 +39,22 @@ public class PetDetailServlet extends HttpServlet {
 		request.setAttribute("petID", petID);
 		request.setAttribute("reserved", reserved);
 		HttpSession session = request.getSession();
+		String userId = (String) session.getAttribute("userId");
 		session.setAttribute("reservePetID", petID);
-		session.setAttribute("reserveFacilityID", facilityID); 
+		session.setAttribute("reserveFacilityID", facilityID);
 		session.setAttribute("reserved", reserved);
 		////////////////////////////////////////////
-		
-		//追加
+
 		session.setAttribute("categoryName", petDetail.getCategoryName());
 		session.setAttribute("categoryId", petDetail.getCategoryId());
-		
+
 		request.setAttribute("petDetail", petDetail);
+
+		if (userId != null) {
+			FavoriteDAO favoriteDAO = new FavoriteDAO();
+			boolean favorite = favoriteDAO.isFavorite(userId, petID);
+			request.setAttribute("favorite", favorite);
+		}
 
 		RequestDispatcher dispatcher = request.getRequestDispatcher("WEB-INF/jsp/petDetail.jsp");
 		dispatcher.forward(request, response);
