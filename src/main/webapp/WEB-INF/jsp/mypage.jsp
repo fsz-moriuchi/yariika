@@ -36,7 +36,7 @@
 </c:choose>
 
 
-<form action="ReservationConfirmServlet" method="get">
+<form action="ReserveCheckServlet" method="get">
 <button type="submit">予約確認</button>
 </form>
 
