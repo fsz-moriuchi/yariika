@@ -4,7 +4,9 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import model.FavoritePet;
 import model.Pet;
@@ -486,6 +488,48 @@ public class PetListDAO {
 			e.printStackTrace();
 		}
 		return list;
+	}
+
+	//顧客とペットのMatchRate取得
+	public Map<Integer, Integer> getAllMatchRate(String userId) {
+		Map<Integer, Integer> allMatchRateMap = new HashMap<>();
+
+		try {
+			Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
+		} catch (ClassNotFoundException e) {
+			throw new IllegalStateException(
+					"JDBCドライバは読み込めませんでした");
+		}
+
+		try (Connection conn = DButil.getConnection()) {
+
+			String sql = "SELECT P.petID, COUNT(US.QuestionID) * 10 AS matchRate " +
+					"FROM Pet P " +
+					"JOIN PetSurvey PS " +
+					"ON P.petID = PS.petID " +
+					"AND PS.QuestionID BETWEEN 1 AND 10 " +
+					"LEFT JOIN UserSurvey US " +
+					"ON US.QuestionID = PS.QuestionID " +
+					"AND US.SurveyChoiceID = PS.SurveyChoiceID " +
+					"AND US.USER_ID = ? " +
+					"AND US.QuestionID BETWEEN 1 AND 10 " +
+					"GROUP BY P.petID";
+
+			PreparedStatement pStmt = conn.prepareStatement(sql);
+			pStmt.setString(1, userId);
+			ResultSet rs = pStmt.executeQuery();
+
+			while (rs.next()) {
+				int petID = rs.getInt("petID");
+				int matchRate = rs.getInt("matchRate");
+
+				allMatchRateMap.put(petID, matchRate);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return allMatchRateMap;
+
 	}
 
 }

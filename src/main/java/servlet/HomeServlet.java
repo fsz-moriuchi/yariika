@@ -2,6 +2,7 @@ package servlet;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletException;
@@ -9,6 +10,7 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 
 import dao.PetListDAO;
 import model.FavoritePet;
@@ -23,6 +25,10 @@ public class HomeServlet extends HttpServlet {
 
 		request.setCharacterEncoding("UTF-8");
 
+		HttpSession session = request.getSession();
+		String userId = (String) session.getAttribute("userId");
+		String sort = request.getParameter("sort");
+
 		PetListDAO dao = new PetListDAO();
 		List<PetInformationView> petList = dao.showList();
 
@@ -30,6 +36,24 @@ public class HomeServlet extends HttpServlet {
 
 		List<FavoritePet> favoritePetList = dao.showFavoritePet();
 		request.setAttribute("favoritePetList", favoritePetList);
+
+		//matchRate
+		if (userId != null) {
+			Map<Integer, Integer> allMatchRateMap = dao.getAllMatchRate(userId);
+
+			for (FavoritePet fPet : favoritePetList) {
+				int matchRate = allMatchRateMap.getOrDefault(fPet.getPetID(), 0);
+				fPet.setMatchRate(matchRate);
+			}
+			request.setAttribute("allMatchRateMap", allMatchRateMap);
+
+		}
+		if ("matchRateDesc".equals(sort)) {
+			favoritePetList.sort((p1, p2) -> p2.getMatchRate() - p1.getMatchRate());
+		} else if ("matchRateAsc".equals(sort)) {
+			favoritePetList.sort((p1, p2) -> p1.getMatchRate() - p2.getMatchRate());
+		}
+		request.setAttribute("sort", sort);
 
 		RequestDispatcher dispatcher = request.getRequestDispatcher("WEB-INF/jsp/home.jsp");
 		dispatcher.forward(request, response);

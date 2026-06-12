@@ -14,6 +14,21 @@
 	<br>
 	<h1>おすすめのペット</h1>
 
+	<c:if test="${not empty sessionScope.userId}">
+
+		<form action="HomeServlet" method="get">
+			並び順： <select name="sort">
+				<option value="">並び順を選択ください</option>
+				<option value="matchRateDesc"
+					${sort == "matchRateDesc" ? "selected" : ""}>マッチング度高い順</option>
+				<option value="matchRateAsc"
+					${sort == "matchRateAsc" ? "selected" : ""}>マッチング度低い順</option>
+			</select>
+			<button type="submit">並び替え</button>
+		</form>
+		<br>
+	</c:if>
+
 	<c:forEach var="pet" items="${favoritePetList}">
 
 	店舗：<c:out value="${pet.facilityName}" />
@@ -30,6 +45,8 @@
 	年齢：<c:out value="${pet.age}" />歳<br>
 
 	価格：<c:out value="${pet.price}" />円<br>
+	
+	マッチング度：<c:out value="${pet.matchRate}" /> % <br>
 
 		<a href="PetDetailServlet?petID=${pet.petID}"> 詳細を見る </a>
 

@@ -9,6 +9,7 @@ public class FavoritePet {
 	private int age;
 	private int price;
 	private String imagePath;
+	private int matchRate;
 
 	public FavoritePet(
 			String facilityName,
@@ -54,5 +55,13 @@ public class FavoritePet {
 
 	public String getImagePath() {
 		return imagePath;
+	}
+
+	public int getMatchRate() {
+		return matchRate;
+	}
+
+	public void setMatchRate(int matchRate) {
+		this.matchRate = matchRate;
 	}
 }
