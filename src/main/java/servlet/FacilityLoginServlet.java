@@ -40,6 +40,7 @@ public class FacilityLoginServlet extends HttpServlet {
 		if (result) {
 			//追加
 			HttpSession session = request.getSession();
+			session.removeAttribute("user"); // ←これ追加
 			session.setAttribute("facilityId", facilityId);
 			//
 			response.sendRedirect("HomeServlet");

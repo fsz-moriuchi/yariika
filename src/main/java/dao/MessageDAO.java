@@ -89,8 +89,9 @@ public class MessageDAO {
 			//SELECT文を準備
 			//String sql = "SELECT USER_ID, petID, MAX(CREATED_AT) AS latest_time FROM Message WHERE FACILITY_ID = ? GROUP BY USER_ID, petID ORDER BY latest_time DESC";
 			String sql = "SELECT m.USER_ID, u.USER_NAME, m.petID, p.name, MAX(m.CREATED_AT) AS latest_time\n"
-					+ "FROM Message m JOIN UserInfo u ON m.USER_ID = u.USER_ID\n"
-					+ "JOIN PetInformation p ON m.petID = p.petID\n"
+					+ "FROM Message m "
+					+ "LEFT JOIN UserInfo u ON m.USER_ID = u.USER_ID\n"
+					+ "LEFT JOIN PetInformation p ON m.petID = p.petID\n"
 					+ "WHERE m.FACILITY_ID = ?\n"
 					+ "GROUP BY m.USER_ID, u.USER_NAME, m.petID, p.name\n"
 					+ "ORDER BY latest_time DESC";

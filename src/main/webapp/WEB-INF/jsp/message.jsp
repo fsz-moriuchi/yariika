@@ -33,7 +33,7 @@
 <form action="MessageServlet" method="post">
 <input type="hidden" name="petID" value="${petDetail.petID}">
 <input type="hidden" name="userId" value="${param.userId}">
-<%--<input type="hidden" name="facilityId" value="${petDetail.facilityID}">--%>
+<input type="hidden" name="facilityId" value="${sessionScope.facilityId}">
 
 <p><input type="text" name="messageText"></p>
 <button type="submit">送信</button>

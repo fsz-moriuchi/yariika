@@ -57,6 +57,13 @@ public class MessageServlet extends HttpServlet {
 			return;
 		}
 		
+		if (facilityId == null) {
+		    facilityId = request.getParameter("facilityId");
+		    if (facilityId != null) {
+		        session.setAttribute("facilityId", facilityId); // ←これが大事！！
+		    }
+		}
+		
 		//共通パラメータ
 		String petIDStr = request.getParameter("petID");
 		int petID= 0;
@@ -70,7 +77,6 @@ public class MessageServlet extends HttpServlet {
 		String userId;
 		if(login != null) {		//ユーザーの場合
 			userId = login.getUserId();
-			//facilityId = request.getParameter("facilityId");
 		}else {
 			userId = request.getParameter("userId");
 			
@@ -135,10 +141,7 @@ public class MessageServlet extends HttpServlet {
 			return;
 		}
 		if (facilityId == null) {
-		    System.out.println("facilityIdがnullです");
-		    response.sendRedirect("FacilityLoginServlet");
-		    return;
-		}
+		    facilityId = request.getParameter("facilityId");		}
 		
 		String messageText = request.getParameter("messageText");
 		String petIDStr = request.getParameter("petID");
@@ -150,7 +153,6 @@ public class MessageServlet extends HttpServlet {
 		//ユーザー
 		if (login != null) {
 		    userId = login.getUserId();
-		    //facilityId = request.getParameter("facilityId");
 		    senderType = "USER";
 		}
 		//店舗
@@ -175,7 +177,7 @@ public class MessageServlet extends HttpServlet {
 		System.out.println("petID: " + petIDStr);
 		System.out.println("facilityId: " + facilityId);
 		System.out.println("messageText: " + messageText);
-		response.sendRedirect("MessageServlet?petID=" + petID + "&facilityId=" + facilityId);		
+		response.sendRedirect("MessageServlet?petID=" + petID + "&facilityId=" + facilityId + "&userId=" + userId);		
 	}
 
 }

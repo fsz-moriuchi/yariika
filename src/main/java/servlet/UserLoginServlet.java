@@ -40,6 +40,7 @@ public class UserLoginServlet extends HttpServlet {
 		boolean result = bo.execute(login);
 
 		if (result) {
+			session.removeAttribute("facilityId"); // ←これ追加
 			session.setAttribute("userId", userId);
 			//追加
 			User user = bo.getUser(login);
