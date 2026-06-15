@@ -38,7 +38,7 @@ public class HomeServlet extends HttpServlet {
 		List<FavoritePet> favoritePetList = dao.showFavoritePet();
 		request.setAttribute("favoritePetList", favoritePetList);
 
-		//matchRate
+		//matchRate おすすめの場合：favoritePetList
 		if (userId != null) {
 			Map<Integer, Integer> allMatchRateMap = dao.getAllMatchRate(userId);
 
@@ -65,7 +65,7 @@ public class HomeServlet extends HttpServlet {
 		request.setAttribute("sort", sort);
 
 		//条件検索
-		String search = request.getParameter("search");
+		String search = request.getParameter("clickSearch");
 		//検索ボタン押すとき
 		if("true".equals(search)) {
 			String categoryId = request.getParameter("categoryId");
@@ -76,6 +76,32 @@ public class HomeServlet extends HttpServlet {
 			String priceRange = request.getParameter("priceRange");
 			
 			List<PetDetail> searchPetList = dao.searchAllPet(categoryId, gender, colorArray, pet_size, ageRange, priceRange);
+		// 検索にもmatchRateを入れる、一覧の場合：searchPetList
+			if (userId != null) {
+				Map<Integer, Integer> allMatchRateMap = dao.getAllMatchRate(userId);
+
+				for (PetDetail pdPet : searchPetList) {
+					int matchRate = allMatchRateMap.getOrDefault(pdPet.getPetID(), 0);
+					pdPet.setMatchRate(matchRate);
+				}
+				request.setAttribute("allMatchRateMap", allMatchRateMap);
+
+			}
+			if ("matchRateDesc".equals(sort)) {
+				searchPetList.sort((p1, p2) -> p2.getMatchRate() - p1.getMatchRate());
+			}else if ("matchRateAsc".equals(sort)) {
+				searchPetList.sort((p1, p2) -> p1.getMatchRate() - p2.getMatchRate());
+			}else if ("priceDesc".equals(sort)) {
+				searchPetList.sort((p1, p2) -> p2.getPrice() - p1.getPrice());
+			}else if ("priceAsc".equals(sort)) {
+				searchPetList.sort((p1, p2) -> p1.getPrice() - p2.getPrice());
+			}else if ("ageDesc".equals(sort)) {
+				searchPetList.sort((p1, p2) -> p2.getAge() - p1.getAge());
+			}else if ("ageAsc".equals(sort)) {
+				searchPetList.sort((p1, p2) -> p1.getAge() - p2.getAge());
+			}
+			request.setAttribute("sort", sort);
+			
 			request.setAttribute("clickSearch", true);
 			request.setAttribute("searchPetList", searchPetList);
 			//検索結果件数計算

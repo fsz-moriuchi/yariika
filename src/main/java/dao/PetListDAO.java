@@ -613,10 +613,10 @@ public class PetListDAO {
 			if(ageRange != null && !ageRange.isEmpty()) {
 				if("age0".equals(ageRange)) {
 					sql += "AND PI.age = 0 ";
-				} else if("age1to5".equals(ageRange)) {
-					sql += "AND PI.age BETWEEN 1 AND 5 ";
-				} else if("age6up".equals(ageRange)) {
-					sql += "AND PI.age >= 6 ";
+				} else if("age1to3".equals(ageRange)) {
+					sql += "AND PI.age BETWEEN 1 AND 3 ";
+				} else if("age4up".equals(ageRange)) {
+					sql += "AND PI.age >= 4 ";
 				}
 			}
 

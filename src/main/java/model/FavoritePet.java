@@ -64,4 +64,18 @@ public class FavoritePet {
 	public void setMatchRate(int matchRate) {
 		this.matchRate = matchRate;
 	}
+	
+	public String getGenderName() {
+		if (gender == null) {
+			return "";
+		}
+		switch (gender) {
+		case "male":
+			return "男の子";
+		case "female":
+			return "女の子";
+		default:
+			return gender;
+		}
+	}
 }
