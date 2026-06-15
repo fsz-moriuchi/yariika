@@ -102,7 +102,7 @@ if (request.getAttribute("petDetail") != null) {
 			<c:otherwise>
 				<input type="submit" name="action" value="アンケート修正">
 				<input type="submit" name="action" value="更新">
-				<input type="submit" name="action" value="削除">
+				<input type="submit" name="action" value="削除" onclick="return confirm('このペット情報（ID：${petDetail.petID}）を削除してもよろしいですか？');">
 				<input type="hidden" name="petID" value="${petDetail.petID}">
 			</c:otherwise>
 		</c:choose>

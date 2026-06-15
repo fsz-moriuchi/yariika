@@ -23,7 +23,7 @@
 	</p>
 </c:if>
 
-<input type="submit" value="パスワードを変更、再度ログイン">
+<input type="submit" value="パスワードを変更">
 </form>
 <c:choose>
 	<c:when test="${not empty sessionScope.userId}">

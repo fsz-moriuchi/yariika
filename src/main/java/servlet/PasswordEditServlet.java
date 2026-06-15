@@ -53,11 +53,13 @@ public class PasswordEditServlet extends HttpServlet {
 		PasswordEditLogic passwordEditLogic = new PasswordEditLogic();
 		PasswordEdit passwordEditResult = passwordEditLogic.execute(userId, facilityId, oldPassword, newPassword, newPasswordConfirm);
 		System.out.println(passwordEditResult);
-		if(passwordEditResult.isSuccess()) {
-			session.invalidate();
+	
 
+		if(passwordEditResult.isSuccess()) {
 			RequestDispatcher dispatcher = request.getRequestDispatcher("WEB-INF/jsp/passwordEditSuccess.jsp");
 			dispatcher.forward(request, response);
+			return;
+
 		}else {
 			request.setAttribute("errorMsg",passwordEditResult.getErrorMsg());
 			RequestDispatcher dispatcher = request.getRequestDispatcher("WEB-INF/jsp/passwordEdit.jsp");
