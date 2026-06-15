@@ -24,6 +24,8 @@ public class PetDetail {
     private String facilityName;
     private String address;
     private String tel;
+    //matchRate
+    private int matchRate;
 
     public PetDetail(
             int petID,
@@ -131,6 +133,13 @@ public class PetDetail {
     public String getTel() {
         return tel;
     }
+    
+    public int getMatchRate() {
+    		return matchRate;
+    }
+    public void setMatchRate(int matchRate) {
+		this.matchRate = matchRate;
+    }
 
     public String getPetSizeName() {
 
@@ -165,4 +174,72 @@ public class PetDetail {
             return vaccine;
         }
     }
+	public String getGenderName() {
+		if (gender == null) {
+			return "";
+		}
+		switch (gender) {
+		case "male":
+			return "男の子";
+		case "female":
+			return "女の子";
+		default:
+			return gender;
+		}
+	}
+	public String getColorName() {
+
+	    if (color == null || color.isEmpty()) {
+	        return "";
+	    }
+
+	    String[] colorArray = color.split(",");
+	    StringBuilder sb = new StringBuilder();
+
+	    for (int i = 0; i < colorArray.length; i++) {
+	        String colorValue = colorArray[i].trim();
+
+	        switch (colorValue) {
+	        case "white":
+	            sb.append("白");
+	            break;
+	        case "black":
+	            sb.append("黒");
+	            break;
+	        case "brown":
+	            sb.append("茶色");
+	            break;
+	        case "yellow":
+	            sb.append("黄");
+	            break;
+	        case "gray":
+	            sb.append("グレー");
+	            break;
+	        case "spotted":
+	            sb.append("斑点模様");
+	            break;
+	        case "brindle":
+	            sb.append("虎柄模様");
+	            break;
+	        case "curlyHair":
+	            sb.append("巻き毛");
+	            break;
+	        case "longHair":
+	            sb.append("長毛");
+	            break;
+	        case "shortHair":
+	            sb.append("短毛");
+	            break;
+	        default:
+	            sb.append(colorValue);
+	            break;
+	        }
+
+	        if (i < colorArray.length - 1) {
+	            sb.append("、");
+	        }
+	    }
+
+	    return sb.toString();
+	}
 }

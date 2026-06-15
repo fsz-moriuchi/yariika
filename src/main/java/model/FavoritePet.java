@@ -75,4 +75,18 @@ public class FavoritePet {
 	public void setFacilityID(String facilityID) {
 		this.facilityID = facilityID;
 	}
+
+	public String getGenderName() {
+		if (gender == null) {
+			return "";
+		}
+		switch (gender) {
+		case "male":
+			return "男の子";
+		case "female":
+			return "女の子";
+		default:
+			return gender;
+		}
+	}
 }

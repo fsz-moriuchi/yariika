@@ -31,7 +31,7 @@
 	</p>
 	<p>
 		性別：
-		<c:out value="${petDetail.gender}" />
+		<c:out value="${petDetail.genderName}" />
 	</p>
 	<p>
 		年齢：
@@ -40,7 +40,7 @@
 	</p>
 	<p>
 		毛色：
-		<c:out value="${petDetail.color}" />
+		<c:out value="${petDetail.colorName}" />
 	</p>
 	<p>
 		サイズ：
