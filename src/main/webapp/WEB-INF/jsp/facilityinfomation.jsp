@@ -32,6 +32,9 @@
 		<br><br>
 		<br> <input type="submit" value="登録">
 	</form>
+	<form action="FacilityPageServlet" method="get">
+		<input type="submit" value="戻る">
+	</form>
 
 </body>
 </html>
