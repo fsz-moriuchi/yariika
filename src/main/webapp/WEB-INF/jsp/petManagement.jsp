@@ -6,83 +6,130 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>petManagement</title>
+<title>ペット情報管理</title>
+
+<link rel="stylesheet" href="${pageContext.request.contextPath}/css/style.css">
 </head>
+
 <body>
 
-	<h1>
-		<c:out value="${facilityId}" />
-		: ペット情報管理
-	</h1>
+	<header class="site-header">
+		<div class="header-inner">
+			<a href="HomeServlet" class="logo">Pet Matching</a>
 
-	<form action="PetRegisterServlet" method="get">
-		<input type="submit" value="新規ペット情報作成">
-	</form>
+			<nav class="header-nav">
+				<a href="HomeServlet">ホーム</a>
+				<a href="FacilityPageServlet">店舗管理ページ</a>
+				<a href="LogoutServlet" class="logout-link">ログアウト</a>
+			</nav>
+		</div>
+	</header>
 
-	<table border="1" style="width: 100%">
-		<tr>
-			<th>写真</th>
-			<th>ペットID</th>
-			<th>種類</th>
-			<th>性別</th>
-			<th>年齢</th>
-			<th>生体価格</th>
-			<th>お気に入り数</th>
-			<th>操作</th>
-		</tr>
+	<main class="container">
 
-		<c:forEach var="pet" items="${facilityList}">
-			<tr>
+		<section class="management-section">
 
-				<td><c:choose>
-						<c:when test="${not empty pet.imagePath}">
-							<img src="${pageContext.request.contextPath}/${pet.imagePath}"
-								alt="ペット画像" width="120" height="120" style="object-fit: cover;">
-						</c:when>
+			<div class="section-heading management-heading">
+				<div>
+					<h1>ペット情報管理</h1>
+					<p>
+						施設ID：
+						<c:out value="${facilityId}" />
+					</p>
+				</div>
 
-						<c:otherwise>
-                画像なし
-            </c:otherwise>
-					</c:choose></td>
+				<form action="PetRegisterServlet" method="get">
+					<input type="submit" value="新規ペット情報作成" class="main-button">
+				</form>
+			</div>
 
-				<td>${pet.petID}</td>
-				<td>${pet.categoryIdName}</td>
-				<td>${pet.genderName}</td>
-				<td>${pet.age}</td>
-				<td>${pet.price}</td>
-				<td>${pet.favoriteCount}人</td>
-				<td>
+			<div class="management-card">
 
-					<form action="PetEditServlet" method="get">
-						<input type="hidden" name="petID" value="${pet.petID}"> <input
-							type="submit" value="修正">
-					</form> <c:choose>
-						<c:when test="${pet.petID == favoritePetId}">
-                ★現在おすすめ中
-            </c:when>
+				<table class="management-table">
+					<thead>
+						<tr>
+							<th>写真</th>
+							<th>ペットID</th>
+							<th>種類</th>
+							<th>性別</th>
+							<th>年齢</th>
+							<th>生体価格</th>
+							<th>お気に入り数</th>
+							<th>操作</th>
+						</tr>
+					</thead>
 
-						<c:otherwise>
-							<form action="FavoritePetServlet" method="post">
-								<input type="hidden" name="petID" value="${pet.petID}">
-								<input type="submit" value="★おすすめに設定">
-							</form>
-						</c:otherwise>
-					</c:choose>
+					<tbody>
+						<c:forEach var="pet" items="${facilityList}">
+							<tr>
 
-					<form action="PetEditServlet" method="post">
-						<input type="hidden" name="petID" value="${pet.petID}"> <input
-							type="submit" value="アンケート確認">
-					</form>
+								<td>
+									<c:choose>
+										<c:when test="${not empty pet.imagePath}">
+											<img src="${pageContext.request.contextPath}/${pet.imagePath}"
+												alt="ペット画像" class="management-pet-image">
+										</c:when>
 
-				</td>
+										<c:otherwise>
+											<div class="management-no-image">画像なし</div>
+										</c:otherwise>
+									</c:choose>
+								</td>
 
-			</tr>
-		</c:forEach>
-	</table>
+								<td class="id-cell">${pet.petID}</td>
+								<td>${pet.categoryIdName}</td>
+								<td>${pet.genderName}</td>
+								<td>${pet.age}歳</td>
+								<td>${pet.price}円</td>
+								<td>${pet.favoriteCount}人</td>
 
-	<form action="FacilityPageServlet" method="get">
-		<input type="submit" value="戻る">
-	</form>
+								<td>
+									<div class="table-action-area">
+
+										<form action="PetEditServlet" method="get">
+											<input type="hidden" name="petID" value="${pet.petID}">
+											<input type="submit" value="修正" class="table-button">
+										</form>
+
+										<c:choose>
+											<c:when test="${pet.petID == favoritePetId}">
+												<span class="recommended-label">★現在おすすめ中</span>
+											</c:when>
+
+											<c:otherwise>
+												<form action="FavoritePetServlet" method="post">
+													<input type="hidden" name="petID" value="${pet.petID}">
+													<input type="submit" value="★おすすめに設定" class="table-button sub-table-button">
+												</form>
+											</c:otherwise>
+										</c:choose>
+
+										<form action="PetEditServlet" method="post">
+											<input type="hidden" name="petID" value="${pet.petID}">
+											<input type="submit" value="アンケート確認" class="table-button gray-table-button">
+										</form>
+
+									</div>
+								</td>
+
+							</tr>
+						</c:forEach>
+					</tbody>
+				</table>
+
+				<c:if test="${empty facilityList}">
+					<p class="empty-message">登録されているペットはありません。</p>
+				</c:if>
+
+			</div>
+
+			<div class="back-link-area">
+				<a href="FacilityPageServlet" class="back-link">店舗管理ページに戻る</a>
+			</div>
+
+		</section>
+
+	</main>
 
 </body>
 </html>

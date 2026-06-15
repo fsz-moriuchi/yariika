@@ -1,0 +1,2466 @@
+@charset "UTF-8";
+
+/* =========================
+   全体共通
+========================= */
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: "Segoe UI", "Hiragino Sans", "Meiryo", sans-serif;
+    background-color: #fff8ef;
+    color: #3f352f;
+    line-height: 1.6;
+}
+
+a {
+    color: #8b5e3c;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+.container {
+    width: 92%;
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 30px 0 56px;
+}
+
+/* =========================
+   ヘッダー
+========================= */
+
+.site-header {
+    background-color: #ffffff;
+    border-bottom: 1px solid #f1ddc8;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.header-inner {
+    width: 92%;
+    max-width: 1180px;
+    margin: 0 auto;
+    min-height: 64px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.logo {
+    font-size: 23px;
+    font-weight: 800;
+    color: #e0893f;
+    letter-spacing: 0.02em;
+}
+
+.header-nav {
+    display: flex;
+    gap: 18px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.header-nav a {
+    font-size: 14px;
+}
+
+.logout-link {
+    color: #b35b45;
+}
+
+/* =========================
+   セクション
+========================= */
+
+.page-section {
+    margin-top: 24px;
+}
+
+.section-heading {
+    margin-bottom: 22px;
+}
+
+.section-heading h1 {
+    margin: 0;
+    font-size: 30px;
+    color: #4a3428;
+}
+
+.section-heading p {
+    margin: 7px 0 0;
+    color: #8a7668;
+    font-size: 14px;
+}
+
+/* =========================
+   フォーム
+========================= */
+
+.sort-form {
+    background-color: #ffffff;
+    padding: 14px 16px;
+    border-radius: 16px;
+    margin-bottom: 24px;
+    box-shadow: 0 4px 12px rgba(90, 60, 40, 0.08);
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    flex-wrap: wrap;
+    border: 1px solid #f0dfcf;
+}
+
+.sort-form label {
+    font-weight: 700;
+    color: #5a4030;
+}
+
+select {
+    padding: 9px 12px;
+    border-radius: 999px;
+    border: 1px solid #d8c8ba;
+    background-color: #fff;
+    color: #3f352f;
+}
+
+button,
+input[type="submit"] {
+    background-color: #f0a35a;
+    color: #fff;
+    border: none;
+    padding: 9px 17px;
+    border-radius: 999px;
+    cursor: pointer;
+    font-weight: bold;
+    box-shadow: 0 3px 8px rgba(180, 110, 50, 0.18);
+}
+
+button:hover,
+input[type="submit"]:hover {
+    background-color: #d98b43;
+}
+
+/* =========================
+   ユーザー側：ペット一覧
+========================= */
+
+.pet-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+    gap: 18px;
+}
+
+.pet-card {
+    background-color: #ffffff;
+    border-radius: 16px;
+    overflow: hidden;
+    border: 1px solid #eadfd4;
+    box-shadow: 0 4px 10px rgba(90, 60, 40, 0.08);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.pet-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 18px rgba(90, 60, 40, 0.13);
+}
+
+.pet-image {
+    width: 100%;
+    height: 145px;
+    object-fit: cover;
+    display: block;
+    background-color: #f1e7dc;
+}
+
+.pet-card-body {
+    padding: 13px 14px 15px;
+}
+
+.facility-name {
+    margin: 0 0 4px;
+    font-size: 12px;
+    color: #8a7668;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.pet-name {
+    margin: 0 0 7px;
+    font-size: 18px;
+    color: #4a3428;
+    line-height: 1.3;
+}
+
+.pet-card-body p {
+    margin: 3px 0;
+    font-size: 13px;
+}
+
+.match-rate {
+    margin-top: 8px !important;
+    font-size: 14px !important;
+    font-weight: bold;
+    color: #d47b37;
+}
+
+.detail-button {
+    display: block;
+    margin-top: 10px;
+    background-color: #f0a35a;
+    color: #fff;
+    padding: 8px 12px;
+    border-radius: 999px;
+    text-align: center;
+    font-size: 13px;
+    font-weight: bold;
+}
+
+.detail-button:hover {
+    background-color: #d98b43;
+    text-decoration: none;
+}
+
+/* =========================
+   施設側：ダッシュボード
+========================= */
+
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+}
+
+.dashboard-card {
+    background-color: #ffffff;
+    border-radius: 18px;
+    padding: 20px;
+    box-shadow: 0 5px 14px rgba(90, 60, 40, 0.09);
+    border: 1px solid #eadfd4;
+}
+
+.dashboard-card h2 {
+    margin: 0 0 12px;
+    font-size: 17px;
+    color: #6a4b37;
+}
+
+.dashboard-number {
+    margin: 0;
+    font-size: 34px;
+    font-weight: 800;
+    color: #d47b37;
+    line-height: 1.2;
+}
+
+.dashboard-number span {
+    font-size: 16px;
+    margin-left: 4px;
+    color: #7a6a5f;
+}
+
+.wide-card {
+    grid-column: span 3;
+}
+
+.info-list p {
+    margin: 6px 0;
+    font-size: 14px;
+}
+
+.empty-message {
+    color: #8a7a70;
+    font-size: 14px;
+}
+
+.latest-pet {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+}
+
+.latest-pet-image {
+    width: 180px;
+    height: 130px;
+    object-fit: cover;
+    border-radius: 14px;
+    background-color: #f1e7dc;
+}
+
+/* =========================
+   もし古いJSPのままでも少し整える用
+   classを付けていない画像にも最低限対応
+========================= */
+
+body > a {
+    display: inline-block;
+    margin: 12px 0 0 20px;
+}
+
+hr {
+    border: none;
+    border-top: 1px solid #eadfd4;
+    margin: 18px 0;
+}
+/* =========================
+   ペット詳細画面
+========================= */
+
+.pet-detail-page {
+    margin-top: 24px;
+}
+
+.pet-detail-layout {
+    display: grid;
+    grid-template-columns: 430px 1fr;
+    gap: 28px;
+    align-items: start;
+}
+
+.pet-detail-photo-card,
+.pet-detail-info-card,
+.detail-section-card {
+    background-color: #ffffff;
+    border: 1px solid #eadfd4;
+    border-radius: 20px;
+    box-shadow: 0 5px 14px rgba(90, 60, 40, 0.09);
+}
+
+.pet-detail-photo-card {
+    overflow: hidden;
+}
+
+.pet-detail-image {
+    width: 100%;
+    height: 430px;
+    object-fit: cover;
+    display: block;
+    background-color: #f1e7dc;
+}
+
+.no-image-box {
+    width: 100%;
+    height: 430px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #f1e7dc;
+    color: #8a7668;
+    font-weight: bold;
+}
+
+.pet-detail-info-card {
+    padding: 26px;
+}
+
+.pet-detail-title {
+    border-bottom: 1px solid #eadfd4;
+    padding-bottom: 16px;
+    margin-bottom: 18px;
+}
+
+.pet-category {
+    display: inline-block;
+    margin: 0 0 8px;
+    padding: 4px 12px;
+    border-radius: 999px;
+    background-color: #fff0dc;
+    color: #d47b37;
+    font-size: 13px;
+    font-weight: bold;
+}
+
+.pet-detail-title h2 {
+    margin: 0;
+    font-size: 30px;
+    color: #4a3428;
+}
+
+.detail-info-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+}
+
+.detail-info-item {
+    background-color: #fff8ef;
+    border: 1px solid #f0dfcf;
+    border-radius: 14px;
+    padding: 13px 14px;
+}
+
+.detail-info-item span {
+    display: block;
+    font-size: 12px;
+    color: #8a7668;
+    margin-bottom: 4px;
+}
+
+.detail-info-item strong {
+    display: block;
+    font-size: 17px;
+    color: #4a3428;
+}
+
+.price-item strong {
+    color: #d47b37;
+    font-size: 20px;
+}
+
+.detail-actions {
+    margin-top: 24px;
+    display: flex;
+    gap: 14px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.favorite-form {
+    margin: 0;
+}
+
+.main-button,
+.sub-button {
+    display: inline-block;
+    background-color: #f0a35a;
+    color: #ffffff;
+    border: none;
+    padding: 10px 22px;
+    border-radius: 999px;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 3px 8px rgba(180, 110, 50, 0.18);
+}
+
+.main-button:hover,
+.sub-button:hover {
+    background-color: #d98b43;
+    text-decoration: none;
+}
+
+.sub-button {
+    background-color: #ffffff;
+    color: #d47b37;
+    border: 1px solid #f0a35a;
+}
+
+.sub-button:hover {
+    background-color: #fff0dc;
+    color: #c46d2d;
+}
+
+.reserved-message {
+    margin: 0;
+    padding: 10px 18px;
+    background-color: #f7e1df;
+    color: #b35b45;
+    border-radius: 999px;
+    font-weight: bold;
+}
+
+.detail-section-card {
+    margin-top: 24px;
+    padding: 24px 26px;
+}
+
+.detail-section-card h2 {
+    margin: 0 0 14px;
+    color: #6a4b37;
+    font-size: 22px;
+}
+
+.comment-text {
+    margin: 0;
+    font-size: 15px;
+    color: #4a3428;
+    white-space: pre-wrap;
+}
+
+.facility-detail-list p {
+    margin: 10px 0;
+    display: grid;
+    grid-template-columns: 100px 1fr;
+    gap: 16px;
+    align-items: start;
+}
+
+.facility-detail-list span {
+    color: #8a7668;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.facility-detail-list strong {
+    color: #4a3428;
+    font-weight: 600;
+}
+
+.back-link-area {
+    margin-top: 24px;
+}
+
+.back-link {
+    display: inline-block;
+    padding: 9px 18px;
+    border-radius: 999px;
+    background-color: #ffffff;
+    border: 1px solid #eadfd4;
+    color: #8b5e3c;
+}
+
+.back-link:hover {
+    background-color: #fff0dc;
+    text-decoration: none;
+}
+/* =========================
+   マイページ
+========================= */
+
+.mypage-section {
+    margin-top: 24px;
+}
+
+.mypage-card {
+    background-color: #ffffff;
+    border: 1px solid #eadfd4;
+    border-radius: 22px;
+    padding: 28px;
+    box-shadow: 0 5px 14px rgba(90, 60, 40, 0.09);
+}
+
+.mypage-menu-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 18px;
+}
+
+.mypage-menu-form {
+    margin: 0;
+}
+
+.mypage-menu-button {
+    width: 100%;
+    min-height: 110px;
+    padding: 20px;
+    border-radius: 18px;
+    background-color: #fff8ef;
+    border: 1px solid #f0dfcf;
+    color: #4a3428;
+    text-align: left;
+    box-shadow: none;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 8px;
+}
+
+.mypage-menu-button:hover {
+    background-color: #fff0dc;
+    border-color: #f0a35a;
+}
+
+.menu-title {
+    font-size: 20px;
+    font-weight: 800;
+    color: #4a3428;
+}
+
+.menu-text {
+    font-size: 14px;
+    color: #8a7668;
+    font-weight: 500;
+}
+
+.mypage-back-area {
+    margin-top: 26px;
+    padding-top: 20px;
+    border-top: 1px solid #eadfd4;
+}
+
+.back-button {
+    background-color: #ffffff;
+    color: #8b5e3c;
+    border: 1px solid #eadfd4;
+    box-shadow: none;
+}
+
+.back-button:hover {
+    background-color: #fff0dc;
+}
+/* =========================
+   施設管理ページ
+========================= */
+
+.facility-menu-section {
+    margin-top: 24px;
+}
+
+.facility-menu-card {
+    background-color: #ffffff;
+    border: 1px solid #eadfd4;
+    border-radius: 22px;
+    padding: 28px;
+    box-shadow: 0 5px 14px rgba(90, 60, 40, 0.09);
+}
+
+.facility-menu-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 18px;
+}
+
+.facility-menu-button {
+    min-height: 115px;
+    padding: 22px;
+    border-radius: 18px;
+    background-color: #fff8ef;
+    border: 1px solid #f0dfcf;
+    color: #4a3428;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 8px;
+    transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+}
+
+.facility-menu-button:hover {
+    background-color: #fff0dc;
+    border-color: #f0a35a;
+    transform: translateY(-2px);
+    text-decoration: none;
+}
+
+.facility-menu-button .menu-title {
+    font-size: 20px;
+    font-weight: 800;
+    color: #4a3428;
+}
+
+.facility-menu-button .menu-text {
+    font-size: 14px;
+    color: #8a7668;
+    font-weight: 500;
+}
+
+.important-menu {
+    background-color: #fff0dc;
+    border-color: #f0a35a;
+}
+
+.important-menu .menu-title {
+    color: #d47b37;
+}
+
+.facility-back-area {
+    margin-top: 26px;
+    padding-top: 20px;
+    border-top: 1px solid #eadfd4;
+}
+/* =========================
+   ペット情報管理画面
+========================= */
+
+.management-section {
+    margin-top: 24px;
+}
+
+.management-heading {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 24px;
+}
+
+.management-heading form {
+    margin: 0;
+}
+
+.management-card {
+    background-color: #ffffff;
+    border: 1px solid #eadfd4;
+    border-radius: 22px;
+    padding: 22px;
+    box-shadow: 0 5px 14px rgba(90, 60, 40, 0.09);
+}
+
+.management-table {
+    width: 100%;
+    border-collapse: collapse;
+    overflow: hidden;
+    border-radius: 16px;
+}
+
+.management-table thead {
+    background-color: #fff0dc;
+}
+
+.management-table th {
+    padding: 14px 12px;
+    color: #5a4030;
+    font-size: 14px;
+    text-align: left;
+    border-bottom: 1px solid #eadfd4;
+    white-space: nowrap;
+}
+
+.management-table td {
+    padding: 14px 12px;
+    border-bottom: 1px solid #f0dfcf;
+    vertical-align: middle;
+    font-size: 14px;
+}
+
+.management-table tbody tr:hover {
+    background-color: #fffaf3;
+}
+
+.management-pet-image {
+    width: 92px;
+    height: 92px;
+    object-fit: cover;
+    border-radius: 14px;
+    display: block;
+    background-color: #f1e7dc;
+}
+
+.management-no-image {
+    width: 92px;
+    height: 92px;
+    border-radius: 14px;
+    background-color: #f1e7dc;
+    color: #8a7668;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    font-weight: bold;
+}
+
+.id-cell {
+    font-weight: bold;
+    color: #6a4b37;
+}
+
+.table-action-area {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    align-items: flex-start;
+}
+
+.table-action-area form {
+    margin: 0;
+}
+
+.table-button {
+    padding: 7px 13px;
+    font-size: 13px;
+    border-radius: 999px;
+    background-color: #f0a35a;
+    box-shadow: none;
+}
+
+.table-button:hover {
+    background-color: #d98b43;
+}
+
+.sub-table-button {
+    background-color: #ffffff;
+    color: #d47b37;
+    border: 1px solid #f0a35a;
+}
+
+.sub-table-button:hover {
+    background-color: #fff0dc;
+    color: #c46d2d;
+}
+
+.gray-table-button {
+    background-color: #f3eee8;
+    color: #6a4b37;
+}
+
+.gray-table-button:hover {
+    background-color: #e8ddd2;
+}
+
+.recommended-label {
+    display: inline-block;
+    padding: 7px 12px;
+    border-radius: 999px;
+    background-color: #fff0dc;
+    color: #d47b37;
+    font-size: 13px;
+    font-weight: bold;
+}
+/* =========================
+   ユーザー側：予約確認画面
+========================= */
+
+.reserve-check-section {
+    margin-top: 24px;
+}
+
+.reserve-card {
+    background-color: #ffffff;
+    border: 1px solid #eadfd4;
+    border-radius: 22px;
+    padding: 26px;
+    box-shadow: 0 5px 14px rgba(90, 60, 40, 0.09);
+}
+
+.reserve-card-header {
+    border-bottom: 1px solid #eadfd4;
+    padding-bottom: 16px;
+    margin-bottom: 18px;
+}
+
+.reserve-card-header h2 {
+    margin: 10px 0 0;
+    color: #4a3428;
+    font-size: 24px;
+}
+
+.reserve-label {
+    display: inline-block;
+    background-color: #fff0dc;
+    color: #d47b37;
+    border-radius: 999px;
+    padding: 5px 14px;
+    font-size: 13px;
+    font-weight: bold;
+}
+
+.reserve-info-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+}
+
+.reserve-info-item {
+    background-color: #fff8ef;
+    border: 1px solid #f0dfcf;
+    border-radius: 14px;
+    padding: 14px 16px;
+}
+
+.reserve-info-item span {
+    display: block;
+    color: #8a7668;
+    font-size: 13px;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+.reserve-info-item strong {
+    color: #4a3428;
+    font-size: 18px;
+}
+
+.wide-reserve-info {
+    grid-column: span 2;
+}
+
+.empty-reserve-card {
+    color: #8a7668;
+    font-weight: bold;
+}
+
+.notice-card {
+    margin-top: 22px;
+    background-color: #fff8ef;
+    border: 1px solid #f0dfcf;
+    border-radius: 18px;
+    padding: 20px 22px;
+}
+
+.notice-card h2 {
+    margin: 0 0 10px;
+    font-size: 18px;
+    color: #6a4b37;
+}
+
+.notice-card p {
+    margin: 0;
+    color: #5a4030;
+    font-size: 14px;
+}
+/* =========================
+   ユーザーアンケート画面
+========================= */
+
+.survey-section {
+    margin-top: 24px;
+}
+
+.survey-card {
+    background-color: #ffffff;
+    border: 1px solid #eadfd4;
+    border-radius: 22px;
+    padding: 26px;
+    box-shadow: 0 5px 14px rgba(90, 60, 40, 0.09);
+}
+
+.survey-form {
+    margin: 0;
+}
+
+.question-card {
+    background-color: #fff8ef;
+    border: 1px solid #f0dfcf;
+    border-radius: 18px;
+    padding: 22px;
+    margin-bottom: 18px;
+}
+
+.question-title {
+    margin: 0 0 16px;
+    font-size: 18px;
+    color: #4a3428;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.question-title span {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 42px;
+    height: 30px;
+    padding: 0 10px;
+    border-radius: 999px;
+    background-color: #f0a35a;
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: 800;
+}
+
+.choice-list {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+}
+
+.choice-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background-color: #ffffff;
+    border: 1px solid #eadfd4;
+    border-radius: 14px;
+    padding: 13px 15px;
+    cursor: pointer;
+    color: #4a3428;
+    font-weight: 600;
+}
+
+.choice-item:hover {
+    background-color: #fff0dc;
+    border-color: #f0a35a;
+}
+
+.choice-item input[type="radio"] {
+    accent-color: #f0a35a;
+    transform: scale(1.15);
+}
+
+.choice-item span {
+    font-size: 14px;
+}
+
+.survey-submit-area {
+    margin-top: 24px;
+    padding-top: 22px;
+    border-top: 1px solid #eadfd4;
+}
+/* =========================
+   予約画面
+========================= */
+
+.reserve-section {
+    margin-top: 24px;
+}
+
+.reserve-guide-card,
+.reserve-step-card {
+    background-color: #ffffff;
+    border: 1px solid #eadfd4;
+    border-radius: 22px;
+    padding: 24px 26px;
+    box-shadow: 0 5px 14px rgba(90, 60, 40, 0.09);
+    margin-bottom: 22px;
+}
+
+.reserve-guide-card {
+    background-color: #fff8ef;
+}
+
+.reserve-guide-card h2,
+.reserve-step-card h2 {
+    margin: 0 0 12px;
+    color: #6a4b37;
+    font-size: 22px;
+}
+
+.reserve-guide-card p {
+    margin: 0;
+    color: #5a4030;
+}
+
+.step-label {
+    display: inline-block;
+    background-color: #f0a35a;
+    color: #ffffff;
+    border-radius: 999px;
+    padding: 5px 14px;
+    font-size: 13px;
+    font-weight: 800;
+    margin-bottom: 10px;
+}
+
+.reserve-date-form {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex-wrap: wrap;
+}
+
+.reserve-date-form label {
+    font-weight: 700;
+    color: #5a4030;
+}
+
+.reserve-date-form input[type="date"] {
+    padding: 10px 14px;
+    border-radius: 999px;
+    border: 1px solid #d8c8ba;
+    color: #3f352f;
+    background-color: #ffffff;
+}
+
+.time-choice-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px;
+}
+
+.time-choice-item {
+    background-color: #fff8ef;
+    border: 1px solid #f0dfcf;
+    border-radius: 16px;
+    padding: 14px 16px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 700;
+    color: #4a3428;
+}
+
+.time-choice-item:hover {
+    background-color: #fff0dc;
+    border-color: #f0a35a;
+}
+
+.time-choice-item input[type="radio"] {
+    accent-color: #f0a35a;
+    transform: scale(1.15);
+}
+
+.reserve-submit-area {
+    margin-top: 22px;
+    padding-top: 20px;
+    border-top: 1px solid #eadfd4;
+}
+
+.error-message-card {
+    background-color: #f7e1df;
+    color: #b35b45;
+    border: 1px solid #edc6c1;
+    border-radius: 16px;
+    padding: 16px 18px;
+    font-weight: bold;
+    margin-bottom: 22px;
+}
+/* =========================
+   施設側：予約確認・管理画面
+========================= */
+
+.reservation-management-section {
+    margin-top: 24px;
+}
+
+.table-title {
+    margin: 0 0 18px;
+    color: #6a4b37;
+    font-size: 22px;
+}
+
+.reservation-table th,
+.reservation-table td {
+    text-align: left;
+}
+
+.date-cell {
+    font-weight: 600;
+    color: #4a3428;
+    white-space: nowrap;
+}
+
+.danger-table-button {
+    background-color: #ffffff;
+    color: #b35b45;
+    border: 1px solid #d99a90;
+}
+
+.danger-table-button:hover {
+    background-color: #f7e1df;
+    color: #a24737;
+}
+css
+/* =========================
+   ペット登録・修正画面
+========================= */
+
+.pet-form-section {
+    margin-top: 24px;
+}
+
+.pet-form {
+    margin: 0;
+}
+
+.form-card {
+    background-color: #ffffff;
+    border: 1px solid #eadfd4;
+    border-radius: 22px;
+    padding: 26px;
+    box-shadow: 0 5px 14px rgba(90, 60, 40, 0.09);
+    margin-bottom: 22px;
+}
+
+.form-card h2 {
+    margin: 0 0 22px;
+    color: #6a4b37;
+    font-size: 22px;
+    border-bottom: 1px solid #eadfd4;
+    padding-bottom: 12px;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 150px 1fr;
+    gap: 18px;
+    align-items: start;
+    margin-bottom: 18px;
+}
+
+.form-row:last-child {
+    margin-bottom: 0;
+}
+
+.form-label {
+    font-weight: 800;
+    color: #5a4030;
+    padding-top: 8px;
+}
+
+.readonly-text {
+    padding: 10px 14px;
+    background-color: #fff8ef;
+    border: 1px solid #f0dfcf;
+    border-radius: 12px;
+    color: #4a3428;
+    font-weight: 700;
+}
+
+.form-input,
+.form-textarea {
+    width: 100%;
+    border: 1px solid #d8c8ba;
+    border-radius: 12px;
+    padding: 11px 14px;
+    background-color: #ffffff;
+    color: #3f352f;
+    font-size: 15px;
+    font-family: inherit;
+}
+
+.form-input:focus,
+.form-textarea:focus {
+    outline: none;
+    border-color: #f0a35a;
+    box-shadow: 0 0 0 3px rgba(240, 163, 90, 0.18);
+}
+
+.short-input {
+    width: 160px;
+}
+
+.input-with-unit {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.input-with-unit span {
+    font-weight: 700;
+    color: #5a4030;
+}
+
+.form-textarea {
+    min-height: 140px;
+    resize: vertical;
+}
+
+.choice-inline-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.checkbox-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 10px;
+}
+
+.form-choice {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background-color: #fff8ef;
+    border: 1px solid #f0dfcf;
+    border-radius: 999px;
+    padding: 9px 14px;
+    color: #4a3428;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.form-choice:hover {
+    background-color: #fff0dc;
+    border-color: #f0a35a;
+}
+
+.form-choice input[type="radio"],
+.form-choice input[type="checkbox"] {
+    accent-color: #f0a35a;
+    transform: scale(1.1);
+}
+
+.form-file {
+    padding: 10px;
+    border: 1px solid #d8c8ba;
+    border-radius: 12px;
+    background-color: #ffffff;
+}
+
+.current-pet-image {
+    width: 220px;
+    height: 160px;
+    object-fit: cover;
+    border-radius: 16px;
+    border: 1px solid #eadfd4;
+    background-color: #f1e7dc;
+}
+
+.form-action-card {
+    background-color: #ffffff;
+    border: 1px solid #eadfd4;
+    border-radius: 22px;
+    padding: 22px 26px;
+    box-shadow: 0 5px 14px rgba(90, 60, 40, 0.09);
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.danger-button {
+    background-color: #ffffff;
+    color: #b35b45;
+    border: 1px solid #d99a90;
+    padding: 10px 22px;
+    border-radius: 999px;
+    cursor: pointer;
+    font-weight: bold;
+    box-shadow: none;
+}
+
+.danger-button:hover {
+    background-color: #f7e1df;
+    color: #a24737;
+}
+/* =========================
+   施設情報確認画面
+========================= */
+
+.facility-info-section {
+    margin-top: 24px;
+}
+
+.facility-info-card {
+    background-color: #ffffff;
+    border: 1px solid #eadfd4;
+    border-radius: 22px;
+    padding: 28px;
+    box-shadow: 0 5px 14px rgba(90, 60, 40, 0.09);
+}
+
+.facility-info-card h2 {
+    margin: 0 0 22px;
+    color: #4a3428;
+    font-size: 26px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid #eadfd4;
+}
+
+.facility-info-list {
+    display: grid;
+    gap: 14px;
+}
+
+.facility-info-row {
+    display: grid;
+    grid-template-columns: 160px 1fr;
+    gap: 18px;
+    background-color: #fff8ef;
+    border: 1px solid #f0dfcf;
+    border-radius: 14px;
+    padding: 15px 18px;
+}
+
+.facility-info-row span {
+    color: #8a7668;
+    font-size: 14px;
+    font-weight: 800;
+}
+
+.facility-info-row strong {
+    color: #4a3428;
+    font-size: 15px;
+    font-weight: 700;
+}
+
+.facility-info-actions {
+    margin-top: 26px;
+    padding-top: 22px;
+    border-top: 1px solid #eadfd4;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.facility-info-actions form {
+    margin: 0;
+}
+/* =========================
+   施設情報編集画面
+========================= */
+
+.facility-edit-section {
+    margin-top: 24px;
+}
+
+.facility-edit-form {
+    margin: 0;
+}
+
+.weekday-checkbox-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+}
+/* =========================
+アンケート画面
+========================= */
+
+.survey-section {
+margin-top: 24px;
+}
+
+.survey-card {
+background-color: #ffffff;
+border: 1px solid #eadfd4;
+border-radius: 22px;
+padding: 26px;
+box-shadow: 0 5px 14px rgba(90, 60, 40, 0.09);
+}
+
+.survey-form {
+margin: 0;
+}
+
+.question-card {
+background-color: #fff8ef;
+border: 1px solid #f0dfcf;
+border-radius: 18px;
+padding: 22px;
+margin-bottom: 18px;
+}
+
+.question-title {
+margin: 0 0 16px;
+font-size: 18px;
+color: #4a3428;
+display: flex;
+align-items: center;
+gap: 10px;
+}
+
+.question-title span {
+display: inline-flex;
+align-items: center;
+justify-content: center;
+min-width: 42px;
+height: 30px;
+padding: 0 10px;
+border-radius: 999px;
+background-color: #f0a35a;
+color: #ffffff;
+font-size: 14px;
+font-weight: 800;
+}
+
+.choice-list {
+display: grid;
+grid-template-columns: repeat(2, 1fr);
+gap: 12px;
+}
+
+.choice-item {
+display: flex;
+align-items: center;
+gap: 10px;
+background-color: #ffffff;
+border: 1px solid #eadfd4;
+border-radius: 14px;
+padding: 13px 15px;
+cursor: pointer;
+color: #4a3428;
+font-weight: 600;
+}
+
+.choice-item:hover {
+background-color: #fff0dc;
+border-color: #f0a35a;
+}
+
+.choice-item input[type="radio"] {
+accent-color: #f0a35a;
+transform: scale(1.15);
+}
+
+.choice-item span {
+font-size: 14px;
+}
+
+.survey-submit-area {
+margin-top: 24px;
+padding-top: 22px;
+border-top: 1px solid #eadfd4;
+display: flex;
+gap: 12px;
+align-items: center;
+flex-wrap: wrap;
+}
+/* =========================
+お気に入り一覧画面
+========================= */
+
+.favorite-section {
+margin-top: 24px;
+}
+
+.empty-card {
+background-color: #ffffff;
+border: 1px solid #eadfd4;
+border-radius: 22px;
+padding: 30px;
+box-shadow: 0 5px 14px rgba(90, 60, 40, 0.09);
+color: #8a7668;
+}
+
+.empty-card p {
+margin: 0 0 18px;
+font-weight: 700;
+}
+
+.pet-no-image {
+width: 100%;
+height: 125px;
+background-color: #f1e7dc;
+color: #8a7668;
+display: flex;
+align-items: center;
+justify-content: center;
+font-weight: bold;
+}
+/* =========================
+個人情報確認画面
+========================= */
+
+.user-info-section {
+margin-top: 24px;
+}
+
+.user-info-card {
+background-color: #ffffff;
+border: 1px solid #eadfd4;
+border-radius: 22px;
+padding: 28px;
+box-shadow: 0 5px 14px rgba(90, 60, 40, 0.09);
+}
+
+.user-info-card h2 {
+margin: 0 0 22px;
+color: #4a3428;
+font-size: 26px;
+padding-bottom: 16px;
+border-bottom: 1px solid #eadfd4;
+}
+
+.user-info-list {
+display: grid;
+gap: 14px;
+}
+
+.user-info-row {
+display: grid;
+grid-template-columns: 160px 1fr;
+gap: 18px;
+background-color: #fff8ef;
+border: 1px solid #f0dfcf;
+border-radius: 14px;
+padding: 15px 18px;
+}
+
+.user-info-row span {
+color: #8a7668;
+font-size: 14px;
+font-weight: 800;
+}
+
+.user-info-row strong {
+color: #4a3428;
+font-size: 15px;
+font-weight: 700;
+}
+
+.user-info-actions {
+margin-top: 26px;
+padding-top: 22px;
+border-top: 1px solid #eadfd4;
+display: flex;
+align-items: center;
+gap: 14px;
+}
+
+.user-info-actions form {
+margin: 0;
+}
+/* =========================
+施設公開ページ
+========================= */
+
+.facility-public-section {
+margin-top: 24px;
+}
+
+.facility-public-hero {
+background: linear-gradient(135deg, #fff0dc 0%, #ffffff 65%);
+border: 1px solid #eadfd4;
+border-radius: 24px;
+padding: 32px;
+box-shadow: 0 5px 14px rgba(90, 60, 40, 0.09);
+display: flex;
+justify-content: space-between;
+align-items: center;
+gap: 24px;
+margin-bottom: 24px;
+}
+
+.facility-public-label {
+display: inline-block;
+margin: 0 0 10px;
+padding: 5px 14px;
+border-radius: 999px;
+background-color: #f0a35a;
+color: #ffffff;
+font-size: 13px;
+font-weight: 800;
+letter-spacing: 0.05em;
+}
+
+.facility-public-hero h1 {
+margin: 0;
+font-size: 34px;
+color: #4a3428;
+}
+
+.facility-public-lead {
+margin: 10px 0 0;
+color: #8a7668;
+font-weight: 600;
+}
+
+.facility-view-count {
+background-color: #ffffff;
+border: 1px solid #eadfd4;
+border-radius: 18px;
+padding: 18px 24px;
+min-width: 150px;
+text-align: center;
+}
+
+.facility-view-count span {
+display: block;
+color: #8a7668;
+font-size: 13px;
+font-weight: 800;
+margin-bottom: 6px;
+}
+
+.facility-view-count strong {
+color: #d47b37;
+font-size: 28px;
+}
+
+.facility-public-card {
+background-color: #ffffff;
+border: 1px solid #eadfd4;
+border-radius: 22px;
+padding: 26px;
+box-shadow: 0 5px 14px rgba(90, 60, 40, 0.09);
+margin-bottom: 30px;
+}
+
+.facility-public-card h2 {
+margin: 0 0 20px;
+color: #6a4b37;
+font-size: 24px;
+padding-bottom: 12px;
+border-bottom: 1px solid #eadfd4;
+}
+
+.facility-public-info-list {
+display: grid;
+grid-template-columns: repeat(2, 1fr);
+gap: 14px;
+}
+
+.facility-public-info-row {
+background-color: #fff8ef;
+border: 1px solid #f0dfcf;
+border-radius: 14px;
+padding: 15px 18px;
+}
+
+.facility-public-info-row span {
+display: block;
+color: #8a7668;
+font-size: 13px;
+font-weight: 800;
+margin-bottom: 5px;
+}
+
+.facility-public-info-row strong {
+color: #4a3428;
+font-size: 15px;
+font-weight: 700;
+}
+
+.facility-public-block {
+margin-top: 34px;
+}
+
+.compact-heading {
+margin-bottom: 18px;
+}
+
+.compact-heading h2 {
+margin: 0;
+font-size: 26px;
+color: #4a3428;
+}
+
+.featured-pet-card {
+background-color: #ffffff;
+border: 1px solid #eadfd4;
+border-radius: 22px;
+box-shadow: 0 5px 14px rgba(90, 60, 40, 0.09);
+overflow: hidden;
+display: grid;
+grid-template-columns: 360px 1fr;
+}
+
+.featured-pet-image {
+width: 100%;
+height: 280px;
+object-fit: cover;
+display: block;
+background-color: #f1e7dc;
+}
+
+.featured-pet-body {
+padding: 28px;
+}
+
+.featured-label {
+display: inline-block;
+margin: 0 0 12px;
+padding: 5px 14px;
+border-radius: 999px;
+background-color: #fff0dc;
+color: #d47b37;
+font-size: 13px;
+font-weight: 800;
+}
+
+.featured-pet-body h3 {
+margin: 0 0 14px;
+color: #4a3428;
+font-size: 28px;
+}
+
+.featured-pet-body p {
+margin: 6px 0;
+color: #5a4030;
+font-weight: 600;
+}
+
+.ranking-grid {
+display: grid;
+grid-template-columns: repeat(3, 1fr);
+gap: 18px;
+}
+
+.ranking-card {
+position: relative;
+background-color: #ffffff;
+border: 1px solid #eadfd4;
+border-radius: 18px;
+overflow: hidden;
+box-shadow: 0 4px 10px rgba(90, 60, 40, 0.08);
+}
+
+.ranking-badge {
+position: absolute;
+top: 12px;
+left: 12px;
+background-color: #f0a35a;
+color: #ffffff;
+border-radius: 999px;
+padding: 6px 13px;
+font-size: 13px;
+font-weight: 800;
+z-index: 1;
+}
+
+.ranking-pet-image {
+width: 100%;
+height: 150px;
+object-fit: cover;
+display: block;
+background-color: #f1e7dc;
+}
+
+.ranking-card-body {
+padding: 15px;
+}
+
+.ranking-card-body h3 {
+margin: 0 0 8px;
+color: #4a3428;
+font-size: 18px;
+}
+
+.ranking-card-body p {
+margin: 0 0 10px;
+color: #8a7668;
+font-size: 13px;
+font-weight: 700;
+}
+/* =========================
+施設情報登録・編集画面
+========================= */
+
+.facility-edit-section {
+margin-top: 24px;
+}
+
+.facility-edit-form {
+margin: 0;
+}
+
+.weekday-checkbox-grid {
+display: grid;
+grid-template-columns: repeat(4, 1fr);
+gap: 10px;
+}
+/* =========================
+予約完了画面
+========================= */
+
+.complete-section {
+margin-top: 40px;
+}
+
+.complete-card {
+background-color: #ffffff;
+border: 1px solid #eadfd4;
+border-radius: 26px;
+padding: 36px;
+box-shadow: 0 6px 18px rgba(90, 60, 40, 0.1);
+text-align: center;
+}
+
+.complete-icon {
+width: 64px;
+height: 64px;
+margin: 0 auto 18px;
+border-radius: 50%;
+background-color: #f0a35a;
+color: #ffffff;
+display: flex;
+align-items: center;
+justify-content: center;
+font-size: 34px;
+font-weight: 800;
+}
+
+.complete-card h1 {
+margin: 0;
+color: #4a3428;
+font-size: 32px;
+}
+
+.complete-lead {
+margin: 12px 0 28px;
+color: #8a7668;
+font-weight: 600;
+}
+
+.complete-info-area {
+display: grid;
+grid-template-columns: repeat(2, 1fr);
+gap: 22px;
+text-align: left;
+margin-top: 24px;
+}
+
+.complete-info-block {
+background-color: #fff8ef;
+border: 1px solid #f0dfcf;
+border-radius: 20px;
+padding: 22px;
+}
+
+.complete-info-block h2 {
+margin: 0 0 16px;
+color: #6a4b37;
+font-size: 21px;
+padding-bottom: 10px;
+border-bottom: 1px solid #eadfd4;
+}
+
+.complete-info-row {
+display: grid;
+grid-template-columns: 100px 1fr;
+gap: 14px;
+margin: 12px 0;
+}
+
+.complete-info-row span {
+color: #8a7668;
+font-size: 14px;
+font-weight: 800;
+}
+
+.complete-info-row strong {
+color: #4a3428;
+font-size: 15px;
+font-weight: 700;
+}
+
+.complete-notice {
+text-align: left;
+margin-top: 24px;
+}
+
+.complete-action-area {
+margin-top: 28px;
+padding-top: 24px;
+border-top: 1px solid #eadfd4;
+display: flex;
+justify-content: center;
+gap: 14px;
+align-items: center;
+}
+/* =========================
+アンケート確認画面
+========================= */
+
+.survey-confirm-section {
+margin-top: 24px;
+}
+
+.survey-confirm-table th:first-child,
+.survey-confirm-table td:first-child {
+width: 60%;
+}
+
+.survey-confirm-table td {
+line-height: 1.7;
+}
+/* =========================
+完了画面共通
+========================= */
+
+.complete-section {
+margin-top: 40px;
+}
+
+.complete-card {
+background-color: #ffffff;
+border: 1px solid #eadfd4;
+border-radius: 26px;
+padding: 36px;
+box-shadow: 0 6px 18px rgba(90, 60, 40, 0.1);
+text-align: center;
+}
+
+.complete-icon {
+width: 64px;
+height: 64px;
+margin: 0 auto 18px;
+border-radius: 50%;
+background-color: #f0a35a;
+color: #ffffff;
+display: flex;
+align-items: center;
+justify-content: center;
+font-size: 34px;
+font-weight: 800;
+}
+
+.complete-card h1 {
+margin: 0;
+color: #4a3428;
+font-size: 32px;
+}
+
+.complete-lead {
+margin: 12px 0 28px;
+color: #8a7668;
+font-weight: 600;
+}
+
+.complete-action-area {
+margin-top: 28px;
+padding-top: 24px;
+border-top: 1px solid #eadfd4;
+display: flex;
+justify-content: center;
+gap: 14px;
+align-items: center;
+}
+/* =========================
+ログイン画面共通
+========================= */
+
+.login-page {
+min-height: 100vh;
+display: flex;
+align-items: center;
+justify-content: center;
+background: linear-gradient(135deg, #fff8ef 0%, #fff0dc 100%);
+padding: 40px 0;
+}
+
+.login-card {
+width: 430px;
+background-color: #ffffff;
+border: 1px solid #eadfd4;
+border-radius: 26px;
+padding: 34px;
+box-shadow: 0 8px 24px rgba(90, 60, 40, 0.13);
+}
+
+.login-heading {
+text-align: center;
+margin-bottom: 26px;
+}
+
+.login-heading .logo {
+display: inline-block;
+margin-bottom: 16px;
+font-size: 24px;
+color: #e0893f;
+font-weight: 800;
+}
+
+.login-heading h1 {
+margin: 0;
+color: #4a3428;
+font-size: 30px;
+}
+
+.login-heading p {
+margin: 8px 0 0;
+color: #8a7668;
+font-size: 14px;
+font-weight: 600;
+}
+
+.login-form {
+margin: 0;
+}
+
+.login-form-row {
+margin-bottom: 18px;
+}
+
+.login-form-row label {
+display: block;
+margin-bottom: 7px;
+color: #5a4030;
+font-weight: 800;
+font-size: 14px;
+}
+
+.login-action-area {
+margin-top: 24px;
+padding-top: 22px;
+border-top: 1px solid #eadfd4;
+display: flex;
+gap: 12px;
+align-items: center;
+justify-content: center;
+}
+/* =========================
+個人情報修正画面
+========================= */
+
+.user-edit-section {
+margin-top: 24px;
+}
+
+.user-edit-form {
+margin: 0;
+}
+/* =========================
+パスワード変更画面
+========================= */
+
+.password-card {
+width: 480px;
+}
+
+.password-notice {
+background-color: #fff8ef;
+border: 1px solid #f0dfcf;
+border-radius: 14px;
+padding: 13px 15px;
+margin-top: 8px;
+}
+
+.password-notice p {
+margin: 0;
+color: #8a7668;
+font-size: 14px;
+font-weight: 700;
+}
+/* =========================
+アンケート確認画面
+========================= */
+
+.survey-confirm-section {
+margin-top: 24px;
+}
+
+.survey-confirm-table th:first-child,
+.survey-confirm-table td:first-child {
+width: 60%;
+}
+
+.survey-confirm-table td {
+line-height: 1.7;
+}
+/* =========================
+基本知識クイズ画面
+========================= */
+
+.quiz-section {
+margin-top: 24px;
+}
+
+.quiz-form {
+margin: 0;
+}
+
+.quiz-guide-card {
+background-color: #fff8ef;
+border: 1px solid #f0dfcf;
+border-radius: 22px;
+padding: 24px 26px;
+box-shadow: 0 5px 14px rgba(90, 60, 40, 0.09);
+margin-bottom: 22px;
+}
+
+.quiz-guide-card h2 {
+margin: 0 0 12px;
+color: #6a4b37;
+font-size: 22px;
+}
+
+.quiz-guide-card p {
+margin: 0;
+color: #5a4030;
+font-weight: 600;
+}
+/* =========================
+クイズ結果画面
+========================= */
+
+.quiz-result-section {
+margin-top: 24px;
+}
+
+.quiz-score-card {
+background-color: #ffffff;
+border: 1px solid #eadfd4;
+border-radius: 24px;
+padding: 30px;
+box-shadow: 0 5px 14px rgba(90, 60, 40, 0.09);
+text-align: center;
+margin-bottom: 26px;
+}
+
+.result-badge {
+display: inline-block;
+padding: 6px 18px;
+border-radius: 999px;
+color: #ffffff;
+font-size: 14px;
+font-weight: 800;
+margin-bottom: 14px;
+}
+
+.pass-badge {
+background-color: #f0a35a;
+}
+
+.fail-badge {
+background-color: #b35b45;
+}
+
+.quiz-score-card h2 {
+margin: 0;
+color: #4a3428;
+font-size: 28px;
+}
+
+.score-percent {
+margin: 10px 0 0;
+color: #d47b37;
+font-size: 30px;
+font-weight: 800;
+}
+
+.score-message {
+margin: 12px 0 0;
+color: #8a7668;
+font-weight: 700;
+}
+
+.quiz-result-list {
+display: grid;
+gap: 18px;
+}
+
+.quiz-result-card {
+background-color: #ffffff;
+border: 1px solid #eadfd4;
+border-radius: 20px;
+padding: 22px;
+box-shadow: 0 4px 12px rgba(90, 60, 40, 0.08);
+}
+
+.quiz-result-header {
+display: flex;
+justify-content: space-between;
+align-items: center;
+gap: 16px;
+margin-bottom: 12px;
+}
+
+.quiz-result-header h2 {
+margin: 0;
+color: #4a3428;
+font-size: 22px;
+}
+
+.answer-label {
+display: inline-block;
+padding: 5px 14px;
+border-radius: 999px;
+font-size: 13px;
+font-weight: 800;
+}
+
+.correct-label {
+background-color: #fff0dc;
+color: #d47b37;
+}
+
+.wrong-label {
+background-color: #f7e1df;
+color: #b35b45;
+}
+
+.quiz-question {
+margin: 0 0 16px;
+color: #4a3428;
+font-weight: 700;
+line-height: 1.7;
+}
+
+.answer-compare-grid {
+display: grid;
+grid-template-columns: repeat(2, 1fr);
+gap: 14px;
+}
+
+.answer-box {
+background-color: #fff8ef;
+border: 1px solid #f0dfcf;
+border-radius: 14px;
+padding: 15px 18px;
+}
+
+.answer-box span {
+display: block;
+color: #8a7668;
+font-size: 13px;
+font-weight: 800;
+margin-bottom: 5px;
+}
+
+.answer-box strong {
+color: #4a3428;
+font-size: 15px;
+}
+
+.quiz-final-card {
+margin-top: 26px;
+background-color: #ffffff;
+border: 1px solid #eadfd4;
+border-radius: 22px;
+padding: 26px;
+box-shadow: 0 5px 14px rgba(90, 60, 40, 0.09);
+}
+
+.quiz-final-card h2 {
+margin: 0 0 12px;
+color: #6a4b37;
+font-size: 24px;
+}
+
+.quiz-final-card p {
+margin: 0 0 18px;
+color: #5a4030;
+font-weight: 600;
+}
+/* =========================
+予約前の注意画面
+========================= */
+
+.warning-section {
+margin-top: 40px;
+}
+
+.warning-card {
+max-width: 760px;
+margin: 0 auto;
+background-color: #ffffff;
+border: 1px solid #eadfd4;
+border-radius: 26px;
+padding: 36px;
+box-shadow: 0 8px 24px rgba(90, 60, 40, 0.12);
+text-align: center;
+}
+
+.warning-icon {
+width: 58px;
+height: 58px;
+margin: 0 auto 18px;
+border-radius: 50%;
+background-color: #f0a35a;
+color: #ffffff;
+font-size: 34px;
+font-weight: 900;
+line-height: 58px;
+}
+
+.warning-card h1 {
+margin: 0;
+color: #4a3428;
+font-size: 30px;
+}
+
+.warning-lead {
+margin: 12px 0 24px;
+color: #8a7668;
+font-weight: 700;
+}
+
+.warning-list-card {
+background-color: #fff8ef;
+border: 1px solid #f0dfcf;
+border-radius: 18px;
+padding: 22px 26px;
+text-align: left;
+}
+
+.warning-list-card ul {
+margin: 0;
+padding-left: 22px;
+}
+
+.warning-list-card li {
+margin: 10px 0;
+color: #5a4030;
+font-weight: 700;
+line-height: 1.7;
+}
+
+.warning-action-area {
+margin-top: 28px;
+display: flex;
+justify-content: center;
+align-items: center;
+gap: 14px;
+}
+
+.inline-form {
+margin: 0;
+}
+/* =========================
+予約日時変更画面
+========================= */
+
+.reservation-edit-section {
+margin-top: 24px;
+}
+
+.current-reserve-time {
+margin: 8px 0 0;
+color: #d47b37;
+font-size: 24px;
+font-weight: 800;
+}
+/* =========================
+Welcome画面
+========================= */
+
+.welcome-page {
+min-height: 100vh;
+display: flex;
+align-items: center;
+justify-content: center;
+background: linear-gradient(135deg, #fff8ef 0%, #fff0dc 100%);
+padding: 40px 0;
+}
+
+.welcome-card {
+width: 760px;
+background-color: #ffffff;
+border: 1px solid #eadfd4;
+border-radius: 30px;
+padding: 42px;
+box-shadow: 0 10px 28px rgba(90, 60, 40, 0.14);
+}
+
+.welcome-heading {
+text-align: center;
+margin-bottom: 34px;
+}
+
+.welcome-label {
+display: inline-block;
+margin: 0 0 12px;
+padding: 6px 18px;
+border-radius: 999px;
+background-color: #fff0dc;
+color: #d47b37;
+font-size: 13px;
+font-weight: 800;
+}
+
+.welcome-heading h1 {
+margin: 0;
+color: #e0893f;
+font-size: 42px;
+letter-spacing: 0.03em;
+}
+
+.welcome-heading p {
+margin: 10px 0 0;
+color: #8a7668;
+font-weight: 700;
+}
+
+.welcome-menu-grid {
+display: grid;
+grid-template-columns: repeat(2, 1fr);
+gap: 18px;
+}
+
+.welcome-menu-card {
+display: block;
+background-color: #fff8ef;
+border: 1px solid #f0dfcf;
+border-radius: 20px;
+padding: 24px;
+color: #4a3428;
+box-shadow: 0 4px 12px rgba(90, 60, 40, 0.07);
+transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.welcome-menu-card:hover {
+transform: translateY(-3px);
+box-shadow: 0 8px 18px rgba(90, 60, 40, 0.13);
+text-decoration: none;
+}
+
+.welcome-menu-title {
+display: block;
+color: #d47b37;
+font-size: 20px;
+font-weight: 800;
+margin-bottom: 8px;
+}
+
+.welcome-menu-text {
+display: block;
+color: #6a5a50;
+font-size: 14px;
+line-height: 1.7;
+font-weight: 600;
+}
+
+.facility-card {
+background-color: #ffffff;
+}
+
