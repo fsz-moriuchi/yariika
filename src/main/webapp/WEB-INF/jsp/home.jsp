@@ -59,11 +59,11 @@
 	<c:if test="${not empty sessionScope.facilityId}">
 	<h2>ダッシュボード</h2>
 	本日の予約数：
-	<c:out value="${countTodayReserve}" />
+	<c:out value="${countTodayReserve}" />件
 	<br>
 	<c:if test="${not empty reserve}">
 	<br> 次の予約
-	<br> 予約ID：${reserve.reservationID}件
+	<br> 予約ID：${reserve.reservationID}
 	<br> ペットID：${reserve.petID}
 	<br> ユーザーID：${reserve.userID}
 	<br> 予約日時：${reserve.formattedReserveTime}
