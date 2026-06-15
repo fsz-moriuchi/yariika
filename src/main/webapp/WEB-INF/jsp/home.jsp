@@ -88,6 +88,8 @@
 	円
 	<br>
 	</c:if>
+	施設ページの累計アクセス数：${viewCount}回
+	<br>
 	</c:if>
 
 	<a href="LogoutServlet">ログアウト</a>

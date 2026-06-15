@@ -12,6 +12,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
+import dao.FacilityViewDAO;
 import dao.PetListDAO;
 import dao.ReserveDAO;
 import model.FavoritePet;
@@ -85,6 +86,11 @@ public class HomeServlet extends HttpServlet {
 		 //最後に追加したペットの表示
 		 FavoritePet latestPet = dao1.findLatestPetByFacilityID(facilityId);
 		 request.setAttribute("latestPet", latestPet);
+		 
+		 //ホームページアクセス数の表示
+		 FacilityViewDAO dao3 = new FacilityViewDAO();
+		 int viewCount = dao3.getViewCount(facilityId);
+		 request.setAttribute("viewCount", viewCount);
 		 
 		RequestDispatcher dispatcher = request.getRequestDispatcher("WEB-INF/jsp/home.jsp");
 		dispatcher.forward(request, response);
