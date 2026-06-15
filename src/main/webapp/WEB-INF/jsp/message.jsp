@@ -10,6 +10,14 @@
 
 
 <body>
+
+<c:if test="${not empty errorMessage}">
+<script>
+alert("${errorMessage}");
+window.location.href="MessageListServlet";
+</script>
+</c:if>
+
 <h1>メッセージ</h1>
 
 <c:forEach var="m" items="${messageList}">
@@ -33,11 +41,34 @@
 <form action="MessageServlet" method="post">
 <input type="hidden" name="petID" value="${petDetail.petID}">
 <input type="hidden" name="userId" value="${param.userId}">
-<input type="hidden" name="facilityId" value="${sessionScope.facilityId}">
+<input type="hidden" name="facilityId" value="${param.facilityId}">
+<input type="hidden" name="from" value="${from}">
 
 <p><input type="text" name="messageText"></p>
 <button type="submit">送信</button>
 </form>
+
+<%--<c:choose>
+<c:when test="${sessionScope.user != null}">
+	<a href="MessageListServlet?petID=${petDetail.petID}">戻る</a>
+</c:when>
+<c:when test="${sessionScope.facilityId != null}">
+	<a href="MessageListServlet?petID=${petDetail.petID}">戻る</a>
+</c:when>
+</c:choose>--%>
+
+
+<c:choose>
+
+<c:when test="${from == 'detail'}">
+    <a href="PetDetailServlet?petID=${petDetail.petID}">戻る</a>
+</c:when>
+
+<c:otherwise>
+    <a href="MessageListServlet">戻る</a>
+</c:otherwise>
+
+</c:choose>
 
 </body>
 </html>

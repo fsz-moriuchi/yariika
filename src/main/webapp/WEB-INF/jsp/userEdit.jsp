@@ -10,6 +10,14 @@
 
 
 <body>
+
+<c:if test="${not empty errorMsg}">
+<script>
+alert("${errorMsg}");
+window.location.href="UserEditServlet";
+</script>
+</c:if>
+
 <h1>個人情報の修正</h1>
 
 <form action="UserEditServlet" method="post">
@@ -31,6 +39,10 @@
 <p>住所：<input type="text" name="userAddress" value="${userInfo.userAddress}"></p>
 
 <button type="submit">更新</button>
+</form>
+
+<form action="UserInfoServlet" method="get">
+<button type="submit">戻る</button>
 </form>
 
 </body>

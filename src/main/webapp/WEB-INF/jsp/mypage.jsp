@@ -13,6 +13,10 @@
 <body>
 <h1>マイページ</h1>
 
+<form action="MessageListServlet" method="get">
+<button type="submit">メッセージ一覧へ</button>
+</form>
+
 <form action="UserInfoServlet" method="get">
 <button type="submit">個人情報確認</button>
 </form>

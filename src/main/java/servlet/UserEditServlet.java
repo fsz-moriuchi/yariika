@@ -47,8 +47,25 @@ public class UserEditServlet extends HttpServlet {
 		
 		String userId = user.getUserId();
 		
-		 // フォームから取得
+		UserInfoDAO dao = new UserInfoDAO();
+		UserInfo existingInfo = dao.findByUserId(userId);
+
+		if (existingInfo == null) {
+		    request.setAttribute("errorMsg", "個人情報が未登録のため更新できません");
+		    RequestDispatcher dispatcher = request.getRequestDispatcher("WEB-INF/jsp/userEdit.jsp");
+		    dispatcher.forward(request, response);
+		    return;
+		}
+
+		// hiddenチェック
 		String userInfoIdStr = request.getParameter("userInfoId");
+		if (userInfoIdStr == null || userInfoIdStr.isEmpty()) {
+		    request.setAttribute("errorMsg", "不正なアクセスです");
+		    RequestDispatcher dispatcher = request.getRequestDispatcher("WEB-INF/jsp/userEdit.jsp");
+		    dispatcher.forward(request, response);
+		    return;
+		}
+
 		int userInfoId = Integer.parseInt(userInfoIdStr);
 		
 	    String userName = request.getParameter("userName");
@@ -61,7 +78,7 @@ public class UserEditServlet extends HttpServlet {
 	        userBirthday = Date.valueOf(birthdayStr);
 	    } else {
 	        // DBから元の値を取得
-	        UserInfoDAO dao = new UserInfoDAO();
+	        //UserInfoDAO dao = new UserInfoDAO();
 	        UserInfo oldInfo = dao.findByUserId(userId);
 	        userBirthday = oldInfo.getUserBirthday();
 	    }
@@ -71,7 +88,6 @@ public class UserEditServlet extends HttpServlet {
 	    UserInfo userInfo = new UserInfo(userInfoId, userId, userName, userGender, userBirthday, userTel, userMail, userAddress);
 		
 		//UserDAOでDBをアップデート
-		UserInfoDAO dao = new UserInfoDAO();
 		boolean result = dao.updateInfo(userInfo);
 		
 		
