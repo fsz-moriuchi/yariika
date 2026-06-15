@@ -8,12 +8,15 @@
 <title>ホーム画面</title>
 </head>
 <body>
-	<a href="MyPageServlet">マイページへ</a>
-	<br>
-	<a href="FacilityPageServlet">施設専用ページへ</a>
-	<br>
-	<h1>おすすめのペット</h1>
-
+	<c:if test="${not empty sessionScope.userId}">
+		<a href="MyPageServlet">マイページへ</a>
+		<br>
+		<h1>おすすめのペット</h1>
+	</c:if>
+	<c:if test="${not empty sessionScope.facilityId}">
+		<a href="FacilityPageServlet">施設専用ページへ</a>
+		<br>
+	</c:if>
 	<c:if test="${not empty sessionScope.userId}">
 		<form action="HomeServlet" method="get">
 			並び順： <select name="sort">
@@ -30,30 +33,63 @@
 			<button type="submit">並び替え</button>
 		</form>
 		<br>
-	</c:if>
 
-	<c:forEach var="pet" items="${favoritePetList}">
+		<c:forEach var="pet" items="${favoritePetList}">
 	店舗：
 		<a href="FacilityHomeServlet?facilityId=${pet.facilityID}"> <c:out
-				value="${pet.facilityName}" />
-		</a>
-		<br>
-		<img src="${pet.imagePath}" width="200">
-		<br>
+					value="${pet.facilityName}" />
+			</a>
+			<br>
+			<img src="${pet.imagePath}" width="200">
+			<br>
 	名前：<c:out value="${pet.name}" />
-		<br>
+			<br>
 	性別：<c:out value="${pet.gender}" />
-		<br>
+			<br>
 	年齢：<c:out value="${pet.age}" />歳<br>
 	価格：<c:out value="${pet.price}" />円<br>
 	マッチング度：<c:out value="${pet.matchRate}" /> % <br>
 
-		<a href="PetDetailServlet?petID=${pet.petID}"> 詳細を見る </a>
+			<a href="PetDetailServlet?petID=${pet.petID}"> 詳細を見る </a>
 
-		<hr>
+			<hr>
 
-	</c:forEach>
+		</c:forEach>
+	</c:if>
+	<c:if test="${not empty sessionScope.facilityId}">
+	<h2>ダッシュボード</h2>
+	本日の予約数：
+	<c:out value="${countTodayReserve}" />
 	<br>
+	<c:if test="${not empty reserve}">
+	<br> 次の予約
+	<br> 予約ID：${reserve.reservationID}件
+	<br> ペットID：${reserve.petID}
+	<br> ユーザーID：${reserve.userID}
+	<br> 予約日時：${reserve.formattedReserveTime}
+	<br>
+	</c:if>
+	<br> 登録しているペット数：
+	<c:out value="${petCount}" />匹
+	<br>
+	<c:if test="${not empty latestPet}">
+	<br>最近追加したペット
+	<br>
+	<img src="${latestPet.imagePath}" width="200">
+	<br> 名前：
+	<c:out value="${latestPet.name}" />
+	<br> 性別：
+	<c:out value="${latestPet.gender}" />
+	<br> 年齢：
+	<c:out value="${latestPet.age}" />
+	歳
+	<br> 価格：
+	<c:out value="${latestPet.price}" />
+	円
+	<br>
+	</c:if>
+	</c:if>
+
 	<a href="LogoutServlet">ログアウト</a>
 </body>
 </html>

@@ -235,11 +235,86 @@ public class ReserveDAO {
 				LocalDateTime reserveTime = rs.getTimestamp("reserveTime").toLocalDateTime();
 				reserve = new Reserve(reservationID, petID, userID, reserveTime);
 			}
-			
+
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 
 		return reserve;
 	}
+
+	//今日の予約件数を数えるメソッド
+	public int countTodayReserve(String facilityID) {
+		int count = 0;
+		try {
+			Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
+		} catch (ClassNotFoundException e) {
+			throw new IllegalStateException("JDBCドライバを読み込めませんでした");
+		}
+		try (Connection conn = DButil.getConnection()) {
+
+			String sql = "SELECT COUNT(*) AS CNT FROM Reserve R JOIN Pet P ON R.petID = P.petID WHERE P.FACILITY_ID = ? AND CAST(R.reserveTime AS DATE) = ?";
+			PreparedStatement pStmt = conn.prepareStatement(sql);
+
+			pStmt.setString(1, facilityID);
+			pStmt.setDate(2, java.sql.Date.valueOf(LocalDate.now()));
+
+			ResultSet rs = pStmt.executeQuery();
+
+			if (rs.next()) {
+				count = rs.getInt("CNT");
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return count;
+	}
+
+	//次の予約を表示するためのメソッド
+	public Reserve findnextReserve(String facilityID) {
+
+		Reserve reserve = null;
+
+		try {
+			Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
+		} catch (ClassNotFoundException e) {
+			throw new IllegalStateException("JDBCドライバは読み込めませんでした");
+		}
+
+		try (Connection conn = DButil.getConnection()) {
+
+			String sql = "SELECT TOP 1 "
+					+ "R.reservationID, "
+					+ "R.petID, "
+					+ "R.USER_ID, "
+					+ "R.reserveTime "
+					+ "FROM Reserve R "
+					+ "JOIN Pet P "
+					+ "ON R.petID = P.petID "
+					+ "WHERE P.FACILITY_ID = ? "
+					+ "AND R.reserveTime >= GETDATE() "
+					+ "ORDER BY R.reserveTime ASC";
+
+			PreparedStatement pStmt = conn.prepareStatement(sql);
+			pStmt.setString(1, facilityID);
+
+			ResultSet rs = pStmt.executeQuery();
+
+			if (rs.next()) {
+				reserve = new Reserve(
+						rs.getInt("reservationID"),
+						rs.getInt("petID"),
+						rs.getString("USER_ID"),
+						rs.getTimestamp("reserveTime").toLocalDateTime());
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return reserve;
+	}
+
 }

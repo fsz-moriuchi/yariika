@@ -540,4 +540,76 @@ public class PetListDAO {
 
 	}
 
+	//登録ペット数の表示(店舗側)
+	public int countByfacilityID(String facilityID) {
+		int petCount = 0;
+		try (Connection conn = DButil.getConnection()) {
+
+			String sql = "SELECT COUNT(*) AS CNT FROM Pet WHERE FACILITY_ID = ?";
+
+			PreparedStatement pStmt = conn.prepareStatement(sql);
+			pStmt.setString(1, facilityID);
+
+			ResultSet rs = pStmt.executeQuery();
+
+			while (rs.next()) {
+				petCount = rs.getInt("CNT");
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return petCount;
+	}
+
+	// 直近で追加したペット
+	public FavoritePet findLatestPetByFacilityID(String facilityID) {
+
+	    FavoritePet latestPet = null;
+
+	    try (Connection conn = DButil.getConnection()) {
+
+	        String sql = """
+	                SELECT TOP 1
+	                    P.petID,
+	                    FI.FACILITY_ID,
+	                    FI.facilityName,
+	                    PI.name,
+	                    PI.gender,
+	                    PI.age,
+	                    PI.price,
+	                    PI.imagePath
+	                FROM Pet P
+	                JOIN FacilityInformation FI
+	                    ON P.FACILITY_ID = FI.FACILITY_ID
+	                JOIN PetInformation PI
+	                    ON P.petID = PI.petID
+	                WHERE P.FACILITY_ID = ?
+	                ORDER BY P.petID DESC
+	                """;
+
+	        PreparedStatement pStmt = conn.prepareStatement(sql);
+	        pStmt.setString(1, facilityID);
+
+	        ResultSet rs = pStmt.executeQuery();
+
+	        if (rs.next()) {
+	            latestPet = new FavoritePet(
+	                    rs.getInt("petID"),
+	                    rs.getString("FACILITY_ID"),
+	                    rs.getString("facilityName"),
+	                    rs.getString("name"),
+	                    rs.getString("gender"),
+	                    rs.getInt("age"),
+	                    rs.getInt("price"),
+	                    rs.getString("imagePath"));
+	        }
+
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    }
+
+	    return latestPet;
+	}
 }
