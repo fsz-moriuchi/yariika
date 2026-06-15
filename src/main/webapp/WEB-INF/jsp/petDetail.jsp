@@ -92,6 +92,10 @@
 		<br>
 	</c:if>
 
+	<%--メッセージ機能の追加--%>
+	<a href="MessageServlet?petID=${petDetail.petID}&facilityId=${petDetail.facilityID}&from=detail">メッセージを送る</a>
+	<br>
+	
 	<!--	予約-->
 	<c:choose>
 		<c:when test="${reserved}">
