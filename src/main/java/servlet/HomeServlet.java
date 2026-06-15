@@ -13,8 +13,10 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
 import dao.PetListDAO;
+import dao.ReserveDAO;
 import model.FavoritePet;
 import model.PetInformationView;
+import model.Reserve;
 
 @WebServlet("/HomeServlet")
 public class HomeServlet extends HttpServlet {
@@ -28,18 +30,20 @@ public class HomeServlet extends HttpServlet {
 		HttpSession session = request.getSession();
 		String userId = (String) session.getAttribute("userId");
 		String sort = request.getParameter("sort");
+		
+		String facilityId = (String)session.getAttribute("facilityId");
 
-		PetListDAO dao = new PetListDAO();
-		List<PetInformationView> petList = dao.showList();
+		PetListDAO dao1 = new PetListDAO();
+		List<PetInformationView> petList = dao1.showList();
 
 		request.setAttribute("petList", petList);
 
-		List<FavoritePet> favoritePetList = dao.showFavoritePet();
+		List<FavoritePet> favoritePetList = dao1.showFavoritePet();
 		request.setAttribute("favoritePetList", favoritePetList);
 
 		//matchRate
 		if (userId != null) {
-			Map<Integer, Integer> allMatchRateMap = dao.getAllMatchRate(userId);
+			Map<Integer, Integer> allMatchRateMap = dao1.getAllMatchRate(userId);
 
 			for (FavoritePet fPet : favoritePetList) {
 				int matchRate = allMatchRateMap.getOrDefault(fPet.getPetID(), 0);
@@ -61,8 +65,27 @@ public class HomeServlet extends HttpServlet {
 		}else if ("ageAsc".equals(sort)) {
 			favoritePetList.sort((p1, p2) -> p1.getAge() - p2.getAge());
 		}
+		
 		request.setAttribute("sort", sort);
-
+		
+		//本日の予約件数のカウント(施設側)
+		ReserveDAO dao2 = new ReserveDAO();
+		int countTodayReserve = dao2.countTodayReserve(facilityId);
+		
+		request.setAttribute("countTodayReserve", countTodayReserve);
+		
+		//登録しているペット数のカウント(施設側)
+		int petCount = dao1.countByfacilityID(facilityId);
+		request.setAttribute("petCount", petCount);
+		
+		//直近の予約1件を表示
+		 Reserve reserve = dao2.findnextReserve(facilityId);
+		 request.setAttribute("reserve", reserve);
+		 
+		 //最後に追加したペットの表示
+		 FavoritePet latestPet = dao1.findLatestPetByFacilityID(facilityId);
+		 request.setAttribute("latestPet", latestPet);
+		 
 		RequestDispatcher dispatcher = request.getRequestDispatcher("WEB-INF/jsp/home.jsp");
 		dispatcher.forward(request, response);
 
