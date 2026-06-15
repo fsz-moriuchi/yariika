@@ -20,7 +20,7 @@
 	<br>
 	<a href="StoreServlet">ペット一覧へ</a>
 	<br>
-	<a href="MessageListServlet">メッセージ確認へ</a>
+	<a href="MessageListServlet">メッセージ一覧へ</a>
 	<br>
 	<a href="HomeServlet">もどる</a>
 	<br>

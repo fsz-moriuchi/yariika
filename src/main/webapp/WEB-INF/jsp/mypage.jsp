@@ -12,14 +12,9 @@
 <body>
 	<h1>マイページ</h1>
 
-
-<form action="MessageListServlet" method="get">
-<button type="submit">メッセージ一覧へ</button>
-</form>
-
-<form action="UserInfoServlet" method="get">
-<button type="submit">個人情報確認</button>
-</form>
+	<form action="UserInfoServlet" method="get">
+		<button type="submit">個人情報確認</button>
+	</form>
 
 	<form action="PasswordEditServlet" method="get">
 		<button type="submit">パスワード変更</button>
@@ -46,6 +41,10 @@
 
 	<form action="FavoriteListServlet" method="get">
 		<button type="submit">お気に入り一覧へ</button>
+	</form>
+
+	<form action="MessageListServlet" method="get">
+		<button type="submit">メッセージ一覧へ</button>
 	</form>
 
 	<form action="HomeServlet" method="get">
