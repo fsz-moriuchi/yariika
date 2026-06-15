@@ -65,7 +65,7 @@ window.location.href="MessageListServlet";
 </c:when>
 
 <c:otherwise>
-    <a href="MessageListServlet">戻る</a>
+    <a href="MessageListServlet">もどる</a>
 </c:otherwise>
 
 </c:choose>
