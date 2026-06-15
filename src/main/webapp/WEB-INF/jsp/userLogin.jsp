@@ -15,6 +15,9 @@
 <p>パスワード:<input type="password" name="password"></p>
 <input type="submit" value="ログイン">
 </form>
+<form action="WelcomeServlet" method="get">
+		<input type="submit" value="戻る">
+	</form>
 <c:if test="${not empty errorMsg}">
 <c:out value="${errorMsg}"/>
 </c:if>

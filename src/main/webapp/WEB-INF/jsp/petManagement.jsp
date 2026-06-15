@@ -80,7 +80,7 @@
 		</c:forEach>
 	</table>
 
-	<form action="HomeServlet" method="get">
+	<form action="FacilityPageServlet" method="get">
 		<input type="submit" value="戻る">
 	</form>
 

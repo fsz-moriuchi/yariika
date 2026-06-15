@@ -34,9 +34,14 @@
 <input type="submit" value="登録">
 </form>
 
+<form action="WelcomeServlet" method="get">
+		<input type="submit" value="戻る">
+	</form>
+
 <c:if test="${not empty errorMsg}">
 <c:out value="${errorMsg}"/>
 </c:if>
+
 </body>
 
 </html>
