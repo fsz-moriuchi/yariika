@@ -11,6 +11,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import dao.FacilityHomeDAO;
+import dao.FacilityViewDAO;
 import model.FacilityHomeView;
 import model.FacilityPetView;
 import model.PopularPetView;
@@ -28,6 +29,11 @@ public class FacilityHomeServlet extends HttpServlet {
 
 		FacilityHomeDAO dao = new FacilityHomeDAO();
 
+		// 閲覧数追加
+		FacilityViewDAO viewDAO = new FacilityViewDAO();
+		viewDAO.insertView(facilityId);
+		int viewCount = viewDAO.getViewCount(facilityId);
+
 		FacilityHomeView facility = dao.showFacilityInfo(facilityId);
 		List<FacilityPetView> petList = dao.showPetList(facilityId);
 		List<PopularPetView> rankingList = dao.showPopularRanking(facilityId);
@@ -35,6 +41,7 @@ public class FacilityHomeServlet extends HttpServlet {
 
 		List<String> closedDayList = dao.getClosedDays(facilityId);
 
+		request.setAttribute("viewCount", viewCount);
 		request.setAttribute("facility", facility);
 		request.setAttribute("petList", petList);
 		request.setAttribute("rankingList", rankingList);

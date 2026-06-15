@@ -17,6 +17,7 @@
 	<br> 電話番号：${facility.tel}
 	<br> 営業時間：${facility.openTimeDisplay} ～
 	${facility.closeTimeDisplay}
+	<br>閲覧数：${viewCount}回
 	<br> 定休日：
 	<c:choose>
 
