@@ -31,10 +31,10 @@
                 	名前：${reserve.petName}<br>
                 	種類：${reserve.categoryName}<br>
                     性別：${reserve.gender}<br>
-                    年齢：${reserve.age}</td>
+                    年齢：${reserve.age}歳</td>
                 <td>ユーザーID：${reserve.userID}<br>
                 	名前：${reserve.userName}<br>
-                	年齢：${reserve.userAge}<br>
+                	年齢：${reserve.userAge}歳<br>
                 	性別：${reserve.userGenderJa}</td>
                 <td>電話番号：${reserve.userTel}<br>
                 	メールアドレス：${reserve.userMail}</td>

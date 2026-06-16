@@ -187,7 +187,7 @@ public class Reserve {
 	 
 	 public String getClosedDay() {
 		 if(closedDay == null || closedDay.isEmpty()) {
-			 return "";
+			 return "定休日なし";
 		 }
 		 String[] days = closedDay.split(",");
 		 StringBuilder sb = new StringBuilder();
