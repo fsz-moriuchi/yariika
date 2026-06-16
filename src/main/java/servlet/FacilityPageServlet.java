@@ -25,6 +25,7 @@ public class FacilityPageServlet extends HttpServlet {
 
 		FacilityInfomationDAO dao = new FacilityInfomationDAO();
 		FacilityInformation facilityInfo = dao.findByFacilityId(facilityId);
+
 		boolean registered = (facilityInfo != null);
 		request.setAttribute("registered", registered);
 		RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/jsp/facilitypage.jsp");

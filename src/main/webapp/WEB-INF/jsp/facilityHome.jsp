@@ -92,7 +92,7 @@
 		<hr>
 	</c:forEach>
 
-	<a href="HomeServlet"> ホームへ戻る </a>
+	<button type="button" onclick="history.back()">戻る</button>
 
 </body>
 </html>

@@ -195,7 +195,8 @@
             			<br>マッチング度：
 					<c:out value="${empty pet.matchRate ? 0 : pet.matchRate}" />%
             			<br>
-					<a href="PetDetailServlet?petID=${pet.petID}"> 詳細を見る </a>
+					<a href="PetDetailServlet?petID=${pet.petID}&from=search">
+						詳細を見る </a>
 					<hr>
 				</c:forEach>
 
@@ -255,7 +256,8 @@
             			<br>マッチング度：
 					<c:out value="${empty pet.matchRate ? 0 : pet.matchRate}" />%
             			<br>
-					<a href="PetDetailServlet?petID=${pet.petID}"> 詳細を見る </a>
+					<a href="PetDetailServlet?petID=${pet.petID}&from=home"> 詳細を見る
+					</a>
 					<hr>
 				</c:forEach>
 
@@ -286,8 +288,9 @@
 			予約日時：${reserve.formattedReserveTime}
 			<br>
 		</c:if>
-
 		<br>
+
+		<!-- 登録ペット数 -->>
 		登録しているペット数：
 		<c:out value="${petCount}" />匹
 		<br>
@@ -312,10 +315,19 @@
 			<c:out value="${latestPet.price}" />円
 			<br>
 		</c:if>
+
+		<!-- アクセス数 -->
 		施設ページの累計アクセス数：
 		${viewCount}回
 		<br>
 	</c:if>
+
+	<!-- メッセージ未読数 -->
+	<a href="MessageListServlet"> メッセージ <c:if test="${unreadCount > 0}">
+			<span style="color: red;"> （未読${unreadCount}件） </span>
+		</c:if>
+	</a>
+	<br>
 
 	<!-- ログアウト -->
 	<a href="LogoutServlet">ログアウト</a>

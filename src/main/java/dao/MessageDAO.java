@@ -196,4 +196,42 @@ public class MessageDAO {
 		}
 		return messageList;
 	}
+	
+	//未読のカウント
+	public int countUnreadByFacilityId(String facilityId) {
+		int unreadCount = 0;
+
+		// JDBCドライバを読み込む
+		try {
+			Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
+		} catch (ClassNotFoundException e) {
+			throw new IllegalStateException("JDBCドライバを読み込めませんでした");
+		}
+
+		// データベースに接続
+		try (Connection conn = DButil.getConnection()) {
+
+			// SELECT文を準備
+			String sql =
+					"SELECT COUNT(*) AS unread_count "
+					+ "FROM Message "
+					+ "WHERE FACILITY_ID = ? "
+					+ "AND SENDER_TYPE = 'USER' "
+					+ "AND IS_READ = 0";
+
+			PreparedStatement pStmt = conn.prepareStatement(sql);
+			pStmt.setString(1, facilityId);
+
+			ResultSet rs = pStmt.executeQuery();
+
+			if (rs.next()) {
+				unreadCount = rs.getInt("unread_count");
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return unreadCount;
+	}
 }

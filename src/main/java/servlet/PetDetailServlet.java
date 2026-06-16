@@ -23,9 +23,17 @@ public class PetDetailServlet extends HttpServlet {
 			throws ServletException, IOException {
 
 		request.setCharacterEncoding("UTF-8");
+		HttpSession session = request.getSession();
 
 		Integer petID = Integer.parseInt(request.getParameter("petID"));
 		request.setAttribute("petID", petID);
+
+		// 遷移元を保持
+		String from = request.getParameter("from");
+		if (from != null) {
+			session.setAttribute("from", from);
+		}
+		request.setAttribute("from", session.getAttribute("from"));
 
 		PetListDAO dao = new PetListDAO();
 		PetDetail petDetail = dao.showPetDetail(petID);
@@ -38,7 +46,6 @@ public class PetDetailServlet extends HttpServlet {
 
 		request.setAttribute("petID", petID);
 		request.setAttribute("reserved", reserved);
-		HttpSession session = request.getSession();
 		String userId = (String) session.getAttribute("userId");
 		session.setAttribute("reservePetID", petID);
 		session.setAttribute("reserveFacilityID", facilityID);

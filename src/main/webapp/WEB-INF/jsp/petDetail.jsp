@@ -94,22 +94,32 @@
 
 	<%--メッセージ機能の追加--%>
 	<a
-		href="MessageServlet?petID=${petDetail.petID}&facilityId=${petDetail.facilityID}&from=detail">メッセージを送る</a>
-	<br>
+		href="MessageServlet?petID=${petDetail.petID}&facilityId=${petDetail.facilityID}&from=detail&backFrom=${from}">
+		<br> <!--	予約--> <c:choose>
+			<c:when test="${reserved}">
+				<h3>★このペットは現在予約済みです★</h3>
+			</c:when>
+			<c:otherwise>
+				<a href="QuizWarningServlet?petID=${petDetail.petID}">予約する</a>
+				<br>
+				<br>
+			</c:otherwise>
+		</c:choose> <br> <c:choose>
+			<c:when test="${from == 'home'}">
+				<a href="HomeServlet">戻る</a>
+			</c:when>
 
-	<!--	予約-->
-	<c:choose>
-		<c:when test="${reserved}">
-			<h3>★このペットは現在予約済みです★</h3>
-		</c:when>
-		<c:otherwise>
-			<a href="QuizWarningServlet?petID=${petDetail.petID}">予約する</a>
-			<br>
-			<br>
-		</c:otherwise>
-	</c:choose>
+			<c:when test="${from == 'favorite'}">
+				<a href="FavoriteListServlet">戻る</a>
+			</c:when>
 
-	<br>
-	<button type="button" onclick="history.back()">戻る</button>
+			<c:when test="${from == 'search'}">
+				<a href="HomeServlet?clickSearch=true">戻る</a>
+			</c:when>
+
+			<c:otherwise>
+				<a href="HomeServlet">戻る</a>
+			</c:otherwise>
+		</c:choose>
 </body>
 </html>
