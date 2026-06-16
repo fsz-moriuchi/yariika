@@ -1,6 +1,7 @@
 package dao;
 
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Timestamp;
@@ -225,8 +226,19 @@ public class ReserveDAO {
 
 		try (Connection conn = DButil.getConnection()) {
 
-			String sql = "SELECT reservationID, petID, USER_ID, reserveTime FROM Reserve WHERE USER_ID = ?";
-
+			//String sql = "SELECT reservationID, petID, USER_ID, reserveTime FROM Reserve WHERE USER_ID = ?";
+			String sql = "SELECT r.reservationID,r.petID,r.USER_ID,r.reserveTime,\r\n"
+					+ "pi.name,pi.gender,pi.age,pi.imagePath,p.CATEGORY_ID,\r\n"
+					+ "fi.facilityName,fi.address,fi.tel,fi.mail,fi.openTime,fi.closeTime,STRING_AGG(fcd.closedDay,',') AS closedDay,\r\n"
+					+ "ui.USER_NAME,ui.USER_GENDER, ui.USER_BIRTHDAY, ui.USER_TEL, ui.USER_MAIL\r\n"
+					+ "FROM Reserve r\r\n"
+					+ "JOIN Pet p ON r.petID = p.petID\r\n"
+					+ "JOIN PetInformation pi ON p.petID = pi.petID\r\n"
+					+ "JOIN FacilityInformation fi ON p.FACILITY_ID = fi.FACILITY_ID\r\n"
+					+ "LEFT JOIN FacilityClosedDay fcd ON fi.FACILITY_ID = fcd.FACILITY_ID\r\n"
+					+ "LEFT JOIN UserInfo ui ON r.USER_ID = ui.USER_ID\n"
+					+ "WHERE r.USER_ID = ?\n"
+					+ "GROUP BY r.reservationID,r.petID,r.USER_ID,r.reserveTime,pi.name,pi.gender,pi.age,pi.imagePath,p.CATEGORY_ID,fi.facilityName,fi.address,fi.tel,fi.mail,fi.openTime,fi.closeTime,ui.USER_NAME,ui.USER_GENDER,ui.USER_BIRTHDAY,ui.USER_TEL,ui.USER_MAIL";
 			PreparedStatement pStmt = conn.prepareStatement(sql);
 			pStmt.setString(1, userID);
 
@@ -236,7 +248,24 @@ public class ReserveDAO {
 				int reservationID = rs.getInt("reservationID");
 				int petID = rs.getInt("petID");
 				LocalDateTime reserveTime = rs.getTimestamp("reserveTime").toLocalDateTime();
-				reserve = new Reserve(reservationID, petID, userID, reserveTime);
+				String petName = rs.getString("name");
+				String gender = rs.getString("gender");
+				int age = rs.getInt("age");
+				String imagePath = rs.getString("imagePath");
+				int categoryId = rs.getInt("CATEGORY_ID");
+				String facilityName = rs.getString("facilityName");
+				String address = rs.getString("address");
+				String tel = rs.getString("tel");
+				String mail = rs.getString("mail");
+				LocalTime openTime = rs.getTimestamp("openTime").toLocalDateTime().toLocalTime();
+				LocalTime closeTime = rs.getTimestamp("closeTime").toLocalDateTime().toLocalTime();
+				String closedDay = rs.getString("closedDay");
+				String userName = rs.getString("USER_NAME");
+				String userGender = rs.getString("USER_GENDER");
+				Date userBirthday = rs.getDate("USER_BIRTHDAY");
+				String userTel = rs.getString("USER_TEL");
+				String userMail = rs.getString("USER_MAIL");
+				reserve = new Reserve(reservationID, petID, userID, reserveTime, petName, gender, age, imagePath, categoryId, facilityName, address, tel, mail, openTime, closeTime, closedDay,userName,userGender,userBirthday,userTel,userMail);
 			}
 
 		} catch (Exception e) {
