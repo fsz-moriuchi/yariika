@@ -53,6 +53,10 @@
 </c:when>
 <c:otherwise>
 <h3>不合格</h3>
+<p>クイズの合格基準は70％以上です。<br>
+もう一度チャレンジしてみましょう。<br>
+ペットたちも、あなたに会える日を楽しみにしています。
+</p>
 <form action="HomeServlet" method="get">
 <button type="submit">戻る</button>
 </form>
