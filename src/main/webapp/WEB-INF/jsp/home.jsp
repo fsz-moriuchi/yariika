@@ -315,7 +315,17 @@
 			<c:out value="${latestPet.name}" />
 			<br>
 			性別：
-			<c:out value="${latestPet.gender}" />
+			<c:choose>
+				<c:when test="${latestPet.gender == 'male'}">
+        			オス
+    			</c:when>
+				<c:when test="${latestPet.gender == 'female'}">
+        			メス
+    			</c:when>
+				<c:otherwise>
+					<c:out value="${latestPet.gender}" />
+				</c:otherwise>
+			</c:choose>
 			<br>
 			年齢：
 			<c:out value="${latestPet.age}" />歳

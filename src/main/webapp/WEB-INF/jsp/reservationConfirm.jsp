@@ -20,7 +20,7 @@
 		<button type="submit" name="dateStatus" value="tomorrow">明日の予約</button>
 
 	</form>
-	<p>表示件数：${reservedDataList.size()}件</p>
+	<p>表示件数：${reserveViewList.size()}件</p>
 	<table border="1" style="width: 100%">
 
 		<tr>
