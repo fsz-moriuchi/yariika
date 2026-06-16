@@ -94,7 +94,7 @@
 
 	<%--メッセージ機能の追加--%>
 	<a
-		href="MessageServlet?petID=${petDetail.petID}&facilityId=${petDetail.facilityID}&from=detail">メッセージを送る</a>
+		href="MessageServlet?petID=${petDetail.petID}&facilityId=${petDetail.facilityID}&from=${from}">メッセージを送る</a>
 	<br>
 
 	<!--	予約-->
@@ -110,6 +110,25 @@
 	</c:choose>
 
 	<br>
-	<button type="button" onclick="history.back()">戻る</button>
+
+	<c:choose>
+
+		<c:when test="${sessionScope.detailFrom == 'favorite'}">
+			<a href="FavoriteListServlet">戻る</a>
+		</c:when>
+
+		<c:when test="${sessionScope.detailFrom == 'search'}">
+			<a href="HomeServlet?clickSearch=true">戻る</a>
+		</c:when>
+
+		<c:when test="${sessionScope.detailFrom == 'home'}">
+			<a href="HomeServlet">戻る</a>
+		</c:when>
+
+		<c:otherwise>
+			<a href="HomeServlet">戻る</a>
+		</c:otherwise>
+
+	</c:choose>
 </body>
 </html>

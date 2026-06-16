@@ -27,6 +27,16 @@ public class PetDetailServlet extends HttpServlet {
 		Integer petID = Integer.parseInt(request.getParameter("petID"));
 		request.setAttribute("petID", petID);
 
+		// 遷移元取得
+		String from = request.getParameter("from");
+		HttpSession session = request.getSession();
+		if (from != null) {
+			session.setAttribute("detailFrom", from);
+		} else {
+			from = (String) session.getAttribute("detailFrom");
+		}
+		request.setAttribute("from", from);
+
 		PetListDAO dao = new PetListDAO();
 		PetDetail petDetail = dao.showPetDetail(petID);
 		request.setAttribute("petDetail", petDetail);
@@ -38,7 +48,7 @@ public class PetDetailServlet extends HttpServlet {
 
 		request.setAttribute("petID", petID);
 		request.setAttribute("reserved", reserved);
-		HttpSession session = request.getSession();
+
 		String userId = (String) session.getAttribute("userId");
 		session.setAttribute("reservePetID", petID);
 		session.setAttribute("reserveFacilityID", facilityID);

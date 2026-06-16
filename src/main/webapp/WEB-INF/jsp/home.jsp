@@ -195,7 +195,8 @@
             			<br>マッチング度：
 					<c:out value="${empty pet.matchRate ? 0 : pet.matchRate}" />%
             			<br>
-					<a href="PetDetailServlet?petID=${pet.petID}"> 詳細を見る </a>
+					<a href="PetDetailServlet?petID=${pet.petID}&from=search">
+						詳細を見る </a>
 					<hr>
 				</c:forEach>
 
@@ -255,7 +256,8 @@
             			<br>マッチング度：
 					<c:out value="${empty pet.matchRate ? 0 : pet.matchRate}" />%
             			<br>
-					<a href="PetDetailServlet?petID=${pet.petID}"> 詳細を見る </a>
+
+					<a href="PetDetailServlet?petID=${pet.petID}&from=home">詳細を見る </a>
 					<hr>
 				</c:forEach>
 

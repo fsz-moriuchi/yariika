@@ -26,7 +26,8 @@
 			性別：${pet.genderName}<br>
 			年齢：${pet.age}歳<br>
 			価格：${pet.price}円<br>
-				<a href="PetDetailServlet?petID=${pet.petID}"> 詳細を見る </a>
+				<a href="PetDetailServlet?petID=${pet.petID}&from=favorite">
+					詳細を見る </a>
 				<hr>
 			</c:forEach>
 		</c:otherwise>
