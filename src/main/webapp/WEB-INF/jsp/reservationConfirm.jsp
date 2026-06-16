@@ -1,6 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
-    pageEncoding="UTF-8"%>
-    <%@ taglib prefix="c" uri="jakarta.tags.core"%>
+	pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="jakarta.tags.core"%>
 <!DOCTYPE html>
 <html>
 <head>
@@ -9,63 +9,74 @@
 </head>
 
 <body>
-<h1>予約確認</h1>
+	<h1>予約確認</h1>
 
-現在の予約情報一覧
-<table border="1" style="width: 100%">
+	現在の予約情報一覧
+	<table border="1" style="width: 100%">
 
-    <tr>
-        <th>予約番号</th>
-        <th>ペットID</th>
-        <th>お客様ID</th>
-        <th>予約日時</th>
-        <th>操作</th>
-    </tr>
+		<tr>
+			<th>予約番号</th>
+			<th>写真</th>
+			<th>ペット情報</th>
+			<th>お客様情報</th>
+			<th>お客様連絡先</th>
+			<th>予約日時</th>
+			<th>操作</th>
+		</tr>
 
-    <c:forEach var="reserved" items="${reservedDataList}">
+		<c:forEach var="reserveView" items="${reserveViewList}">
 
-        <tr>
-            <td>${reserved.reservationID}</td>
-            <td>${reserved.petID}</td>
-            <td>${reserved.userID}</td>
-            <td>${reserved.formattedReserveTime}</td>
+			<tr>
 
-            <td>
-                <form action="ReservationConfirmServlet" method="post">
+				<td>予約番号:${reserveView.reservationID}</td>
 
-                    <input type="hidden"
-                           name="reservationID"
-                           value="${reserved.reservationID}">
+				<td><c:choose>
+						<c:when test="${not empty reserveView.imagePath}">
+							<img
+								src="${pageContext.request.contextPath}/${reserveView.imagePath}"
+								alt="ペット画像" width="120" height="120" style="object-fit: cover;">
+						</c:when>
 
-                    <input type="submit"
-                           value="この予約を削除">
+						<c:otherwise>
+                画像なし
+            </c:otherwise>
+					</c:choose></td>
 
-                </form>
-                <form action="ReservationEditServlet" method="get">
-                <input type="hidden"
-                           name="reservationID"
-                           value="${reserved.reservationID}">
-                           
-                           <input type="hidden"
-                           name="reserveTime"
-                           value="${reserved.reserveTime}">
+				<td>ペットID：${reserveView.petID}<br>
+					名前：${reserveView.petName}<br> 種類：${reserveView.categoryName}<br>
+					性別：${reserveView.genderName} <br> 年齢：${reserveView.petAge}歳
+				</td>
 
-                    <input type="submit"
-                           value="予約日時の変更">
-                </form>
-            </td>
-        </tr>
+				<td>ユーザーID：${reserveView.userID}<br>
+					名前：${reserveView.userName}<br> 年齢：${reserveView.userAge}歳<br>
+					性別：${reserveView.userGender}
+				</td>
 
-    </c:forEach>
+				<td>電話番号：${reserveView.userTel}<br>
+					メールアドレス：${reserveView.userMail}
+				</td>
 
-</table>
+				<td>${reserveView.formattedReserveTime}</td>
 
-<p>
-    予約の対応完了およびキャンセルの場合は、予約の削除を行ってください。
-</p>
+				<td>
+					<form action="ReservationEditServlet" method="get">
+						<input type="hidden" name="reservationID"
+							value="${reserveView.reservationID}"> <input
+							type="hidden" name="reserveTime"
+							value="${reserveView.reserveTime}"> <input type="submit"
+							value="予約日時の変更">
+					</form>
+				</td>
+			</tr>
 
-<form action="FacilityPageServlet" method="get">
-    <button type="submit">戻る</button>
-</form>
+		</c:forEach>
+
+	</table>
+
+	<p>予約の対応完了およびキャンセルの場合は、修正から予約の削除を行ってください。</p>
+
+	<form action="FacilityPageServlet" method="get">
+		<button type="submit">戻る</button>
+	</form>
 </body>
 </html>

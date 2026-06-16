@@ -7,10 +7,13 @@ import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.Period;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
 import model.Reserve;
+import model.ReserveView;
 import util.DButil;
 
 public class ReserveDAO {
@@ -107,7 +110,7 @@ public class ReserveDAO {
 		return false;
 	}
 
-	//施設の予約一覧を表示するためのメソッド
+	//施設の予約一覧を表示するためのメソッド(没)
 	public List<Reserve> findByFacilityID(String facilityID) {
 
 		List<Reserve> reservedDataList = new ArrayList<>();
@@ -315,6 +318,103 @@ public class ReserveDAO {
 		}
 
 		return reserve;
+	}
+	
+	//施設の予約一覧を表示するためのメソッド
+	public List<ReserveView> findByFacilityIDForView(String facilityID) {
+
+		List<ReserveView> reserveViewList = new ArrayList<>();
+
+		try {
+			Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
+		} catch (ClassNotFoundException e) {
+			throw new IllegalStateException("JDBCドライバを読み込めませんでした");
+		}
+
+		try (Connection conn = DButil.getConnection()) {
+
+			String sql =
+					"SELECT " +
+					"R.reservationID, " +
+					"R.petID, " +
+					"R.USER_ID, " +
+					"R.reserveTime, " +
+				    "PI.name AS petName, " +
+					"PI.imagePath, " +
+					"PI.gender AS petGender, " +
+					"PI.age AS petAge, " +
+                    "C.CATEGORY_NAME AS categoryName, " +
+					"UI.USER_NAME AS userName, " +
+					"UI.USER_BIRTHDAY AS userBirthday, " +
+					"UI.USER_GENDER AS userGender, " +
+					"UI.USER_TEL AS userTel, " +
+					"UI.USER_MAIL AS userMail " +
+					"FROM Reserve R " +
+					"JOIN Pet P ON R.petID = P.petID " +
+					"JOIN Category C ON P.CATEGORY_ID = C.CATEGORY_ID " +
+					"LEFT JOIN PetInformation PI ON R.petID = PI.petID " +
+					"LEFT JOIN UserInfo UI ON R.USER_ID = UI.USER_ID " +
+					"WHERE P.FACILITY_ID = ? " +
+					"ORDER BY R.reserveTime ASC";
+
+			PreparedStatement pStmt = conn.prepareStatement(sql);
+			pStmt.setString(1, facilityID);
+
+			ResultSet rs = pStmt.executeQuery();
+
+			DateTimeFormatter formatter =
+					DateTimeFormatter.ofPattern("yyyy年MM月dd日 HH:mm");
+
+			while (rs.next()) {
+				int reservationID = rs.getInt("reservationID");
+				int petID = rs.getInt("petID");
+				String userID = rs.getString("USER_ID");
+				LocalDateTime reserveTime = rs.getTimestamp("reserveTime").toLocalDateTime();
+				String formattedReserveTime = reserveTime.format(formatter);
+				String petName = rs.getString("petName");
+				String imagePath = rs.getString("imagePath");
+				String userName = rs.getString("userName");
+				String userTel = rs.getString("userTel");
+				String userMail = rs.getString("userMail");
+				String categoryName = rs.getString("categoryName");
+				String petGender = rs.getString("petGender");
+				String userGender = rs.getString("userGender");
+				int petAge = rs.getInt("petAge");
+
+				int userAge = 0;
+
+				if (rs.getDate("userBirthday") != null) {
+					LocalDate birthday = rs.getDate("userBirthday").toLocalDate();
+					userAge = Period.between(birthday, LocalDate.now()).getYears();
+				}
+
+				ReserveView reserveView = new ReserveView(
+						reservationID,
+						petID,
+						petName,
+						imagePath,
+						categoryName,
+						petGender,
+						petAge,
+						userID,
+						userName,
+						userAge,
+						userGender,
+						userTel,
+						userMail,
+						reserveTime,
+						formattedReserveTime
+						);
+
+
+				reserveViewList.add(reserveView);
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return reserveViewList;
 	}
 
 }

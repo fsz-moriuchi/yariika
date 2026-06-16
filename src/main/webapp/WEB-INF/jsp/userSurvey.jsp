@@ -71,7 +71,7 @@ List<UserSurvey> userSurveyList = (List<UserSurvey>) request.getAttribute("userS
 
 	</form>
 
-	<form action="FacilityPageServlet" method="get">
+	<form action="MyPageServlet" method="get">
 		<input type="submit" value="戻る">
 	</form>
 

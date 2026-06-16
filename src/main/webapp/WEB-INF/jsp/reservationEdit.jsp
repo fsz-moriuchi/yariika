@@ -12,7 +12,7 @@
 
 <body>
 
-	<h1>予約日時の変更</h1>
+	<h1>予約日時の変更・削除</h1>
 
 	<c:if test="${not empty errorMsg}">
 		<p>${errorMsg}</p>
@@ -60,6 +60,10 @@
 	<form action="ReservationConfirmServlet" method="get">
 		<button type="submit">変更をキャンセルして戻る</button>
 	</form>
+	<form action="ReservationDeleteServlet" method="post">
+	<input type="hidden" name="reservationID" value="${reservationID}">
+		<input type="submit" name="action" value="この予約を削除する" onclick="return confirm('この予約情報（reservationID：${reservationID}）を削除してもよろしいですか？');">
+		</form>
 
 </body>
 </html>
