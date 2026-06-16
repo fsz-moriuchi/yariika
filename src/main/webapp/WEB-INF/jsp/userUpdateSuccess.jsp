@@ -1,5 +1,5 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
-    pageEncoding="UTF-8"%>
+	pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html>
 <head>
@@ -7,9 +7,9 @@
 <title>userUpdateSuccess</title>
 </head>
 <body>
-<script>
-alert("ユーザー情報更新成功。");
-window.location.href="MyPageServlet";
-</script>
+	<script>
+		alert("ユーザー情報更新成功。");
+		window.location.href = "SurveyConfirmServlet";
+	</script>
 </body>
 </html>

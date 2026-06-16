@@ -58,7 +58,7 @@
 			width="200">
 		<br>
 		名前：${favoritePet.name}<br>
-		性別：${favoritePet.gender}<br>
+		性別：${favoritePet.genderName}<br>
 		年齢：${favoritePet.age}歳<br>
 		価格：${favoritePet.price}円<br>
 		<a href="PetDetailServlet?petID=${favoritePet.petID}"> 詳細を見る </a>
