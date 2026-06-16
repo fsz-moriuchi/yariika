@@ -17,7 +17,7 @@ public class MessageDAO {
 		//JDBCドライバを読み込む
 		try {
 			Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
-		}catch(ClassNotFoundException e) {
+		} catch (ClassNotFoundException e) {
 			throw new IllegalStateException("JDBCドライバを読み込めませんでした");
 		}
 		//データベースに接続
@@ -28,35 +28,34 @@ public class MessageDAO {
 			pStmt.setString(1, message.getUserId());
 			pStmt.setString(2, message.getFacilityId());
 			pStmt.setInt(3, message.getPetID());
-			pStmt.setString(4,  message.getMessageText());
-			pStmt.setString(5,  message.getSenderType());
+			pStmt.setString(4, message.getMessageText());
+			pStmt.setString(5, message.getSenderType());
 			pStmt.executeUpdate();
-			
-		}catch (Exception e) {
+
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
-	
-	
+
 	//メッセージの通知機能_既読処理
 	public void markAsRead(String userId, String facilityId, int petID, String viewerType) {
 		//JDBCドライバを読み込む
 		try {
 			Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
-		}catch(ClassNotFoundException e) {
+		} catch (ClassNotFoundException e) {
 			throw new IllegalStateException("JDBCドライバを読み込めませんでした");
 		}
 		//データベースに接続
 		try (Connection conn = DButil.getConnection()) {
 			//INSERT
 			String sql = "";
-			
-			if(viewerType.equals("USER")) {
+
+			if (viewerType.equals("USER")) {
 				//ユーザーが見た→店舗からのメッセージを既読に
 				sql = "UPDATE Message SET IS_READ = 1 \n"
 						+ "WHERE USER_ID = ? AND FACILITY_ID = ? AND petID = ? \n"
 						+ "AND SENDER_TYPE = 'FACILITY' AND IS_READ = 0";
-			}else {
+			} else {
 				//店舗が見た→ユーザーからのメッセージを既読に
 				sql = "UPDATE Message SET IS_READ = 1 \n"
 						+ "WHERE USER_ID = ? AND FACILITY_ID = ? AND petID = ? \n"
@@ -67,12 +66,12 @@ public class MessageDAO {
 			pStmt.setString(2, facilityId);
 			pStmt.setInt(3, petID);
 			pStmt.executeUpdate();
-			
-		}catch (Exception e) {
+
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
-	
+
 	//メッセージ取得
 	public List<Message> getMessage(String userId, String facilityId, int petID) {
 		List<Message> messageList = new ArrayList<>();
@@ -80,7 +79,7 @@ public class MessageDAO {
 		//JDBCドライバを読み込む
 		try {
 			Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
-		}catch(ClassNotFoundException e) {
+		} catch (ClassNotFoundException e) {
 			throw new IllegalStateException("JDBCドライバを読み込めませんでした");
 		}
 		//データベースに接続
@@ -90,8 +89,8 @@ public class MessageDAO {
 			PreparedStatement pStmt = conn.prepareStatement(sql);
 			pStmt.setString(1, userId);
 			pStmt.setString(2, facilityId);
-			pStmt.setInt(3,  petID);
-			
+			pStmt.setInt(3, petID);
+
 			ResultSet rs = pStmt.executeQuery();
 			while (rs.next()) {
 				String uid = rs.getString("USER_ID");
@@ -100,24 +99,23 @@ public class MessageDAO {
 				String messageText = rs.getString("MESSAGE_TEXT");
 				String senderType = rs.getString("SENDER_TYPE");
 				Timestamp createdAt = rs.getTimestamp("CREATED_AT");
-				
+
 				Message message = new Message(uid, fid, pid, messageText, senderType, createdAt);
-				messageList.add(message);	//listに一件ずつ追加
+				messageList.add(message); //listに一件ずつ追加
 			}
-		}catch (Exception e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return messageList;
 	}
-	
-	
+
 	//店舗側メッセージ一覧表示
 	public List<MessageList> findMessageListByFacilityId(String facilityId) {
 		List<MessageList> messageList = new ArrayList<>();
 		//JDBCドライバを読み込む
 		try {
 			Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
-		}catch(ClassNotFoundException e) {
+		} catch (ClassNotFoundException e) {
 			throw new IllegalStateException("JDBCドライバを読み込めませんでした");
 		}
 		//データベースに接続
@@ -133,7 +131,7 @@ public class MessageDAO {
 					+ "ORDER BY latest_time DESC";
 			PreparedStatement pStmt = conn.prepareStatement(sql);
 			pStmt.setString(1, facilityId);
-					
+
 			ResultSet rs = pStmt.executeQuery();
 			while (rs.next()) {
 				String userId = rs.getString("USER_ID");
@@ -143,24 +141,24 @@ public class MessageDAO {
 				Timestamp latestTime = rs.getTimestamp("latest_time");
 				int unreadCount = rs.getInt("unread_count");
 
-	            MessageList mList = new MessageList(userId, userName, petID, petName, latestTime, unreadCount);
-	            messageList.add(mList);
-	
+				MessageList mList = new MessageList(userId, userName, petID, petName, latestTime, unreadCount);
+				messageList.add(mList);
+
 			}
-			
-		}catch (Exception e) {
+
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
-				return messageList;
+		return messageList;
 	}
-	
+
 	//ユーザー側メッセージ一覧表示
 	public List<MessageList> findMessageListByUserId(String userId) {
 		List<MessageList> messageList = new ArrayList<>();
 		//JDBCドライバを読み込む
 		try {
 			Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
-		}catch(ClassNotFoundException e) {
+		} catch (ClassNotFoundException e) {
 			throw new IllegalStateException("JDBCドライバを読み込めませんでした");
 		}
 		//データベースに接続
@@ -176,7 +174,7 @@ public class MessageDAO {
 					+ "ORDER BY latest_time DESC";
 			PreparedStatement pStmt = conn.prepareStatement(sql);
 			pStmt.setString(1, userId);
-						
+
 			ResultSet rs = pStmt.executeQuery();
 			while (rs.next()) {
 				String facilityId = rs.getString("FACILITY_ID");
@@ -185,15 +183,86 @@ public class MessageDAO {
 				String petName = rs.getString("name");
 				Timestamp latestTime = rs.getTimestamp("latest_time");
 				int unreadCount = rs.getInt("unread_count");
-				
-				MessageList mList = new MessageList(facilityId, facilityName, petID, petName, latestTime, true, unreadCount);
+
+				MessageList mList = new MessageList(facilityId, facilityName, petID, petName, latestTime, true,
+						unreadCount);
 				messageList.add(mList);
-		
+
 			}
-				
-		}catch (Exception e) {
+
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return messageList;
+	}
+
+	//未読数の表示（ユーザー）
+	public int countUnreadByUserId(String userId) {
+
+		int count = 0;
+
+		try {
+			Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
+		} catch (ClassNotFoundException e) {
+			throw new IllegalStateException("JDBCドライバを読み込めませんでした");
+		}
+
+		try (Connection conn = DButil.getConnection()) {
+
+			String sql = "SELECT COUNT(*) AS unread_count "
+					+ "FROM Message "
+					+ "WHERE USER_ID = ? "
+					+ "AND SENDER_TYPE = 'FACILITY' "
+					+ "AND IS_READ = 0";
+
+			PreparedStatement pStmt = conn.prepareStatement(sql);
+			pStmt.setString(1, userId);
+
+			ResultSet rs = pStmt.executeQuery();
+
+			if (rs.next()) {
+				count = rs.getInt("unread_count");
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return count;
+	}
+
+	//未読数の表示（施設）
+	public int countUnreadByFacilityId(String facilityId) {
+
+		int count = 0;
+
+		try {
+			Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
+		} catch (ClassNotFoundException e) {
+			throw new IllegalStateException("JDBCドライバを読み込めませんでした");
+		}
+
+		try (Connection conn = DButil.getConnection()) {
+
+			String sql = "SELECT COUNT(*) AS unread_count "
+					+ "FROM Message "
+					+ "WHERE FACILITY_ID = ? "
+					+ "AND SENDER_TYPE = 'USER' "
+					+ "AND IS_READ = 0";
+
+			PreparedStatement pStmt = conn.prepareStatement(sql);
+			pStmt.setString(1, facilityId);
+
+			ResultSet rs = pStmt.executeQuery();
+
+			if (rs.next()) {
+				count = rs.getInt("unread_count");
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return count;
 	}
 }

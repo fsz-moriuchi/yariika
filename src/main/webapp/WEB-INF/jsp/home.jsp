@@ -15,11 +15,21 @@
 	<c:if test="${not empty sessionScope.userId}">
 		<a href="MyPageServlet">マイページへ</a>
 		<br>
+
+		<a href="MessageListServlet"> メッセージ <span style="color: red;">
+				（未読${userUnreadCount}件） </span>
+		</a>
+		<br>
 	</c:if>
 
 	<!-- 施設用メニュー -->
 	<c:if test="${not empty sessionScope.facilityId}">
 		<a href="FacilityPageServlet">施設専用ページへ</a>
+		<br>
+
+		<a href="MessageListServlet"> メッセージ <span style="color: red;">
+				（未読${facilityUnreadCount}件） </span>
+		</a>
 		<br>
 	</c:if>
 

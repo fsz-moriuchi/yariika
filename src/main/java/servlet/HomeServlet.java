@@ -15,6 +15,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
 import dao.FacilityViewDAO;
+import dao.MessageDAO;
 import dao.PetListDAO;
 import dao.ReserveDAO;
 import model.FavoritePet;
@@ -152,6 +153,21 @@ public class HomeServlet extends HttpServlet {
 			request.setAttribute("selectedAgeRange", ageRange);
 			request.setAttribute("selectedPriceRange", priceRange);
 		}
+
+		//メッセージ未読表示
+		MessageDAO dao4 = new MessageDAO();
+		// ユーザー側
+		int userUnreadCount = 0;
+		if (userId != null) {
+			userUnreadCount = dao4.countUnreadByUserId(userId);
+		}
+		request.setAttribute("userUnreadCount", userUnreadCount);
+		// 施設側
+		int facilityUnreadCount = 0;
+		if (facilityId != null) {
+			facilityUnreadCount = dao4.countUnreadByFacilityId(facilityId);
+		}
+		request.setAttribute("facilityUnreadCount", facilityUnreadCount);
 
 		RequestDispatcher dispatcher = request.getRequestDispatcher("WEB-INF/jsp/home.jsp");
 		dispatcher.forward(request, response);
