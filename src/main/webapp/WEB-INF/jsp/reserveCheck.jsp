@@ -17,19 +17,40 @@
 
             <tr>
                 <th>予約番号</th>
-                <th>ペットID</th>
-                <th>ユーザーID</th>
+                <th>写真</th>
+                <th>ペット情報</th>
+                <th>お客様情報</th>
+                <th>お客様連絡先</th>
                 <th>予約日時</th>
             </tr>
 
             <tr>
-                <td>${reserve.reservationID}</td>
-                <td>${reserve.petID}</td>
-                <td>${reserve.userID}</td>
+                <td>予約番号：${reserve.reservationID}</td>
+                <td><img src="${reserve.imagePath}"width="100"></td>
+                <td>ペットID：${reserve.petID}<br>
+                	名前：${reserve.petName}<br>
+                	種類：${reserve.categoryName}<br>
+                    性別：${reserve.gender}<br>
+                    年齢：${reserve.age}</td>
+                <td>ユーザーID：${reserve.userID}<br>
+                	名前：${reserve.userName}<br>
+                	年齢：${reserve.userAge}<br>
+                	性別：${reserve.userGenderJa}</td>
+                <td>電話番号：${reserve.userTel}<br>
+                	メールアドレス：${reserve.userMail}</td>
                 <td>${reserve.formattedReserveTime}</td>
             </tr>
 
         </table>
+        
+    <h3>店舗情報</h3>    
+    <p>店舗名：${reserve.facilityName}</p>
+    <p>住所：${reserve.address}</p>
+    <p>電話：${reserve.tel}</p>
+    <p>メール：${reserve.mail}</p>
+    <p>営業時間：${reserve.openTime}～${reserve.closeTime}</p>
+    <p>休日：${reserve.closedDay}</p>
+    <hr>
 
     </c:when>
 
