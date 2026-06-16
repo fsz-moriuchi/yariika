@@ -58,39 +58,39 @@
 			</select> <br>
 
 			<!-- 色柄 -->
-			色柄： <br> <label> <input type="checkbox" name="color"
+			色柄：<br> <label> <input type="checkbox" name="color"
 				value="white"
-				${selectedColorArrayList.contains('white') ? 'checked' : ''}>
+				${selectedColorList != null && selectedColorList.contains('white') ? 'checked' : ''}>
 				白
 			</label> <label> <input type="checkbox" name="color" value="black"
-				${selectedColorArrayList.contains('black') ? 'checked' : ''}>
+				${selectedColorList != null && selectedColorList.contains('black') ? 'checked' : ''}>
 				黒
 			</label> <label> <input type="checkbox" name="color" value="brown"
-				${selectedColorArrayList.contains('brown') ? 'checked' : ''}>
+				${selectedColorList != null && selectedColorList.contains('brown') ? 'checked' : ''}>
 				茶色
 			</label> <label> <input type="checkbox" name="color" value="yellow"
-				${selectedColorArrayList.contains('yellow') ? 'checked' : ''}>
+				${selectedColorList != null && selectedColorList.contains('yellow') ? 'checked' : ''}>
 				黄
 			</label> <label> <input type="checkbox" name="color" value="gray"
-				${selectedColorArrayList.contains('gray') ? 'checked' : ''}>
+				${selectedColorList != null && selectedColorList.contains('gray') ? 'checked' : ''}>
 				グレー
 			</label> <br> <label> <input type="checkbox" name="color"
 				value="spotted"
-				${selectedColorArrayList.contains('spotted') ? 'checked' : ''}>
+				${selectedColorList != null && selectedColorList.contains('spotted') ? 'checked' : ''}>
 				斑点模様
 			</label> <label> <input type="checkbox" name="color" value="brindle"
-				${selectedColorArrayList.contains('brindle') ? 'checked' : ''}>
+				${selectedColorList != null && selectedColorList.contains('brindle') ? 'checked' : ''}>
 				虎柄模様
 			</label> <label> <input type="checkbox" name="color"
 				value="curlyHair"
-				${selectedColorArrayList.contains('curlyHair') ? 'checked' : ''}>
+				${selectedColorList != null && selectedColorList.contains('curlyHair') ? 'checked' : ''}>
 				巻き毛
 			</label> <label> <input type="checkbox" name="color" value="longHair"
-				${selectedColorArrayList.contains('longHair') ? 'checked' : ''}>
+				${selectedColorList != null && selectedColorList.contains('longHair') ? 'checked' : ''}>
 				長毛
 			</label> <label> <input type="checkbox" name="color"
 				value="shortHair"
-				${selectedColorArrayList.contains('shortHair') ? 'checked' : ''}>
+				${selectedColorList != null && selectedColorList.contains('shortHair') ? 'checked' : ''}>
 				短毛
 			</label> <br>
 

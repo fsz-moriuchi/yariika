@@ -2,6 +2,7 @@ package servlet;
 
 import java.io.IOException;
 import java.time.LocalTime;
+import java.util.List;
 
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletException;
@@ -26,10 +27,16 @@ public class FacilityInformationEditServlet extends HttpServlet {
 
 		String facilityId = (String) session.getAttribute("facilityId");
 
+		// 施設情報取得
 		FacilityInfomationDAO dao = new FacilityInfomationDAO();
 		FacilityInformation facilityInfo = dao.findByFacilityId(facilityId);
 
+		// 定休日取得
+		FacilityClosedDayDAO closedDayDAO = new FacilityClosedDayDAO();
+		List<String> facilityClosedDayList = closedDayDAO.findByFacilityID(facilityId);
+
 		request.setAttribute("facilityInfo", facilityInfo);
+		request.setAttribute("facilityClosedDayList", facilityClosedDayList);
 
 		RequestDispatcher dispatcher = request.getRequestDispatcher("WEB-INF/jsp/facilityInformationEdit.jsp");
 		dispatcher.forward(request, response);
@@ -91,7 +98,6 @@ public class FacilityInformationEditServlet extends HttpServlet {
 			}
 		}
 
-		
 		// すべて成功したか判定
 		if (facilityUpdateResult
 				&& closedDayDeleteResult
