@@ -12,7 +12,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
 import dao.ReserveDAO;
-import model.Reserve;
+import model.ReserveView;
 
 @WebServlet("/ReservationConfirmServlet")
 public class ReservationConfirmServlet extends HttpServlet {
@@ -25,9 +25,8 @@ public class ReservationConfirmServlet extends HttpServlet {
 		String facilityId = (String) session.getAttribute("facilityId");
 
 		ReserveDAO dao = new ReserveDAO();
-		List<Reserve> reservedDataList = dao.findByFacilityID(facilityId);
-
-		request.setAttribute("reservedDataList", reservedDataList);
+		List<ReserveView> reserveViewList = dao.findByFacilityIDForView(facilityId);
+		request.setAttribute("reserveViewList", reserveViewList);
 
 		RequestDispatcher dispatcher = request.getRequestDispatcher("WEB-INF/jsp/reservationConfirm.jsp");
 		dispatcher.forward(request, response);
@@ -45,8 +44,8 @@ public class ReservationConfirmServlet extends HttpServlet {
 		ReserveDAO dao = new ReserveDAO();
 		boolean result = dao.deleteReservation(reservationID);
 
-		List<Reserve> reservedDataList = dao.findByFacilityID(facilityId);
-		request.setAttribute("reservedDataList", reservedDataList);
+		List<ReserveView> reserveViewList = dao.findByFacilityIDForView(facilityId);
+		request.setAttribute("reserveViewList", reserveViewList);
 
 		response.sendRedirect("ReservationConfirmServlet");
 	}
