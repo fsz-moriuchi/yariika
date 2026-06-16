@@ -11,7 +11,16 @@
 <body>
 	<h1>予約確認</h1>
 
+
 	現在の予約情報一覧
+	<form action="ReservationConfirmServlet" method="get">
+
+		<button type="submit" name="dateStatus" value="all">すべての予約</button>
+		<button type="submit" name="dateStatus" value="today">今日の予約</button>
+		<button type="submit" name="dateStatus" value="tomorrow">明日の予約</button>
+
+	</form>
+	<p>表示件数：${reservedDataList.size()}件</p>
 	<table border="1" style="width: 100%">
 
 		<tr>
