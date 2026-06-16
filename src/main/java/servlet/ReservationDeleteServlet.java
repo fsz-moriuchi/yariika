@@ -29,11 +29,17 @@ public class ReservationDeleteServlet extends HttpServlet {
 		}
 
 		int reservationID = Integer.parseInt(reservationIDStr);
+		
+		
 
 		ReserveDAO dao = new ReserveDAO();
 		boolean result = dao.deleteReservation(reservationID);
 
 		request.setAttribute("reservationID", reservationID);
+		
+		System.out.println("削除対象 reservationIDStr = " + reservationIDStr);
+		System.out.println("削除対象 reservationID = " + reservationID);
+		System.out.println("削除結果 result = " + result);
 
 		if (result) {
 			RequestDispatcher dispatcher =

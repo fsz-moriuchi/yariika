@@ -339,14 +339,19 @@ public class ReserveDAO {
 					"R.petID, " +
 					"R.USER_ID, " +
 					"R.reserveTime, " +
-					"PI.name AS petName, " +
+				    "PI.name AS petName, " +
 					"PI.imagePath, " +
+					"PI.gender AS petGender, " +
+					"PI.age AS petAge, " +
+                    "C.CATEGORY_NAME AS categoryName, " +
 					"UI.USER_NAME AS userName, " +
 					"UI.USER_BIRTHDAY AS userBirthday, " +
+					"UI.USER_GENDER AS userGender, " +
 					"UI.USER_TEL AS userTel, " +
 					"UI.USER_MAIL AS userMail " +
 					"FROM Reserve R " +
 					"JOIN Pet P ON R.petID = P.petID " +
+					"JOIN Category C ON P.CATEGORY_ID = C.CATEGORY_ID " +
 					"LEFT JOIN PetInformation PI ON R.petID = PI.petID " +
 					"LEFT JOIN UserInfo UI ON R.USER_ID = UI.USER_ID " +
 					"WHERE P.FACILITY_ID = ? " +
@@ -371,6 +376,10 @@ public class ReserveDAO {
 				String userName = rs.getString("userName");
 				String userTel = rs.getString("userTel");
 				String userMail = rs.getString("userMail");
+				String categoryName = rs.getString("categoryName");
+				String petGender = rs.getString("petGender");
+				String userGender = rs.getString("userGender");
+				int petAge = rs.getInt("petAge");
 
 				int userAge = 0;
 
@@ -384,14 +393,19 @@ public class ReserveDAO {
 						petID,
 						petName,
 						imagePath,
+						categoryName,
+						petGender,
+						petAge,
 						userID,
 						userName,
 						userAge,
+						userGender,
 						userTel,
 						userMail,
 						reserveTime,
 						formattedReserveTime
-				);
+						);
+
 
 				reserveViewList.add(reserveView);
 			}

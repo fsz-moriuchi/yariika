@@ -15,11 +15,11 @@
 <table border="1" style="width: 100%">
 
     <tr>
-    <th>写真</th>
     <th>予約番号</th>
+    <th>写真</th>
     <th>ペット情報</th>
     <th>お客様情報</th>
-    <th>連絡先</th>
+    <th>お客様連絡先</th>
     <th>予約日時</th>
     <th>操作</th>
     </tr>
@@ -27,6 +27,9 @@
     <c:forEach var="reserveView" items="${reserveViewList}">
 
         <tr>
+        
+        <td>予約番号:${reserveView.reservationID}</td>
+        
         <td><c:choose>
 						<c:when test="${not empty reserveView.imagePath}">
 							<img src="${pageContext.request.contextPath}/${reserveView.imagePath}"
@@ -38,14 +41,16 @@
             </c:otherwise>
 					</c:choose></td>
         
-        <td>予約番号:${reserveView.reservationID}</td>
-        
         <td>ペットID：${reserveView.petID}<br>
-        名前：${reserveView.petName}</td>
+        名前：${reserveView.petName}<br>
+        種類：${reserveView.categoryName}<br>
+        性別：${reserveView.petGender}<br>
+        年齢：${reserveView.petAge}歳</td>
         
         <td>ユーザーID：${reserveView.userID}<br>
         名前：${reserveView.userName}<br>
-        年齢：${reserveView.userAge}歳</td>
+        年齢：${reserveView.userAge}歳<br>
+        性別：${reserveView.userGender}</td>
         
         <td>電話番号：${reserveView.userTel}<br>
         メールアドレス：${reserveView.userMail}</td>
@@ -55,7 +60,7 @@
             <td>
                 <form action="ReservationEditServlet" method="get">
                 <input type="hidden" name="reservationID" value="${reserveView.reservationID}">
-                <input type="hidden" name="reserveTime"value="${reserveView.reserveTime}">
+                <input type="hidden" name="reserveTime" value="${reserveView.reserveTime}">
                 <input type="submit" value="予約日時の変更">
                 </form>
             </td>

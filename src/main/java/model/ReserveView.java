@@ -7,22 +7,30 @@ public class ReserveView {
 	private int petID; 
 	private String petName; 
 	private String imagePath; 
+	private String categoryName;
+	private String petGender;
+	private int petAge;
 	private String userID; 
 	private String userName; 
-	private int userAge; 
+	private int userAge;
+	private String userGender;
 	private String userTel; 
 	private String userMail; 
 	private LocalDateTime reserveTime; 
 	private String formattedReserveTime;	
 
-public ReserveView(int reservationID, int petID, String petName, String imagePath, String userID, String userName, int userAge, String userTel, String userMail, LocalDateTime reserveTime, String formattedReserveTime) {
+public ReserveView(int reservationID, int petID, String petName, String imagePath, String categoryName, String petGender, int petAge, String userID, String userName, int userAge, String userGender, String userTel, String userMail, LocalDateTime reserveTime, String formattedReserveTime) {
 	this.reservationID = reservationID;
 	this.petID = petID;
 	this.petName = petName;
 	this.imagePath = imagePath;
+	this.categoryName = categoryName;
+	this.petGender = petGender;
+	this.petAge = petAge;
 	this.userID = userID;
 	this.userName = userName;
 	this.userAge = userAge;
+	this.userGender = userGender;
 	this.userTel = userTel;
 	this.userMail = userMail;
 	this.reserveTime = reserveTime;
@@ -71,6 +79,22 @@ public LocalDateTime getReserveTime() {
 
 public String getFormattedReserveTime() {
 	return formattedReserveTime;
+}
+
+public String getCategoryName() {
+return categoryName;
+}
+
+public String getPetGender() {
+return petGender;
+}
+
+public String getUserGender() {
+return userGender;
+}
+
+public int getPetAge() {
+	return petAge;
 }
 
 }
