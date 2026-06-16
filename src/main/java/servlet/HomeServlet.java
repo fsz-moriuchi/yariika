@@ -1,6 +1,8 @@
 package servlet;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -100,6 +102,12 @@ public class HomeServlet extends HttpServlet {
 			String categoryId = request.getParameter("categoryId");
 			String gender = request.getParameter("gender");
 			String[] colorArray = request.getParameterValues("color");
+
+			List<String> selectedColorList = new ArrayList<>();
+
+			if (colorArray != null) {
+				selectedColorList = Arrays.asList(colorArray);
+			}
 			String pet_size = request.getParameter("pet_size");
 			String ageRange = request.getParameter("ageRange");
 			String priceRange = request.getParameter("priceRange");
@@ -139,7 +147,7 @@ public class HomeServlet extends HttpServlet {
 			//選択した条件をjspで残る
 			request.setAttribute("selectedCategoryId", categoryId);
 			request.setAttribute("selectedGender", gender);
-			request.setAttribute("selectedColorArray", colorArray);
+			request.setAttribute("selectedColorList", selectedColorList);
 			request.setAttribute("selectedPet_size", pet_size);
 			request.setAttribute("selectedAgeRange", ageRange);
 			request.setAttribute("selectedPriceRange", priceRange);
