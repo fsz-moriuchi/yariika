@@ -1,6 +1,8 @@
 package servlet;
 
 import java.io.IOException;
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 import jakarta.servlet.RequestDispatcher;
@@ -27,8 +29,42 @@ public class ReservationConfirmServlet extends HttpServlet {
 		ReserveDAO dao = new ReserveDAO();
 		List<Reserve> reservedDataList = dao.findByFacilityID(facilityId);
 
+
+		//予約絞り込み（すべで・今日・明日）
+		List<Reserve> showDateList = new ArrayList<>();
+		String dateStatus = request.getParameter("dateStatus");
+		LocalDate today = LocalDate.now();
+		LocalDate tomorrow = today.plusDays(1);
+		
+		//すべて表示
+		if(dateStatus == null || dateStatus.isEmpty()) {
+			dateStatus = "all";
+		}
+		
+		for (Reserve r : reservedDataList) {
+			boolean addIn = true;
+		
+			if ("today".equals(dateStatus)) {
+				//今日を選択 >>  showDateList に入れる
+				if (!r.getReserveTime().toLocalDate().equals(today)) {
+					addIn = false;
+				}
+			//明日を選択 >>  showDateList に入れる
+			} else if ("tomorrow".equals(dateStatus)) {
+				if (!r.getReserveTime().toLocalDate().equals(tomorrow)) {
+					addIn = false;
+				}
+			}
+			//if(addIn is true)showDateList に入れる
+			if (addIn) {
+				showDateList.add(r);
+			}
+		}
+		reservedDataList = showDateList;
+		request.setAttribute("dateStatus", dateStatus);
 		request.setAttribute("reservedDataList", reservedDataList);
 
+		
 		RequestDispatcher dispatcher = request.getRequestDispatcher("WEB-INF/jsp/reservationConfirm.jsp");
 		dispatcher.forward(request, response);
 	}
