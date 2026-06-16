@@ -24,14 +24,14 @@ window.location.href="MessageListServlet";
 <c:choose>
 <c:when test="${m.senderType == 'USER'}">
     <p style="text-align:right;">
-	ユーザー：${m.messageText}(${m.createdAt })
+	${m.userId}：${m.messageText}(${m.createdAt })
 </p>
 </c:when>
 
 <%--店舗側 --%>
 <c:otherwise>
 <p style="text-align:left;">
-店舗：${m.messageText} (${m.createdAt})
+店舗(${m.facilityId})：${m.messageText} (${m.createdAt})
 </p>
 </c:otherwise>
 </c:choose>
