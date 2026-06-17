@@ -46,7 +46,7 @@ public class FacilityLoginServlet extends HttpServlet {
 
 			session.setAttribute("facilityId", facilityId);
 			//
-			response.sendRedirect("HomeServlet");
+			response.sendRedirect("DashboardServlet");
 		} else {
 			request.setAttribute("errorMsg", "ログインに失敗しました");
 			RequestDispatcher dispatcher = request.getRequestDispatcher("WEB-INF/jsp/facilityLogin.jsp");

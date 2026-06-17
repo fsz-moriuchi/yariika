@@ -14,14 +14,11 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
-import dao.FacilityViewDAO;
 import dao.MessageDAO;
 import dao.PetListDAO;
-import dao.ReserveDAO;
 import model.FavoritePet;
 import model.PetDetail;
 import model.PetInformationView;
-import model.Reserve;
 
 @WebServlet("/HomeServlet")
 public class HomeServlet extends HttpServlet {
@@ -36,7 +33,10 @@ public class HomeServlet extends HttpServlet {
 		String userId = (String) session.getAttribute("userId");
 		String sort = request.getParameter("sort");
 
-		String facilityId = (String) session.getAttribute("facilityId");
+	    if (session == null || session.getAttribute("userId") == null) {
+	        response.sendRedirect("WelcomeServlet");
+	        return;
+	    }
 
 		PetListDAO dao1 = new PetListDAO();
 		List<PetInformationView> petList = dao1.showList();
@@ -73,29 +73,7 @@ public class HomeServlet extends HttpServlet {
 
 		request.setAttribute("sort", sort);
 
-		//本日の予約件数のカウント(施設側)
-		ReserveDAO dao2 = new ReserveDAO();
-		int countTodayReserve = dao2.countTodayReserve(facilityId);
-
-		request.setAttribute("countTodayReserve", countTodayReserve);
-
-		//登録しているペット数のカウント(施設側)
-		int petCount = dao1.countByfacilityID(facilityId);
-		request.setAttribute("petCount", petCount);
-
-		//直近の予約1件を表示
-		Reserve reserve = dao2.findnextReserve(facilityId);
-		request.setAttribute("reserve", reserve);
-
-		//最後に追加したペットの表示
-		FavoritePet latestPet = dao1.findLatestPetByFacilityID(facilityId);
-		request.setAttribute("latestPet", latestPet);
-
-		//ホームページアクセス数の表示
-		FacilityViewDAO dao3 = new FacilityViewDAO();
-		int viewCount = dao3.getViewCount(facilityId);
-		request.setAttribute("viewCount", viewCount);
-
+		
 		//条件検索
 		String search = request.getParameter("clickSearch");
 		//検索ボタン押すとき
@@ -162,13 +140,7 @@ public class HomeServlet extends HttpServlet {
 			userUnreadCount = dao4.countUnreadByUserId(userId);
 		}
 		request.setAttribute("userUnreadCount", userUnreadCount);
-		// 施設側
-		int facilityUnreadCount = 0;
-		if (facilityId != null) {
-			facilityUnreadCount = dao4.countUnreadByFacilityId(facilityId);
-		}
-		request.setAttribute("facilityUnreadCount", facilityUnreadCount);
-
+		
 		RequestDispatcher dispatcher = request.getRequestDispatcher("WEB-INF/jsp/home.jsp");
 		dispatcher.forward(request, response);
 

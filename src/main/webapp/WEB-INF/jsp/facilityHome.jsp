@@ -92,7 +92,7 @@
 		<hr>
 	</c:forEach>
 
-	<a href="HomeServlet"> ホームへ戻る </a>
+	<a href="DashboardServlet"> ホームへ戻る </a>
 
 </body>
 </html>

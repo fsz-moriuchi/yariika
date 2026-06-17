@@ -22,7 +22,7 @@
 	<br>
 	<a href="MessageListServlet">メッセージ一覧へ</a>
 	<br>
-	<a href="HomeServlet">もどる</a>
+	<a href="DashboardServlet">もどる</a>
 	<br>
 </body>
 </html>
