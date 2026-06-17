@@ -11,7 +11,7 @@
 <body>
 	<!-- 施設用メニュー -->
 	<c:if test="${not empty sessionScope.facilityId}">
-		<a href="FacilityPageServlet">施設専用ページへ</a>
+		<a href="FacilityPageServlet">施設ページへ</a>
 		<br>
 
 		<a href="MessageListServlet"> メッセージ <span style="color: red;">
