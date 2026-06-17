@@ -22,18 +22,7 @@
 		<br>
 	</c:if>
 
-	<!-- 施設用メニュー -->
-	<c:if test="${not empty sessionScope.facilityId}">
-		<a href="FacilityPageServlet">施設専用ページへ</a>
-		<br>
-
-		<a href="MessageListServlet"> メッセージ <span style="color: red;">
-				（未読${facilityUnreadCount}件） </span>
-		</a>
-		<br>
-	</c:if>
-
-	<!-- ================= ユーザー側 ================= -->
+		<!-- ================= ユーザー側 ================= -->
 	<c:if test="${not empty sessionScope.userId}">
 
 		<h1>条件で探す</h1>
@@ -273,70 +262,6 @@
 
 			</c:otherwise>
 		</c:choose>
-	</c:if>
-
-	<!-- ================= 施設側 ================= -->
-	<c:if test="${not empty sessionScope.facilityId}">
-
-		<h2>ダッシュボード</h2>
-
-		本日の予約数：
-		<c:out value="${countTodayReserve}" />件
-		<br>
-
-		<!-- 次の予約 -->
-		<c:if test="${not empty reserve}">
-			<br>
-			次の予約
-			<br>
-			予約ID：${reserve.reservationID}
-			<br>
-			ペットID：${reserve.petID}
-			<br>
-			ユーザーID：${reserve.userID}
-			<br>
-			予約日時：${reserve.formattedReserveTime}
-			<br>
-		</c:if>
-
-		<br>
-		登録しているペット数：
-		<c:out value="${petCount}" />匹
-		<br>
-
-		<!-- 最近追加したペット -->
-		<c:if test="${not empty latestPet}">
-			<br>
-			最近追加したペット
-			<br>
-			<img src="${latestPet.imagePath}" width="200">
-			<br>
-			名前：
-			<c:out value="${latestPet.name}" />
-			<br>
-			性別：
-			<c:choose>
-				<c:when test="${latestPet.gender == 'male'}">
-        			オス
-    			</c:when>
-				<c:when test="${latestPet.gender == 'female'}">
-        			メス
-    			</c:when>
-				<c:otherwise>
-					<c:out value="${latestPet.gender}" />
-				</c:otherwise>
-			</c:choose>
-			<br>
-			年齢：
-			<c:out value="${latestPet.age}" />歳
-			<br>
-			価格：
-			<c:out value="${latestPet.price}" />円
-			<br>
-		</c:if>
-		施設ページの累計アクセス数：
-		${viewCount}回
-		<br>
 	</c:if>
 
 	<!-- ログアウト -->
