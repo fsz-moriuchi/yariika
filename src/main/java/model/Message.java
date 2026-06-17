@@ -1,6 +1,8 @@
 package model;
 
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 public class Message {
 	private int messageId;
@@ -50,6 +52,12 @@ public class Message {
 	}
 	public Timestamp getCreatedAt() {
 		return createdAt;
+	}
+
+	public String getFormattedTime() {
+		LocalDateTime ldt = createdAt.toLocalDateTime(); 
+	    DateTimeFormatter fmt = DateTimeFormatter.ofPattern("HH:mm");
+	    return ldt.format(fmt);
 	}
 
 }
