@@ -29,6 +29,14 @@ public class ReservationEditServlet extends HttpServlet {
 
 		request.setCharacterEncoding("UTF-8");
 
+		HttpSession session = request.getSession(false);
+
+		// 未ログインならログイン画面へ
+		if (session == null || session.getAttribute("facilityId") == null) {
+			response.sendRedirect("WelcomeServlet");
+			return;
+		}
+
 		String reservationIDStr = request.getParameter("reservationID");
 		String reserveTimeStr = request.getParameter("reserveTime");
 
@@ -100,7 +108,7 @@ public class ReservationEditServlet extends HttpServlet {
 			request.setAttribute("reservationID", reservationID);
 			request.setAttribute("reserveDate", reserveDate);
 			request.setAttribute("timeList", timeList);
-			request.setAttribute("reserveTime",request.getParameter("currentReserveTime"));
+			request.setAttribute("reserveTime", request.getParameter("currentReserveTime"));
 			request.getRequestDispatcher("/WEB-INF/jsp/reservationEdit.jsp").forward(request, response);
 		} else if ("update".equals(action)) {
 			LocalDate reserveDate = LocalDate.parse(request.getParameter("reserveDateStr"));
@@ -114,7 +122,7 @@ public class ReservationEditServlet extends HttpServlet {
 				response.sendRedirect(
 						"ReservationConfirmServlet");
 			} else {
-				request.setAttribute("errorMsg","予約日時の変更に失敗しました。");
+				request.setAttribute("errorMsg", "予約日時の変更に失敗しました。");
 				request.setAttribute("reservationID", reservationID);
 				request.getRequestDispatcher("/WEB-INF/jsp/reservationEdit.jsp").forward(request, response);
 			}

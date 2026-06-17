@@ -14,13 +14,21 @@ import jakarta.servlet.http.HttpSession;
 public class ReserveCancelServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		
-		HttpSession session = request.getSession();
+	protected void doGet(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+
+		HttpSession session = request.getSession(false);
+
+		// 未ログインならログイン画面へ
+		if (session == null || session.getAttribute("facilityId") == null) {
+			response.sendRedirect("WelcomeServlet");
+			return;
+		}
+
 		session.removeAttribute("reserveDate");
 		session.removeAttribute("reservePetID");
 		session.removeAttribute("reserveFacilityID");
-		
+
 		RequestDispatcher dispatcher = request.getRequestDispatcher("HomeServlet");
 		dispatcher.forward(request, response);
 	}

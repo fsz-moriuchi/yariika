@@ -24,7 +24,14 @@ public class ReservationConfirmServlet extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 
-		HttpSession session = request.getSession();
+		HttpSession session = request.getSession(false);
+
+		// 未ログインならログイン画面へ
+		if (session == null || session.getAttribute("facilityId") == null) {
+			response.sendRedirect("WelcomeServlet");
+			return;
+		}
+
 		String facilityId = (String) session.getAttribute("facilityId");
 
 		ReserveDAO dao = new ReserveDAO();

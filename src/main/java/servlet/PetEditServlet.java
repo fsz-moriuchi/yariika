@@ -24,18 +24,25 @@ import model.Question;
 public class PetEditServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
-
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	protected void doGet(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
 		request.setCharacterEncoding("UTF-8");
-		HttpSession session = request.getSession();
-		String loginFacilityId = (String)session.getAttribute("facilityId");
+		HttpSession session = request.getSession(false);
+
+		// 未ログインならログイン画面へ
+		if (session == null || session.getAttribute("facilityId") == null) {
+			response.sendRedirect("WelcomeServlet");
+			return;
+		}
+
+		String loginFacilityId = (String) session.getAttribute("facilityId");
 		int petID = Integer.parseInt(request.getParameter("petID"));
 
 		PetListDAO dao = new PetListDAO();
 		PetDetail petDetail = dao.showPetDetail(petID);
-		
+
 		List<PetSurvey> petSurveyList = dao.showPetSurvey(petID);
-		
+
 		request.setAttribute("petDetail", petDetail);
 		request.setAttribute("petSurveyList", petSurveyList);
 		request.setAttribute("loginFacilityId", loginFacilityId);
@@ -43,32 +50,33 @@ public class PetEditServlet extends HttpServlet {
 		RequestDispatcher dispatcher = request.getRequestDispatcher("WEB-INF/jsp/petInformation.jsp");
 		dispatcher.forward(request, response);
 	}
-	
 
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		
-	    request.setCharacterEncoding("UTF-8");
+	protected void doPost(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
 
-	    int petID = Integer.parseInt(request.getParameter("petID"));
+		request.setCharacterEncoding("UTF-8");
 
-	    PetListDAO dao = new PetListDAO();
-	    QuestionSurveyDAO qDao = new QuestionSurveyDAO();
-	    SurveyChoiceDAO cDao = new SurveyChoiceDAO();
+		int petID = Integer.parseInt(request.getParameter("petID"));
 
-	    List<PetSurvey> petSurveyList = dao.showPetSurvey(petID);
-	    List<Question> questionList = qDao.findAllQuestion();
-	    List<Question> petQuestionList = new ArrayList<>();
-	    for(Question petQ:questionList) {
-	    	if(petQ.getQuestionID() <=10) {
-	    		petQuestionList.add(petQ);
-	    	}
-	    }List<Choice> allChoiceList = cDao.findAllChoices();
-		
+		PetListDAO dao = new PetListDAO();
+		QuestionSurveyDAO qDao = new QuestionSurveyDAO();
+		SurveyChoiceDAO cDao = new SurveyChoiceDAO();
+
+		List<PetSurvey> petSurveyList = dao.showPetSurvey(petID);
+		List<Question> questionList = qDao.findAllQuestion();
+		List<Question> petQuestionList = new ArrayList<>();
+		for (Question petQ : questionList) {
+			if (petQ.getQuestionID() <= 10) {
+				petQuestionList.add(petQ);
+			}
+		}
+		List<Choice> allChoiceList = cDao.findAllChoices();
+
 		request.setAttribute("petQuestionList", petQuestionList);
 		request.setAttribute("allChoiceList", allChoiceList);
 		request.setAttribute("petSurveyList", petSurveyList);
 		request.setAttribute("petID", petID);
-		
+
 		RequestDispatcher dispatcher = request.getRequestDispatcher("WEB-INF/jsp/petSurveyConfirm.jsp");
 		dispatcher.forward(request, response);
 	}

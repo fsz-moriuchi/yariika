@@ -17,42 +17,48 @@ import model.User;
 import model.UserInfo;
 import model.UserSurvey;
 
-
-
 @WebServlet("/MyPageServlet")
 public class MyPageServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-	
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		
+
+	protected void doGet(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+
 		//ログインユーザーをセッションから取得
 		HttpSession session = request.getSession();
+
+		// 未ログインならログイン画面へ
+		if (session == null || session.getAttribute("userId") == null) {
+			response.sendRedirect("WelcomeServlet");
+			return;
+		}
+
 		User login = (User) session.getAttribute("user");
-			
+
 		String userId = login.getUserId();
-		
+
 		//DBから取得
 		UserInfoDAO dao = new UserInfoDAO();
 		UserInfo userInfo = dao.findByUserId(userId);
-		
+
 		//JSPへ渡す
-		request.setAttribute("userInfo", userInfo);		
-		
-		if(userId == null) {
+		request.setAttribute("userInfo", userInfo);
+
+		if (userId == null) {
 			response.sendRedirect("UserLoginServlet");
 			return;
 		}
 		UsersDAO dao1 = new UsersDAO();
 		List<UserSurvey> userSurveyList = dao1.showUserSurvey(userId);
 		request.setAttribute("userSurveyList", userSurveyList);
-		
+
 		RequestDispatcher dispatcher = request.getRequestDispatcher("WEB-INF/jsp/mypage.jsp");
 		dispatcher.forward(request, response);
 	}
 
-	
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		
+	protected void doPost(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+
 	}
 
 }

@@ -32,7 +32,15 @@ public class PetRegisterServlet extends HttpServlet {
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		HttpSession session = request.getSession();
+
+		HttpSession session = request.getSession(false);
+
+		// 未ログインならログイン画面へ
+		if (session == null || session.getAttribute("facilityId") == null) {
+			response.sendRedirect("WelcomeServlet");
+			return;
+		}
+
 		String loginFacilityId = (String) session.getAttribute("facilityId");
 
 		request.setAttribute("loginFacilityId", loginFacilityId);
@@ -98,7 +106,7 @@ public class PetRegisterServlet extends HttpServlet {
 					price,
 					commentText,
 					imagePath);
-			
+
 			session.setAttribute("pet", pet);
 			session.setAttribute("petInformation", petInformation);
 
@@ -127,7 +135,7 @@ public class PetRegisterServlet extends HttpServlet {
 			String vaccine = request.getParameter("vaccine");
 			int price = Integer.parseInt(request.getParameter("price"));
 			String commentText = request.getParameter("commentText");
-			
+
 			Part filePart = request.getPart("imageFile");
 			String imagePath;
 

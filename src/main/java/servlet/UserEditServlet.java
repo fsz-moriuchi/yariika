@@ -20,83 +20,91 @@ public class UserEditServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
 	//表示
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		//セッション
-		HttpSession session = request.getSession();
-		User user = (User)session.getAttribute("user");
-				
+	protected void doGet(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+
+		HttpSession session = request.getSession(false);
+
+		// 未ログインならログイン画面へ
+		if (session == null || session.getAttribute("userId") == null) {
+			response.sendRedirect("WelcomeServlet");
+			return;
+		}
+
+		User user = (User) session.getAttribute("user");
+
 		String userId = user.getUserId();
-				
+
 		//UserDAOでDBからユーザー情報を取得
 		UserInfoDAO dao = new UserInfoDAO();
 		UserInfo userInfo = dao.findByUserId(userId);
-				
+
 		//リクエストにセット
 		request.setAttribute("userInfo", userInfo);
-		
+
 		RequestDispatcher dispatcher = request.getRequestDispatcher("WEB-INF/jsp/userEdit.jsp");
 		dispatcher.forward(request, response);
 	}
 
-	
 	//データの更新
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	protected void doPost(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
 		//セッション
 		HttpSession session = request.getSession();
-		User user = (User)session.getAttribute("user");
-		
+		User user = (User) session.getAttribute("user");
+
 		String userId = user.getUserId();
-		
+
 		UserInfoDAO dao = new UserInfoDAO();
 		UserInfo existingInfo = dao.findByUserId(userId);
 
 		if (existingInfo == null) {
-		    request.setAttribute("errorMsg", "個人情報が未登録のため更新できません");
-		    RequestDispatcher dispatcher = request.getRequestDispatcher("WEB-INF/jsp/userEdit.jsp");
-		    dispatcher.forward(request, response);
-		    return;
+			request.setAttribute("errorMsg", "個人情報が未登録のため更新できません");
+			RequestDispatcher dispatcher = request.getRequestDispatcher("WEB-INF/jsp/userEdit.jsp");
+			dispatcher.forward(request, response);
+			return;
 		}
 
 		// hiddenチェック
 		String userInfoIdStr = request.getParameter("userInfoId");
 		if (userInfoIdStr == null || userInfoIdStr.isEmpty()) {
-		    request.setAttribute("errorMsg", "不正なアクセスです");
-		    RequestDispatcher dispatcher = request.getRequestDispatcher("WEB-INF/jsp/userEdit.jsp");
-		    dispatcher.forward(request, response);
-		    return;
+			request.setAttribute("errorMsg", "不正なアクセスです");
+			RequestDispatcher dispatcher = request.getRequestDispatcher("WEB-INF/jsp/userEdit.jsp");
+			dispatcher.forward(request, response);
+			return;
 		}
 
 		int userInfoId = Integer.parseInt(userInfoIdStr);
-		
-	    String userName = request.getParameter("userName");
-	    String userGender = request.getParameter("userGender");
-	    
-	    //日付はjavaとDBでフォームが違う事に注意
-	    String birthdayStr = request.getParameter("userBirthday");
-	    Date userBirthday = null;
-	    if (birthdayStr != null && !birthdayStr.isEmpty()) {
-	        userBirthday = Date.valueOf(birthdayStr);
-	    } else {
-	        // DBから元の値を取得
-	        //UserInfoDAO dao = new UserInfoDAO();
-	        UserInfo oldInfo = dao.findByUserId(userId);
-	        userBirthday = oldInfo.getUserBirthday();
-	    }
-	    String userTel = request.getParameter("userTel");
+
+		String userName = request.getParameter("userName");
+		String userGender = request.getParameter("userGender");
+
+		//日付はjavaとDBでフォームが違う事に注意
+		String birthdayStr = request.getParameter("userBirthday");
+		Date userBirthday = null;
+		if (birthdayStr != null && !birthdayStr.isEmpty()) {
+			userBirthday = Date.valueOf(birthdayStr);
+		} else {
+			// DBから元の値を取得
+			//UserInfoDAO dao = new UserInfoDAO();
+			UserInfo oldInfo = dao.findByUserId(userId);
+			userBirthday = oldInfo.getUserBirthday();
+		}
+		String userTel = request.getParameter("userTel");
 		String userMail = request.getParameter("userMail");
 		String userAddress = request.getParameter("userAddress");
-	    UserInfo userInfo = new UserInfo(userInfoId, userId, userName, userGender, userBirthday, userTel, userMail, userAddress);
-		
+		UserInfo userInfo = new UserInfo(userInfoId, userId, userName, userGender, userBirthday, userTel, userMail,
+				userAddress);
+
 		//UserDAOでDBをアップデート
 		boolean result = dao.updateInfo(userInfo);
-		
-		
+
 		if (result) {
-	        response.sendRedirect("UserInfoServlet"); // 更新後表示
-	    } else {
-	        request.setAttribute("errorMsg", "更新に失敗しました");
-	        RequestDispatcher dispatcher = request.getRequestDispatcher("WEB-INF/jsp/userEdit.jsp");
-	        dispatcher.forward(request, response);
-	    }
+			response.sendRedirect("UserInfoServlet"); // 更新後表示
+		} else {
+			request.setAttribute("errorMsg", "更新に失敗しました");
+			RequestDispatcher dispatcher = request.getRequestDispatcher("WEB-INF/jsp/userEdit.jsp");
+			dispatcher.forward(request, response);
+		}
 	}
 }

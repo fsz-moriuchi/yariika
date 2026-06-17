@@ -21,6 +21,15 @@ public class FacilityInfomationServlet extends HttpServlet {
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
+
+		HttpSession session = request.getSession(false);
+
+		// 未ログインならログイン画面へ
+		if (session == null || session.getAttribute("facilityId") == null) {
+			response.sendRedirect("WelcomeServlet");
+			return;
+		}
+
 		RequestDispatcher dispatcher = request.getRequestDispatcher("WEB-INF/jsp/facilityinfomation.jsp");
 		dispatcher.forward(request, response);
 	}
@@ -49,7 +58,7 @@ public class FacilityInfomationServlet extends HttpServlet {
 			for (String closedDay : closedDays) {
 				//休日をテーブルに登録
 				FacilityClosedDayDAO dao2 = new FacilityClosedDayDAO();
-				boolean result =dao2.insertByFacilityID(facilityId, closedDay);
+				boolean result = dao2.insertByFacilityID(facilityId, closedDay);
 			}
 		}
 

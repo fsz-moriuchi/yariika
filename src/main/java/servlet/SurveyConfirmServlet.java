@@ -16,33 +16,38 @@ import dao.SurveyChoiceDAO;
 import dao.UsersDAO;
 import model.UserSurvey;
 
-
 @WebServlet("/SurveyConfirmServlet")
 public class SurveyConfirmServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
-	
-	protected void doGet(HttpServletRequest request,HttpServletResponse response)throws ServletException, IOException {
+	protected void doGet(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
 
-		HttpSession session = request.getSession();
-	    String userId = (String) session.getAttribute("userId");
+		HttpSession session = request.getSession(false);
 
-	    UsersDAO dao = new UsersDAO();
-	    QuestionSurveyDAO qDao = new QuestionSurveyDAO();
-	    SurveyChoiceDAO cDao = new SurveyChoiceDAO();
-	    List<UserSurvey> userSurveyList =dao.showUserSurvey(userId);
-	    request.setAttribute("userSurveyList",userSurveyList);
-	    request.setAttribute("questionList",qDao.findAllQuestion());
-	    request.setAttribute("allChoiceList",cDao.findAllChoices());
-	    
+		// 未ログインならログイン画面へ
+		if (session == null || session.getAttribute("userId") == null) {
+			response.sendRedirect("WelcomeServlet");
+			return;
+		}
 
-	    RequestDispatcher dispatcher =request.getRequestDispatcher("WEB-INF/jsp/surveyConfirm.jsp");
-	    dispatcher.forward(request,response);
+		String userId = (String) session.getAttribute("userId");
+
+		UsersDAO dao = new UsersDAO();
+		QuestionSurveyDAO qDao = new QuestionSurveyDAO();
+		SurveyChoiceDAO cDao = new SurveyChoiceDAO();
+		List<UserSurvey> userSurveyList = dao.showUserSurvey(userId);
+		request.setAttribute("userSurveyList", userSurveyList);
+		request.setAttribute("questionList", qDao.findAllQuestion());
+		request.setAttribute("allChoiceList", cDao.findAllChoices());
+
+		RequestDispatcher dispatcher = request.getRequestDispatcher("WEB-INF/jsp/surveyConfirm.jsp");
+		dispatcher.forward(request, response);
 	}
 
-	
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		
+	protected void doPost(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+
 	}
 
 }

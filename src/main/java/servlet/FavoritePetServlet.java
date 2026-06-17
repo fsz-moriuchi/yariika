@@ -20,6 +20,7 @@ public class FavoritePetServlet extends HttpServlet {
 			throws ServletException, IOException {
 
 		HttpSession session = request.getSession();
+
 		String facilityId = (String) session.getAttribute("facilityId");
 
 		int petID = Integer.parseInt(request.getParameter("petID"));

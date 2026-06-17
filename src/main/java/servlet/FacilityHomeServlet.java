@@ -9,6 +9,7 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 
 import dao.FacilityHomeDAO;
 import dao.FacilityViewDAO;
@@ -25,6 +26,14 @@ public class FacilityHomeServlet extends HttpServlet {
 			throws ServletException, IOException {
 
 		request.setCharacterEncoding("UTF-8");
+
+		HttpSession session = request.getSession(false);
+
+		// 未ログインならログイン画面へ
+		if (session == null || session.getAttribute("userId") == null) {
+			response.sendRedirect("WelcomeServlet");
+			return;
+		}
 		String facilityId = request.getParameter("facilityId");
 
 		FacilityHomeDAO dao = new FacilityHomeDAO();

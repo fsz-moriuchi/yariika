@@ -24,12 +24,19 @@ public class PetDetailServlet extends HttpServlet {
 
 		request.setCharacterEncoding("UTF-8");
 
+		HttpSession session = request.getSession(false);
+
+		// 未ログインならログイン画面へ
+		if (session == null || session.getAttribute("userId") == null) {
+			response.sendRedirect("WelcomeServlet");
+			return;
+		}
+
 		Integer petID = Integer.parseInt(request.getParameter("petID"));
 		request.setAttribute("petID", petID);
 
 		// 遷移元取得
 		String from = request.getParameter("from");
-		HttpSession session = request.getSession();
 		if (from != null) {
 			session.setAttribute("detailFrom", from);
 		} else {

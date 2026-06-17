@@ -13,9 +13,11 @@ import dao.FavoriteDAO;
 
 @WebServlet("/FavoriteServlet")
 public class FavoriteServlet extends HttpServlet {
+
 	protected void doPost(HttpServletRequest request,
 			HttpServletResponse response)
 			throws ServletException, IOException {
+
 		HttpSession session = request.getSession();
 
 		String userId = (String) session.getAttribute("userId");

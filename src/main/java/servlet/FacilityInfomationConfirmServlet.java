@@ -24,20 +24,27 @@ public class FacilityInfomationConfirmServlet extends HttpServlet {
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		
-		HttpSession session = request.getSession();
+
+		HttpSession session = request.getSession(false);
+
+		// 未ログインならログイン画面へ
+		if (session == null || session.getAttribute("facilityId") == null) {
+			response.sendRedirect("WelcomeServlet");
+			return;
+		}
+
 		String facilityId = (String) session.getAttribute("facilityId");
 		//店舗情報の取得
 		FacilityInfomationDAO dao1 = new FacilityInfomationDAO();
 		FacilityInformation facilityInfo = dao1.findByFacilityId(facilityId);
-		
+
 		//店舗の定休日の取得
 		FacilityClosedDayDAO dao2 = new FacilityClosedDayDAO();
 		List<String> facilityClosedDayList = dao2.findByFacilityID(facilityId);
 
-		request.setAttribute("facilityInfo",facilityInfo);
+		request.setAttribute("facilityInfo", facilityInfo);
 		request.setAttribute("facilityClosedDayList", facilityClosedDayList);
-		
+
 		RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/jsp/facilityInfomationConfirm.jsp");
 		dispatcher.forward(request, response);
 	}

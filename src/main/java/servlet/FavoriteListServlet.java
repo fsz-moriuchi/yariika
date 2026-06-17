@@ -22,13 +22,20 @@ public class FavoriteListServlet extends HttpServlet {
 			HttpServletResponse response)
 			throws ServletException, IOException {
 
-		HttpSession session = request.getSession();
+		HttpSession session = request.getSession(false);
+
+		// 未ログインならログイン画面へ
+		if (session == null || session.getAttribute("userId") == null) {
+			response.sendRedirect("WelcomeServlet");
+			return;
+		}
+
 		String userId = (String) session.getAttribute("userId");
 
 		FavoriteDAO dao = new FavoriteDAO();
 		List<FavoriteView> favoriteList = dao.showFavoriteList(userId);
 		request.setAttribute("favoriteList", favoriteList);
-		
+
 		RequestDispatcher dispatcher = request.getRequestDispatcher("WEB-INF/jsp/favoriteList.jsp");
 		dispatcher.forward(request, response);
 	}

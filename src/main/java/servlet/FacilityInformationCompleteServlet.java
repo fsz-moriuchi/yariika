@@ -8,6 +8,7 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 
 @WebServlet("/FacilityInformationCompleteServlet")
 public class FacilityInformationCompleteServlet extends HttpServlet {
@@ -16,6 +17,14 @@ public class FacilityInformationCompleteServlet extends HttpServlet {
 	protected void doGet(HttpServletRequest request,
 			HttpServletResponse response)
 			throws ServletException, IOException {
+
+		HttpSession session = request.getSession(false);
+
+		// 未ログインならログイン画面へ
+		if (session == null || session.getAttribute("facilityId") == null) {
+			response.sendRedirect("WelcomeServlet");
+			return;
+		}
 
 		RequestDispatcher dispatcher = request.getRequestDispatcher(
 				"WEB-INF/jsp/facilityInformationComplete.jsp");
