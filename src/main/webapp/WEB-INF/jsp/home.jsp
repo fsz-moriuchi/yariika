@@ -7,20 +7,38 @@
 <head>
 <meta charset="UTF-8">
 <title>ホーム画面</title>
+<link rel="stylesheet" href="style.css">
 </head>
 
 <body>
+<div class="page-container">
+<div class="site-header">
 
-	<!-- ユーザー用メニュー -->
-	<c:if test="${not empty sessionScope.userId}">
-		<a href="MyPageServlet">マイページへ</a>
-		<br>
+	<div class="site-logo-wrap">
+        <h1 class="site-logo">PET MATCH</h1>
+    </div>
+    <div class="top-menu">
+        <c:if test="${not empty sessionScope.userId}">
 
-		<a href="MessageListServlet"> メッセージ <span style="color: red;">
-				（未読${userUnreadCount}件） </span>
-		</a>
-		<br>
-	</c:if>
+            <a class="menu-button" href="MyPageServlet">
+                マイページへ
+            </a>
+
+            <a class="menu-button" href="MessageListServlet">
+                メッセージ
+                <span class="unread-badge">
+                    未読${userUnreadCount}件
+                </span>
+            </a>
+
+        </c:if>
+
+        <a class="menu-button logout-button" href="LogoutServlet">
+            ログアウト
+        </a>
+    </div>
+
+</div>
 
 		<!-- ================= ユーザー側 ================= -->
 	<c:if test="${not empty sessionScope.userId}">
@@ -147,12 +165,14 @@
 					年齢低い順</option>
 			</select> <br> <br>
 
-			<button type="submit">検索</button>
-		</form>
+			<div class="form-button-area">
+    <button type="submit">🐾検索</button>
 
-		<form action="HomeServlet" method="get">
-			<button type="submit">クリア</button>
-		</form>
+    <a class="clear-button" href="HomeServlet">
+        クリア
+    </a>
+</div>
+</form>
 
 		<p>
 			※ 条件を指定せずに「検索」を押すと、すべてのペットを一覧で表示できます。<br> ※
@@ -164,48 +184,91 @@
 
 		<c:choose>
 
-			<%-- 検索結果あり --%>
-			<c:when test="${clickSearch and searchResultCount > 0}">
+<%-- 検索結果あり --%>
+<c:when test="${clickSearch and searchResultCount > 0}">
 
-				<h1>検索結果：${searchResultCount}件</h1>
-				<c:forEach var="pet" items="${searchPetList}">
-					店舗：
-		            <a href="FacilityHomeServlet?facilityId=${pet.facilityID}">
-						<c:out value="${pet.facilityName}" />
-					</a>
-					<br>
-					<img src="${pet.imagePath}" width="200">
-					<br>
-            			名前：
-            		    <c:out
-						value="${not empty pet.name ? pet.name : '名付けてください！'}" />
-					<br>カテゴリー：
-            			<c:out value="${pet.categoryName}" />
-					<br>性別：
-		            <c:out value="${pet.genderName}" />
-					<br>年齢：
-            			<c:out value="${pet.age}" />歳
-            			<br>色柄：
-            			<c:out value="${pet.colorName}" />
-					<br>サイズ：
-            			<c:out value="${pet.petSizeName}" />
-					<br>価格：
-      				<c:out value="${pet.price}" />円
-            			<br>マッチング度：
-					<c:out value="${empty pet.matchRate ? 0 : pet.matchRate}" />%
-            			<br>
-					<a href="PetDetailServlet?petID=${pet.petID}&from=search">
-						詳細を見る </a>
-					<hr>
-				</c:forEach>
+    <div class="result-header">
+        <h2>検索結果</h2>
+        <span class="result-badge">${searchResultCount}件見つかりました</span>
+    </div>
 
-			</c:when>
+    <div class="pet-card-list">
 
+        <c:forEach var="pet" items="${searchPetList}">
+
+            <div class="pet-card">
+
+                <img class="pet-image" src="${pet.imagePath}" alt="ペット画像">
+
+                <div class="pet-info">
+
+<p>
+    <span class="pet-dot">・</span><span class="pet-label">店舗：</span>
+    <a href="FacilityHomeServlet?facilityId=${pet.facilityID}">
+        <c:out value="${pet.facilityName}" />
+    </a>
+</p>
+
+<p>
+    <span class="pet-dot">・</span><span class="pet-label">名前：</span>
+    <c:out value="${not empty pet.name ? pet.name : '名付けてください！'}" />
+</p>
+
+<p>
+    <span class="pet-dot">・</span><span class="pet-label">カテゴリー：</span>
+    <c:out value="${pet.categoryName}" />
+</p>
+
+<p>
+    <span class="pet-dot">・</span><span class="pet-label">性別：</span>
+    <c:out value="${pet.genderName}" />
+</p>
+
+<p>
+    <span class="pet-dot">・</span><span class="pet-label">年齢：</span>
+    <c:out value="${pet.age}" />歳
+</p>
+
+<p>
+    <span class="pet-dot">・</span><span class="pet-label">色柄：</span>
+    <c:out value="${pet.colorName}" />
+</p>
+
+<p>
+    <span class="pet-dot">・</span><span class="pet-label">サイズ：</span>
+    <c:out value="${pet.petSizeName}" />
+</p>
+
+<p>
+    <span class="pet-dot">・</span><span class="pet-label">価格：</span>
+    <c:out value="${pet.price}" />円
+</p>
+
+<p>
+    <span class="pet-dot">・</span><span class="pet-label">マッチング度：</span>
+    <span class="match-rate">
+        <c:out value="${empty pet.matchRate ? 0 : pet.matchRate}" />%
+    </span>
+</p>
+
+                    <a class="detail-button" href="PetDetailServlet?petID=${pet.petID}&from=search">
+                        🐾詳細を見る🐾
+                    </a>
+
+                </div>
+
+            </div>
+
+        </c:forEach>
+
+    </div>
+
+</c:when>
 			<%-- 初期表示・検索0件 --%>
 			<c:otherwise>
 
 				<c:if test="${clickSearch and searchResultCount == 0}">
-					<h1>検索結果 0 件</h1>
+					<h2 class="section-title">検索結果：${searchResultCount}件</h2>
 					<p>条件に一致するペットはいません。</p>
 					<hr>
 				</c:if>
@@ -235,37 +298,70 @@
 				</form>
 				<br>
 
-				<c:forEach var="pet" items="${favoritePetList}">
-		
-		            店舗：
-		            <a href="FacilityHomeServlet?facilityId=${pet.facilityID}">
-						<c:out value="${pet.facilityName}" />
-					</a>
-					<br>
-					<img src="${pet.imagePath}" width="200">
-					<br>名前：
-		            <c:out
-						value="${not empty pet.name ? pet.name : '名付けてください！'}" />
-					<br>性別：
-		            <c:out value="${pet.genderName}" />
-					<br>年齢：
-		            <c:out value="${pet.age}" />歳
-		            <br>価格：
-            			<c:out value="${pet.price}" />円
-            			<br>マッチング度：
-					<c:out value="${empty pet.matchRate ? 0 : pet.matchRate}" />%
-            			<br>
+<div class="pet-card-list">
 
-					<a href="PetDetailServlet?petID=${pet.petID}&from=home">詳細を見る </a>
-					<hr>
-				</c:forEach>
+    <c:forEach var="pet" items="${favoritePetList}">
+
+        <div class="pet-card">
+
+            <img class="pet-image" src="${pet.imagePath}" alt="ペット画像">
+
+            <div class="pet-info">
+
+                <p>
+                    <span class="pet-dot">・</span><span class="pet-label">店舗：</span>
+                    <a href="FacilityHomeServlet?facilityId=${pet.facilityID}">
+                        <c:out value="${pet.facilityName}" />
+                    </a>
+                </p>
+
+                <p>
+                    <span class="pet-dot">・</span><span class="pet-label">名前：</span>
+                    <c:out value="${not empty pet.name ? pet.name : '名付けてください！'}" />
+                </p>
+
+                <p>
+                    <span class="pet-dot">・</span><span class="pet-label">性別：</span>
+                    <c:out value="${pet.genderName}" />
+                </p>
+
+                <p>
+                    <span class="pet-dot">・</span><span class="pet-label">年齢：</span>
+                    <c:out value="${pet.age}" />歳
+                </p>
+
+                <p>
+                    <span class="pet-dot">・</span><span class="pet-label">価格：</span>
+                    <c:out value="${pet.price}" />円
+                </p>
+
+                <p>
+                    <span class="pet-dot">・</span><span class="pet-label">マッチング度：</span>
+                    <span class="match-rate">
+                        <c:out value="${empty pet.matchRate ? 0 : pet.matchRate}" />%
+                    </span>
+                </p>
+
+                <a class="detail-button" href="PetDetailServlet?petID=${pet.petID}&from=home">
+                    🐾詳細を見る🐾
+                </a>
+
+            </div>
+
+        </div>
+
+    </c:forEach>
+
+
+        </div>
+
+
+</div>
 
 			</c:otherwise>
 		</c:choose>
 	</c:if>
 
-	<!-- ログアウト -->
-	<a href="LogoutServlet">ログアウト</a>
-
+</div>
 </body>
 </html>

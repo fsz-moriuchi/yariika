@@ -1,43 +1,88 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
-    pageEncoding="UTF-8"%>
-    
-    <%@ taglib prefix="c" uri="jakarta.tags.core"%>
-    
+pageEncoding="UTF-8"%>
+
+<%@ taglib prefix="c" uri="jakarta.tags.core"%>
+
+
 <!DOCTYPE html>
+
 <html>
 <head>
 <meta charset="UTF-8">
 <title>passwordEdit</title>
+<link rel="stylesheet" href="${pageContext.request.contextPath}/style.css">
 </head>
+
 <body>
-<h1>パスワード変更</h1>
 
-<form action="PasswordEditServlet" method="post">
-元パスワード：<input type="password" name="oldPassword" required><br>
-新しいパスワード：<input type="password" name="newPassword" required><br>
-もう一度入力：<input type="password" name="newPasswordConfirm" required><br>
+<div class="page-container">
 
-<c:if test="${not empty errorMsg}">
-	<p style="color:red;">
-	<c:out value="${errorMsg}"/><br>
-	</p>
-</c:if>
+<div class="site-header">
 
-<input type="submit" value="パスワードを変更">
-</form>
-<c:choose>
-	<c:when test="${not empty sessionScope.userId}">
-		<form action="MyPageServlet" method="get">
-			<button type="submit">キャンセル</button>
-		</form>
-	</c:when>
+    <div class="site-logo-wrap">
+        <h1 class="site-logo">PET MATCH</h1>
+    </div>
 
-	<c:when test="${not empty sessionScope.facilityId}">
-		<form action="FacilityPageServlet" method="get">
-			<button type="submit">キャンセル</button>
-		</form>
-	</c:when>
-</c:choose>
+</div>
+
+<div class="info-card">
+
+    <h1>パスワード変更</h1>
+
+    <p class="welcome-message">
+        現在のパスワードと新しいパスワードを入力してください。
+    </p>
+
+    <form class="edit-form" action="PasswordEditServlet" method="post">
+
+        <p>
+            元パスワード：<br>
+            <input type="password" name="oldPassword" required>
+        </p>
+
+        <p>
+            新しいパスワード：<br>
+            <input type="password" name="newPassword" required>
+        </p>
+
+        <p>
+            もう一度入力：<br>
+            <input type="password" name="newPasswordConfirm" required>
+        </p>
+
+        <c:if test="${not empty errorMsg}">
+            <p class="error-message">
+                <c:out value="${errorMsg}"/><br>
+            </p>
+        </c:if>
+
+        <div class="form-button-area center-button-area">
+            <input type="submit" value="パスワードを変更">
+        </div>
+
+    </form>
+
+    <c:choose>
+        <c:when test="${not empty sessionScope.userId}">
+            <div class="form-button-area center-button-area">
+                <form action="MyPageServlet" method="get">
+                    <button class="back-button" type="submit">キャンセル</button>
+                </form>
+            </div>
+        </c:when>
+
+        <c:when test="${not empty sessionScope.facilityId}">
+            <div class="form-button-area center-button-area">
+                <form action="FacilityPageServlet" method="get">
+                    <button class="back-button" type="submit">キャンセル</button>
+                </form>
+            </div>
+        </c:when>
+    </c:choose>
+
+</div>
+
+</div>
 
 </body>
 </html>

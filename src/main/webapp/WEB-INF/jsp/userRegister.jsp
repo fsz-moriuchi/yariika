@@ -7,44 +7,92 @@
 <head>
 <meta charset="UTF-8">
 <title>新規ユーザー作成画面</title>
+<link rel="stylesheet" href="${pageContext.request.contextPath}/style.css">
 </head>
 
 <body>
-<h1>新規ユーザー作成画面</h1>
 
-<p>全項目登録してください。</p>
+<div class="welcome-container">
 
-<form action="UserRegisterServlet" method="post">
-<p>ユーザーID:<input type="text" name="userId" required></p>
-<p>パスワード:<input type="password" name="password" required></p>
+    <div class="register-card">
 
-<p>名前：<input type="text" name="userName" required></p>
+        <div class="site-logo-wrap welcome-logo-wrap">
+            <h1 class="site-logo">PET MATCH</h1>
+        </div>
 
-<p>性別：<select name="userGender" required>
-  <option value="男">男</option>
-  <option value="女">女</option>
-  <option value="選択しない">選択しない</option>
-</select></p>
+        <h2>新規ユーザー作成画面</h2>
 
-<p>生年月日:<input type="date" name="userBirthday" required></p>
+        <p class="welcome-message">全項目登録してください。</p>
 
-<p>電話番号：<input type="text" name="userTel" required></p>
+        <form class="register-form" action="UserRegisterServlet" method="post">
 
-<p>メール：<input type="email" name="userMail" required></p>
+            <p>
+                ユーザーID:<br>
+                <input type="text" name="userId" required>
+            </p>
 
-<p>住所：<input type="text" name="userAddress" required></p>
+            <p>
+                パスワード:<br>
+                <input type="password" name="password" required>
+            </p>
 
-<input type="submit" value="登録">
-</form>
+            <p>
+                名前：<br>
+                <input type="text" name="userName" required>
+            </p>
 
-<form action="WelcomeServlet" method="get">
-		<input type="submit" value="戻る">
-	</form>
-<p>登録内容の変更はマイページからいつでも行えます。</p>
+            <p>
+                性別：<br>
+                <select name="userGender" required>
+                    <option value="男">男</option>
+                    <option value="女">女</option>
+                    <option value="選択しない">選択しない</option>
+                </select>
+            </p>
 
-<c:if test="${not empty errorMsg}">
-<c:out value="${errorMsg}"/>
-</c:if>
+            <p>
+                生年月日:<br>
+                <input type="date" name="userBirthday" required>
+            </p>
+
+            <p>
+                電話番号：<br>
+                <input type="text" name="userTel" required>
+            </p>
+
+            <p>
+                メール：<br>
+                <input type="email" name="userMail" required>
+            </p>
+
+            <p>
+                住所：<br>
+                <input type="text" name="userAddress" required>
+            </p>
+
+            <div class="form-button-area">
+                <input type="submit" value="登録">
+
+                <a class="clear-button" href="WelcomeServlet">
+                    戻る
+                </a>
+            </div>
+
+        </form>
+
+        <p class="notice">
+            登録内容の変更はマイページからいつでも行えます。
+        </p>
+
+        <c:if test="${not empty errorMsg}">
+            <p class="error-message">
+                <c:out value="${errorMsg}" />
+            </p>
+        </c:if>
+
+    </div>
+
+</div>
 
 </body>
 

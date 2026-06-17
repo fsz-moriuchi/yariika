@@ -5,11 +5,46 @@
 <head>
 <meta charset="UTF-8">
 <title>最初の画面</title>
+<link rel="stylesheet" href="style.css">
 </head>
+
 <body>
-<a href="UserLoginServlet">ユーザーログイン画面へ</a><br>
-<a href="UserRegisterServlet">新規ユーザー登録へ</a><br>
-<a href="FacilityLoginServlet">店舗ログイン画面へ</a><br>
-<a href="FacilityRegisterServlet">新規店舗登録へ</a>
+
+<div class="welcome-container">
+
+    <div class="welcome-card">
+
+        <div class="site-logo-wrap welcome-logo-wrap">
+            <h1 class="site-logo">PET MATCH</h1>
+        </div>
+
+        <p class="welcome-message">
+            あなたとペットの、やさしい出会いをサポートします。
+        </p>
+
+        <div class="welcome-menu">
+
+<a class="welcome-button user-button" href="UserLoginServlet">
+    ユーザーログイン
+</a>
+
+<a class="welcome-button user-register-button" href="UserRegisterServlet">
+    新規ユーザー登録
+</a>
+
+<a class="welcome-button facility-button" href="FacilityLoginServlet">
+    店舗ログイン
+</a>
+
+<a class="welcome-button facility-register-button" href="FacilityRegisterServlet">
+    新規店舗登録
+</a>
+
+        </div>
+
+    </div>
+
+</div>
+
 </body>
 </html>
