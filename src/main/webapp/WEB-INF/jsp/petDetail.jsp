@@ -125,6 +125,12 @@
 			<a href="HomeServlet">戻る</a>
 		</c:when>
 
+		<c:when test="${sessionScope.detailFrom == 'facilityhome'}">
+			<a
+				href="FacilityHomeServlet?facilityId=${sessionScope.detailFacilityId}">
+				戻る </a>
+		</c:when>
+
 		<c:otherwise>
 			<a href="HomeServlet">戻る</a>
 		</c:otherwise>

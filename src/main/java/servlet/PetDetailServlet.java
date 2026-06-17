@@ -44,6 +44,12 @@ public class PetDetailServlet extends HttpServlet {
 		}
 		request.setAttribute("from", from);
 
+		String facilityId = request.getParameter("facilityId");
+
+		if (facilityId != null) {
+			session.setAttribute("detailFacilityId", facilityId);
+		}
+
 		PetListDAO dao = new PetListDAO();
 		PetDetail petDetail = dao.showPetDetail(petID);
 		request.setAttribute("petDetail", petDetail);
