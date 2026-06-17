@@ -1,0 +1,704 @@
+@charset "UTF-8";
+
+/* ===============================
+全体設定
+================================ */
+
+html {
+box-sizing: border-box;
+}
+
+* {
+  box-sizing: inherit;
+  }
+
+body {
+margin: 0;
+padding: 0;
+background-color: #fffaf4;
+color: #2f2a26;
+font-family: "Yu Gothic", "Meiryo", sans-serif;
+line-height: 1.7;
+}
+
+a {
+color: #b86a1f;
+text-decoration: none;
+font-weight: bold;
+}
+
+a:hover {
+text-decoration: underline;
+}
+
+img {
+max-width: 100%;
+display: block;
+}
+
+h1,
+h2,
+h3,
+p {
+margin-top: 0;
+}
+
+.container {
+width: 92%;
+max-width: 1180px;
+margin: 34px auto 64px;
+}
+
+/* ===============================
+ヘッダー
+================================ */
+
+.site-header {
+background-color: #ffffff;
+border-bottom: 1px solid #eadcc9;
+box-shadow: 0 2px 12px rgba(80, 50, 25, 0.08);
+}
+
+.header-inner {
+width: 92%;
+max-width: 1180px;
+margin: 0 auto;
+padding: 16px 0;
+display: flex;
+justify-content: space-between;
+align-items: center;
+gap: 16px;
+}
+
+.logo {
+font-size: 24px;
+font-weight: bold;
+color: #b86a1f;
+letter-spacing: 0.03em;
+}
+
+.logo:hover {
+text-decoration: none;
+}
+
+.header-nav {
+display: flex;
+gap: 10px;
+flex-wrap: wrap;
+}
+
+.header-nav a {
+display: inline-block;
+padding: 8px 14px;
+border-radius: 999px;
+background-color: #fff1e0;
+color: #5a3b1d;
+font-size: 14px;
+}
+
+.header-nav a:hover {
+background-color: #ffd8b0;
+text-decoration: none;
+}
+
+.logout-link {
+background-color: #5a3b1d !important;
+color: #ffffff !important;
+}
+
+.unread-badge {
+display: inline-block;
+margin-left: 5px;
+padding: 2px 8px;
+border-radius: 999px;
+background-color: #d9534f;
+color: #ffffff;
+font-size: 12px;
+font-weight: bold;
+}
+
+/* ===============================
+ヒーロー・見出し
+================================ */
+
+.hero-section,
+.search-section,
+.pet-section {
+margin-bottom: 40px;
+}
+
+.hero-card {
+background-color: #ffffff;
+border: 1px solid #eadcc9;
+border-radius: 28px;
+padding: 36px;
+box-shadow: 0 8px 24px rgba(70, 45, 20, 0.10);
+background-image: linear-gradient(135deg, #ffffff 0%, #fff1e0 100%);
+}
+
+.hero-card h1 {
+margin-bottom: 10px;
+font-size: 34px;
+color: #2f2a26;
+}
+
+.hero-card p {
+color: #6d6259;
+margin-bottom: 0;
+}
+
+.small-title {
+color: #e28b35;
+font-size: 13px;
+font-weight: bold;
+letter-spacing: 0.12em;
+margin-bottom: 6px;
+}
+
+.section-header {
+margin-bottom: 18px;
+}
+
+.section-heading {
+margin: 0;
+padding-left: 12px;
+border-left: 6px solid #e28b35;
+color: #2f2a26;
+font-size: 26px;
+line-height: 1.35;
+}
+
+.sort-header {
+display: flex;
+justify-content: space-between;
+align-items: flex-end;
+gap: 20px;
+}
+
+/* ===============================
+フォーム
+================================ */
+
+.search-card,
+.sort-form {
+background-color: #ffffff;
+border: 1px solid #eadcc9;
+border-radius: 24px;
+padding: 26px;
+box-shadow: 0 8px 24px rgba(70, 45, 20, 0.08);
+}
+
+.search-grid {
+display: flex;
+flex-wrap: wrap;
+gap: 20px;
+}
+
+.form-row {
+margin-bottom: 18px;
+}
+
+.search-grid .form-row {
+width: calc(33.333% - 14px);
+min-width: 240px;
+}
+
+.form-row label {
+display: block;
+margin-bottom: 6px;
+font-weight: bold;
+color: #4b3d31;
+}
+
+select,
+input[type="text"],
+input[type="password"],
+input[type="email"],
+input[type="number"],
+input[type="date"],
+input[type="time"],
+textarea {
+width: 100%;
+min-height: 42px;
+padding: 10px 12px;
+border: 1px solid #d9c4aa;
+border-radius: 12px;
+background-color: #fffdfa;
+color: #2f2a26;
+font-size: 15px;
+font-family: inherit;
+}
+
+select:focus,
+input:focus,
+textarea:focus {
+outline: none;
+border-color: #e28b35;
+box-shadow: 0 0 0 3px rgba(226, 139, 53, 0.18);
+}
+
+.color-row {
+margin-top: 4px;
+}
+
+.checkbox-group {
+display: flex;
+flex-wrap: wrap;
+gap: 10px;
+}
+
+.checkbox-group label {
+display: inline-flex;
+align-items: center;
+gap: 6px;
+background-color: #fff7ed;
+border: 1px solid #eadcc9;
+border-radius: 999px;
+padding: 7px 12px;
+}
+
+.checkbox-group input {
+margin: 0;
+}
+
+.button-row {
+display: flex;
+flex-wrap: wrap;
+gap: 12px;
+margin-top: 18px;
+}
+
+/* ===============================
+ボタン
+================================ */
+
+button,
+.main-button,
+.sub-button {
+display: inline-block;
+border: none;
+border-radius: 999px;
+padding: 10px 22px;
+font-size: 15px;
+font-weight: bold;
+cursor: pointer;
+font-family: inherit;
+text-align: center;
+}
+
+button,
+.main-button {
+background-color: #e28b35;
+color: #ffffff;
+}
+
+button:hover,
+.main-button:hover {
+background-color: #bf6c1d;
+color: #ffffff;
+text-decoration: none;
+}
+
+.sub-button {
+background-color: #f3e2cb;
+color: #4c3a2c;
+}
+
+.sub-button:hover {
+background-color: #e8cfb0;
+text-decoration: none;
+}
+
+.card-button {
+width: 100%;
+margin-top: 16px;
+}
+
+/* ===============================
+注意書き・空表示
+================================ */
+
+.notice-box,
+.empty-box {
+background-color: #fff4e7;
+border: 1px solid #efd5b4;
+border-left: 6px solid #e28b35;
+border-radius: 18px;
+padding: 16px 18px;
+margin-top: 18px;
+color: #6d6259;
+}
+
+.notice-box p {
+margin-bottom: 6px;
+}
+
+.notice-box p:last-child {
+margin-bottom: 0;
+}
+
+.empty-box {
+margin-bottom: 24px;
+}
+
+.empty-box h2 {
+margin-bottom: 8px;
+}
+
+/* ===============================
+並び替え
+================================ */
+
+.sort-form {
+display: flex;
+gap: 10px;
+align-items: center;
+padding: 14px;
+}
+
+.sort-form select {
+min-width: 240px;
+}
+
+/* ===============================
+ペットカード
+================================ */
+
+.pet-grid {
+display: flex;
+flex-wrap: wrap;
+gap: 24px;
+}
+
+.pet-card {
+width: calc(33.333% - 16px);
+min-width: 280px;
+background-color: #ffffff;
+border: 1px solid #eadcc9;
+border-radius: 22px;
+overflow: hidden;
+box-shadow: 0 8px 24px rgba(70, 45, 20, 0.10);
+display: flex;
+flex-direction: column;
+}
+
+.pet-card-image {
+width: 100%;
+height: 220px;
+object-fit: cover;
+background-color: #f7eadc;
+}
+
+.pet-card-body {
+padding: 20px;
+display: flex;
+flex-direction: column;
+flex: 1;
+}
+
+.pet-card-head {
+display: flex;
+justify-content: space-between;
+align-items: flex-start;
+gap: 12px;
+margin-bottom: 10px;
+}
+
+.pet-card-title {
+margin-bottom: 0;
+font-size: 21px;
+color: #2f2a26;
+}
+
+.match-badge {
+white-space: nowrap;
+padding: 5px 10px;
+border-radius: 999px;
+background-color: #fff1e0;
+color: #a45d1d;
+border: 1px solid #f0d0aa;
+font-size: 13px;
+font-weight: bold;
+}
+
+.shop-name {
+color: #6d6259;
+margin-bottom: 14px;
+}
+
+.pet-info {
+margin-top: 4px;
+}
+
+.pet-info p {
+display: flex;
+justify-content: space-between;
+gap: 16px;
+margin: 0;
+padding: 7px 0;
+border-bottom: 1px dashed #eadcc9;
+}
+
+.pet-info span {
+color: #7a6d60;
+font-weight: bold;
+}
+
+.pet-info strong {
+text-align: right;
+color: #2f2a26;
+}
+
+/* ===============================
+管理系画面でも使う共通部品
+================================ */
+
+.dashboard-grid {
+display: flex;
+flex-wrap: wrap;
+gap: 20px;
+}
+
+.dashboard-card {
+width: calc(33.333% - 14px);
+min-width: 240px;
+background-color: #ffffff;
+border: 1px solid #eadcc9;
+border-radius: 22px;
+padding: 22px;
+box-shadow: 0 8px 24px rgba(70, 45, 20, 0.08);
+}
+
+.dashboard-label {
+color: #7a6d60;
+font-weight: bold;
+margin-bottom: 8px;
+}
+
+.dashboard-value,
+.dashboard-number {
+font-size: 36px;
+font-weight: bold;
+color: #b86a1f;
+margin: 0;
+}
+
+.menu-grid {
+display: flex;
+flex-wrap: wrap;
+gap: 20px;
+}
+
+.menu-card {
+width: calc(25% - 15px);
+min-width: 220px;
+background-color: #ffffff;
+border: 1px solid #eadcc9;
+border-radius: 20px;
+padding: 20px;
+box-shadow: 0 8px 24px rgba(70, 45, 20, 0.08);
+color: #2f2a26;
+}
+
+.menu-card:hover {
+background-color: #fff4e7;
+text-decoration: none;
+}
+
+/* ===============================
+テーブル
+================================ */
+
+.table-wrap {
+overflow-x: auto;
+}
+
+table {
+width: 100%;
+border-collapse: collapse;
+background-color: #ffffff;
+border: 1px solid #eadcc9;
+border-radius: 16px;
+overflow: hidden;
+}
+
+th,
+td {
+padding: 14px 16px;
+border-bottom: 1px solid #eee2d3;
+text-align: left;
+vertical-align: top;
+}
+
+th {
+background-color: #fff1e0;
+color: #4c3a2c;
+}
+
+tr:last-child td {
+border-bottom: none;
+}
+
+/* ===============================
+レスポンシブ
+================================ */
+
+@media screen and (max-width: 960px) {
+.search-grid .form-row,
+.pet-card,
+.dashboard-card,
+.menu-card {
+width: calc(50% - 12px);
+}
+
+
+.sort-header {
+    display: block;
+}
+
+.sort-form {
+    margin-top: 14px;
+}
+
+
+}
+
+@media screen and (max-width: 640px) {
+.header-inner {
+display: block;
+}
+
+
+.header-nav {
+    margin-top: 12px;
+}
+
+.search-grid .form-row,
+.pet-card,
+.dashboard-card,
+.menu-card {
+    width: 100%;
+}
+
+.hero-card {
+    padding: 24px;
+}
+
+.hero-card h1 {
+    font-size: 28px;
+}
+
+.sort-form {
+    display: block;
+}
+
+.sort-form select {
+    width: 100%;
+    margin-bottom: 10px;
+}
+
+.pet-info p {
+    display: block;
+}
+
+.pet-info strong {
+    display: block;
+    text-align: left;
+    margin-top: 2px;
+}
+
+
+}
+/* ===============================
+施設ダッシュボード
+================================ */
+
+.dashboard-section {
+margin-bottom: 42px;
+}
+
+.dashboard-two-column {
+display: flex;
+flex-wrap: wrap;
+gap: 24px;
+}
+
+.management-card {
+width: calc(50% - 12px);
+min-width: 320px;
+background-color: #ffffff;
+border: 1px solid #eadcc9;
+border-radius: 24px;
+padding: 24px;
+box-shadow: 0 8px 24px rgba(70, 45, 20, 0.09);
+}
+
+.card-title-row {
+margin-bottom: 18px;
+}
+
+.card-title-row h2 {
+margin-bottom: 0;
+color: #2f2a26;
+font-size: 24px;
+}
+
+.info-list {
+margin-bottom: 18px;
+}
+
+.info-list p {
+display: flex;
+justify-content: space-between;
+gap: 16px;
+margin: 0;
+padding: 10px 0;
+border-bottom: 1px dashed #eadcc9;
+}
+
+.info-list span {
+color: #7a6d60;
+font-weight: bold;
+}
+
+.info-list strong {
+color: #2f2a26;
+text-align: right;
+}
+
+.dashboard-pet-image {
+width: 100%;
+height: 240px;
+object-fit: cover;
+border-radius: 18px;
+margin-bottom: 18px;
+background-color: #f7eadc;
+}
+
+.dashboard-number span {
+font-size: 18px;
+margin-left: 4px;
+}
+
+@media screen and (max-width: 960px) {
+.management-card {
+width: 100%;
+}
+}
+
+@media screen and (max-width: 640px) {
+.info-list p {
+display: block;
+}
+
+.info-list strong {
+    display: block;
+    text-align: left;
+    margin-top: 4px;
+}
+
+.dashboard-pet-image {
+    height: 200px;
+}
+
+}
