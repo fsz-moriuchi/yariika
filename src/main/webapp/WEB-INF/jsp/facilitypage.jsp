@@ -8,10 +8,7 @@
 <title>店舗ページ</title>
 </head>
 <body>
-	<c:if test="${!registered}">
-		<a href="FacilityInfomationServlet"> 施設情報の入力へ </a>
-		<br>
-	</c:if>
+
 	<a href="FacilityInfomationConfirmServlet">施設情報の確認・変更へ</a>
 	<br>
 	<a href="PasswordEditServlet">パスワード変更</a>
