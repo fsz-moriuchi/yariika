@@ -13,7 +13,7 @@
 	<h1>マイページ</h1>
 
 	<form action="UserInfoServlet" method="get">
-		<button type="submit">個人情報確認</button>
+		<button type="submit">個人情報確認・変更</button>
 	</form>
 
 	<form action="PasswordEditServlet" method="get">

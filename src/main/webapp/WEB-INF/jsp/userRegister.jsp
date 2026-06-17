@@ -11,6 +11,9 @@
 
 <body>
 <h1>新規ユーザー作成画面</h1>
+
+<p>全項目登録してください。</p>
+
 <form action="UserRegisterServlet" method="post">
 <p>ユーザーID:<input type="text" name="userId" required></p>
 <p>パスワード:<input type="password" name="password" required></p>
@@ -37,6 +40,7 @@
 <form action="WelcomeServlet" method="get">
 		<input type="submit" value="戻る">
 	</form>
+<p>登録内容の変更はマイページからいつでも行えます。</p>
 
 <c:if test="${not empty errorMsg}">
 <c:out value="${errorMsg}"/>
