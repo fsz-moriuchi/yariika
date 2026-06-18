@@ -182,73 +182,30 @@ public class PetRegisterServlet extends HttpServlet {
 			}
 		}
 
-		//既存ペットアンケート修正
 		else if ("アンケート修正".equals(action)) {
 
 			int petID = Integer.parseInt(request.getParameter("petID"));
-			String name = request.getParameter("name");
-			String gender = request.getParameter("gender");
-			int age = Integer.parseInt(request.getParameter("age"));
-			int categoryId = Integer.parseInt(request.getParameter("categoryId"));
-
-			String[] colorArray = request.getParameterValues("color");
-			String colorText = "";
-			if (colorArray != null) {
-				for (int i = 0; i < colorArray.length; i++) {
-					colorText += colorArray[i];
-					if (i < colorArray.length - 1) {
-						colorText += ",";
-					}
-				}
-			}
-			String pet_size = request.getParameter("pet_size");
-			String vaccine = request.getParameter("vaccine");
-			int price = Integer.parseInt(request.getParameter("price"));
-			String commentText = request.getParameter("commentText");
-			Part filePart = request.getPart("imageFile");
-
-			String imagePath = null;
-
-			if (filePart != null && filePart.getSize() > 0) {
-				String fileName = filePart.getSubmittedFileName();
-				String uploadPath = getServletContext().getRealPath("/images");
-				File dir = new File(uploadPath);
-				if (!dir.exists()) {
-					dir.mkdirs();
-				}
-				filePart.write(uploadPath + File.separator + fileName);
-				imagePath = "images/" + fileName;
-			}
 
 			PetListDAO dao = new PetListDAO();
 			QuestionSurveyDAO qDao = new QuestionSurveyDAO();
 			SurveyChoiceDAO cDao = new SurveyChoiceDAO();
-			PetInformation petInformation = new PetInformation(
-					0,
-					name,
-					gender,
-					age,
-					colorText,
-					pet_size,
-					vaccine,
-					price,
-					commentText,
-					imagePath);
 
+			// 現在の回答
 			List<PetSurvey> petSurveyList = dao.showPetSurvey(petID);
+
+			// 全質問
 			List<Question> questionList = qDao.findAllQuestion();
+
+			// ペット用質問のみ
 			List<Question> petQuestionList = new ArrayList<>();
-			for (Question petQ : questionList) {
-				if (petQ.getQuestionID() <= 10) {
-					petQuestionList.add(petQ);
+			for (Question q : questionList) {
+				if (q.getQuestionID() <= 10) {
+					petQuestionList.add(q);
 				}
 			}
-			List<Choice> allChoiceList = cDao.findAllChoices();
 
-			Pet pet = new Pet(facilityId, categoryId);
-			pet.setPetID(petID);
-			dao.updatePet(pet);
-			dao.updatePetInformation(petInformation);
+			// 全選択肢
+			List<Choice> allChoiceList = cDao.findAllChoices();
 
 			request.setAttribute("petID", petID);
 			request.setAttribute("petSurveyList", petSurveyList);
