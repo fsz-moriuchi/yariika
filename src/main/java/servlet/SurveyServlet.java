@@ -1,0 +1,135 @@
+package servlet;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
+import jakarta.servlet.RequestDispatcher;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+
+import dao.PetListDAO;
+import dao.QuestionSurveyDAO;
+import dao.SurveyChoiceDAO;
+import model.Choice;
+import model.Pet;
+import model.PetInformation;
+import model.PetSurvey;
+import model.Question;
+
+@WebServlet("/SurveyServlet")
+public class SurveyServlet extends HttpServlet {
+	private static final long serialVersionUID = 1L;
+
+	//PetSurveyServlet
+	protected void doGet(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+
+		HttpSession session = request.getSession(false);
+
+		// 未ログインならログイン画面へ
+		if (session == null || session.getAttribute("facilityId") == null) {
+			response.sendRedirect("WelcomeServlet");
+			return;
+		}
+
+		QuestionSurveyDAO Qdao = new QuestionSurveyDAO();
+		SurveyChoiceDAO Cdao = new SurveyChoiceDAO();
+		List<Question> questionList = Qdao.findAllQuestion();
+		List<Question> petQuestionList = new ArrayList<>();
+
+		for (Question petQ : questionList) {
+			if (petQ.getQuestionID() <= 10) {
+				petQuestionList.add(petQ);
+			}
+		}
+
+		List<Choice> allChoiceList = Cdao.findAllChoices();
+
+		request.setAttribute("petQuestionList", petQuestionList);
+		request.setAttribute("allChoiceList", allChoiceList);
+
+		RequestDispatcher dispatcher = request.getRequestDispatcher("WEB-INF/jsp/petSurvey.jsp");
+		dispatcher.forward(request, response);
+	}
+
+	protected void doPost(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+		request.setCharacterEncoding("UTF-8");
+		HttpSession session = request.getSession();
+		String nowPetID = request.getParameter("petID");
+
+		//新規入力
+		if (nowPetID == null || nowPetID.isEmpty()) {
+			Pet pet = (Pet) session.getAttribute("pet");
+			PetInformation petInformation = (PetInformation) session.getAttribute("petInformation");
+
+			if (pet == null || petInformation == null) {
+				response.setContentType("text/html; charset=UTF-8");
+				response.getWriter().println("ペット情報がありません。ペット情報入力画面から登録してください。");
+				return;
+			}
+
+			PetListDAO dao = new PetListDAO();
+			int petID = dao.createPet(pet);
+
+			//追加
+			if (petID == -1) {
+				response.setContentType("text/html; charset=UTF-8");
+				response.getWriter().println("ペット情報の登録に失敗しました。");
+				return;
+			}
+			//ここまで
+
+			petInformation.setPetID(petID);
+			boolean petInformationResult = dao.createPetInformation(petInformation);
+			boolean petSurveyResult = true;
+
+			for (int qID = 1; qID <= 10; qID++) {
+				int surveyChoiceID = Integer.parseInt(request.getParameter("q" + qID));
+				PetSurvey petSurvey = new PetSurvey(petID, qID, surveyChoiceID);
+				if (!dao.createPetSurvey(petSurvey)) {
+					petSurveyResult = false;
+					break;
+				}
+				;
+			}
+			session.removeAttribute("pet");
+			session.removeAttribute("petInformation");
+
+			if (petInformationResult && petSurveyResult) {
+				RequestDispatcher dispatcher = request.getRequestDispatcher("WEB-INF/jsp/petRegisterSuccess.jsp");
+				dispatcher.forward(request, response);
+			} else {
+				response.setContentType("text/html; charset=UTF-8");
+				response.getWriter().print("登録失敗");
+			}
+
+		}
+		//内容修正
+		else {
+			int petID = Integer.parseInt(nowPetID);
+			PetListDAO dao = new PetListDAO();
+			boolean petSurveyResult = true;
+			for (int qID = 1; qID <= 10; qID++) {
+				int surveyChoiceID = Integer.parseInt(request.getParameter("q" + qID));
+				if (!dao.updatePetSurvey(petID, qID, surveyChoiceID)) {
+					petSurveyResult = false;
+					break;
+				}
+				;
+			}
+			if (petSurveyResult) {
+				RequestDispatcher dispatcher = request.getRequestDispatcher("WEB-INF/jsp/petRegisterSuccess.jsp");
+				dispatcher.forward(request, response);
+			} else {
+				response.setContentType("text/html; charset=UTF-8");
+				response.getWriter().println("更新失敗");
+			}
+		}
+	}
+}
