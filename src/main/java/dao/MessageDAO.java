@@ -85,7 +85,14 @@ public class MessageDAO {
 		//データベースに接続
 		try (Connection conn = DButil.getConnection()) {
 			//SELECT文を準備
-			String sql = "SELECT * FROM Message WHERE USER_ID = ? AND FACILITY_ID = ? AND petID = ? ORDER BY CREATED_AT ASC";
+			//String sql = "SELECT * FROM Message WHERE USER_ID = ? AND FACILITY_ID = ? AND petID = ? ORDER BY CREATED_AT ASC";
+			String sql =
+		            "SELECT m.*, u.USER_NAME, f.facilityName " +
+		            "FROM Message m " +
+		            "LEFT JOIN UserInfo u ON m.USER_ID = u.USER_ID " +
+		            "LEFT JOIN FacilityInformation f ON m.FACILITY_ID = f.FACILITY_ID " +
+		            "WHERE m.USER_ID = ? AND m.FACILITY_ID = ? AND m.petID = ? " +
+		            "ORDER BY m.CREATED_AT ASC";
 			PreparedStatement pStmt = conn.prepareStatement(sql);
 			pStmt.setString(1, userId);
 			pStmt.setString(2, facilityId);
@@ -99,8 +106,10 @@ public class MessageDAO {
 				String messageText = rs.getString("MESSAGE_TEXT");
 				String senderType = rs.getString("SENDER_TYPE");
 				Timestamp createdAt = rs.getTimestamp("CREATED_AT");
+				String userName = rs.getString("USER_NAME");
+				String facilityName = rs.getString("facilityName");
 
-				Message message = new Message(uid, fid, pid, messageText, senderType, createdAt);
+				Message message = new Message(uid, fid, pid, messageText, senderType, createdAt,userName, facilityName);
 				messageList.add(message); //listに一件ずつ追加
 			}
 		} catch (Exception e) {

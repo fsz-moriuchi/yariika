@@ -12,15 +12,19 @@ public class Message {
 	private String messageText;
 	private String senderType;
 	private Timestamp createdAt;
+	private String userName;
+	private String facilityName;
 	
 	//SELECT用
-	public Message(String userId, String facilityId, int petID, String messageText, String senderType, Timestamp createdAt) {
+	public Message(String userId, String facilityId, int petID, String messageText, String senderType, Timestamp createdAt, String userName, String facilityName) {
 		this.userId = userId;
 		this.facilityId = facilityId;
 		this.petID = petID;
 		this.messageText = messageText;
 		this.senderType = senderType;
 		this.createdAt = createdAt;
+		this.userName = userName;
+		this.facilityName = facilityName;
 	}
 	
 	//INSERT用
@@ -58,6 +62,12 @@ public class Message {
 		LocalDateTime ldt = createdAt.toLocalDateTime(); 
 	    DateTimeFormatter fmt = DateTimeFormatter.ofPattern("HH:mm");
 	    return ldt.format(fmt);
+	}
+	public String getUserName() {
+		return userName;
+	}
+	public String getFacilityName() {
+		return facilityName;
 	}
 
 }
