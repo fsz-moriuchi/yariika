@@ -73,41 +73,51 @@ public class MessageDAO {
 	}
 
 	//メッセージ取得
-	public List<Message> getMessage(String userId, String facilityId, int petID) {
-		List<Message> messageList = new ArrayList<>();
-
-		//JDBCドライバを読み込む
-		try {
-			Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
-		} catch (ClassNotFoundException e) {
-			throw new IllegalStateException("JDBCドライバを読み込めませんでした");
-		}
-		//データベースに接続
-		try (Connection conn = DButil.getConnection()) {
-			//SELECT文を準備
-			String sql = "SELECT * FROM Message WHERE USER_ID = ? AND FACILITY_ID = ? AND petID = ? ORDER BY CREATED_AT ASC";
-			PreparedStatement pStmt = conn.prepareStatement(sql);
-			pStmt.setString(1, userId);
-			pStmt.setString(2, facilityId);
-			pStmt.setInt(3, petID);
-
-			ResultSet rs = pStmt.executeQuery();
-			while (rs.next()) {
-				String uid = rs.getString("USER_ID");
-				String fid = rs.getString("FACILITY_ID");
-				int pid = rs.getInt("petID");
-				String messageText = rs.getString("MESSAGE_TEXT");
-				String senderType = rs.getString("SENDER_TYPE");
-				Timestamp createdAt = rs.getTimestamp("CREATED_AT");
-
-				Message message = new Message(uid, fid, pid, messageText, senderType, createdAt);
-				messageList.add(message); //listに一件ずつ追加
+		public List<Message> getMessage(String userId, String facilityId, int petID) {
+			List<Message> messageList = new ArrayList<>();
+	 
+			//JDBCドライバを読み込む
+			try {
+				Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
+			} catch (ClassNotFoundException e) {
+				throw new IllegalStateException("JDBCドライバを読み込めませんでした");
 			}
-		} catch (Exception e) {
-			e.printStackTrace();
+			//データベースに接続
+			try (Connection conn = DButil.getConnection()) {
+				//SELECT文を準備
+				//String sql = "SELECT * FROM Message WHERE USER_ID = ? AND FACILITY_ID = ? AND petID = ? ORDER BY CREATED_AT ASC";
+				String sql =
+			            "SELECT m.*, u.USER_NAME, f.facilityName " +
+			            "FROM Message m " +
+			            "LEFT JOIN UserInfo u ON m.USER_ID = u.USER_ID " +
+			            "LEFT JOIN FacilityInformation f ON m.FACILITY_ID = f.FACILITY_ID " +
+			            "WHERE m.USER_ID = ? AND m.FACILITY_ID = ? AND m.petID = ? " +
+			            "ORDER BY m.CREATED_AT ASC";
+				PreparedStatement pStmt = conn.prepareStatement(sql);
+				pStmt.setString(1, userId);
+				pStmt.setString(2, facilityId);
+				pStmt.setInt(3, petID);
+	 
+				ResultSet rs = pStmt.executeQuery();
+				while (rs.next()) {
+					String uid = rs.getString("USER_ID");
+					String fid = rs.getString("FACILITY_ID");
+					int pid = rs.getInt("petID");
+					String messageText = rs.getString("MESSAGE_TEXT");
+					String senderType = rs.getString("SENDER_TYPE");
+					Timestamp createdAt = rs.getTimestamp("CREATED_AT");
+					String userName = rs.getString("USER_NAME");
+					String facilityName = rs.getString("facilityName");
+	 
+					Message message = new Message(uid, fid, pid, messageText, senderType, createdAt,userName, facilityName);
+					messageList.add(message); //listに一件ずつ追加
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			return messageList;
 		}
-		return messageList;
-	}
+	 
 
 	//店舗側メッセージ一覧表示
 	public List<MessageList> findMessageListByFacilityId(String facilityId) {

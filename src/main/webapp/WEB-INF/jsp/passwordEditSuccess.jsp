@@ -6,6 +6,8 @@
 <head>
 <meta charset="UTF-8">
 <title>passwordEditSuccess</title>
+<link rel="stylesheet" href="${pageContext.request.contextPath}/style.css">
+
 </head>
 <body>
 	<c:choose>

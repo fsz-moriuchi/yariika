@@ -1,91 +1,147 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
-	pageEncoding="UTF-8"%>
+pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="jakarta.tags.core"%>
+
 <!DOCTYPE html>
+
 <html>
 <head>
 <meta charset="UTF-8">
 <title>予約確認</title>
+<link rel="stylesheet" href="${pageContext.request.contextPath}/style.css">
 </head>
 
 <body>
-	<h1>予約確認</h1>
+
+<div class="page-container">
+
+<div class="site-header">
+
+	<div class="site-logo-wrap">
+		<h1 class="site-logo">PET MATCH</h1>
+	</div>
+
+</div>
+
+<div class="reservation-confirm-card">
+
+<h1>予約確認</h1>
+
+<p class="welcome-message">
+
+</p>
 
 
-	現在の予約情報一覧
-	<form action="ReservationConfirmServlet" method="get">
+<div class="reservation-filter-box">
 
-		<button type="submit" name="dateStatus" value="all">すべての予約</button>
-		<button type="submit" name="dateStatus" value="today">今日の予約</button>
-		<button type="submit" name="dateStatus" value="tomorrow">明日の予約</button>
+	<p class="reservation-section-title">現在の予約情報一覧</p>
 
-	</form>
-	<p>表示件数：${reserveViewList.size()}件</p>
-	<table border="1" style="width: 100%">
+<form action="ReservationConfirmServlet" method="get" class="reservation-filter-form">
+
+	<button type="submit" name="dateStatus" value="all">すべての予約</button>
+	<button type="submit" name="dateStatus" value="today">今日の予約</button>
+	<button type="submit" name="dateStatus" value="tomorrow">明日の予約</button>
+
+</form>
+
+</div>
+
+<div class="reservation-count-box">
+	<span class="reservation-count-label">表示件数</span>
+	<span class="reservation-count-number">${reserveViewList.size()}</span>
+	<span class="reservation-count-unit">件</span>
+</div>
+
+<div class="reservation-table-wrap">
+
+<table border="1" style="width: 100%" class="reservation-table">
+
+	<tr>
+		<th>予約情報</th>
+		<th>ペット情報</th>
+		<th>お客様情報</th>
+		<th>お客様連絡先</th>
+		<th>予約日時</th>
+		<th>操作</th>
+	</tr>
+
+	<c:forEach var="reserveView" items="${reserveViewList}">
 
 		<tr>
-			<th>予約番号</th>
-			<th>写真</th>
-			<th>ペット情報</th>
-			<th>お客様情報</th>
-			<th>お客様連絡先</th>
-			<th>予約日時</th>
-			<th>操作</th>
-		</tr>
 
-		<c:forEach var="reserveView" items="${reserveViewList}">
+			<td>
+				<div class="reservation-photo-cell">
 
-			<tr>
+					<span class="reservation-id-badge">予約番号:${reserveView.reservationID}</span>
 
-				<td>予約番号:${reserveView.reservationID}</td>
-
-				<td><c:choose>
+					<c:choose>
 						<c:when test="${not empty reserveView.imagePath}">
 							<img
 								src="${pageContext.request.contextPath}/${reserveView.imagePath}"
-								alt="ペット画像" width="120" height="120" style="object-fit: cover;">
+								alt="ペット画像" width="120" height="120" style="object-fit: cover;" class="reservation-pet-image">
 						</c:when>
 
 						<c:otherwise>
-                画像なし
-            </c:otherwise>
-					</c:choose></td>
+            				<div class="no-image-box">画像なし</div>
+        				</c:otherwise>
+					</c:choose>
 
-				<td>ペットID：${reserveView.petID}<br>
-					名前：${reserveView.petName}<br> 種類：${reserveView.categoryName}<br>
-					性別：${reserveView.genderName} <br> 年齢：${reserveView.petAge}歳
-				</td>
+				</div>
+			</td>
 
-				<td>ユーザーID：${reserveView.userID}<br>
-					名前：${reserveView.userName}<br> 年齢：${reserveView.userAge}歳<br>
-					性別：${reserveView.userGender}
-				</td>
+			<td>
+				<p><span class="pet-dot">・</span><span class="pet-label">ペットID：</span>${reserveView.petID}</p>
+				<p><span class="pet-dot">・</span><span class="pet-label">名前：</span>${reserveView.petName}</p>
+				<p><span class="pet-dot">・</span><span class="pet-label">種類：</span>${reserveView.categoryName}</p>
+				<p><span class="pet-dot">・</span><span class="pet-label">性別：</span>${reserveView.genderName}</p>
+				<p><span class="pet-dot">・</span><span class="pet-label">年齢：</span>${reserveView.petAge}歳</p>
+			</td>
 
-				<td>電話番号：${reserveView.userTel}<br>
-					メールアドレス：${reserveView.userMail}
-				</td>
+			<td>
+				<p><span class="pet-dot">・</span><span class="pet-label">ユーザーID：</span>${reserveView.userID}</p>
+				<p><span class="pet-dot">・</span><span class="pet-label">名前：</span>${reserveView.userName}</p>
+				<p><span class="pet-dot">・</span><span class="pet-label">年齢：</span>${reserveView.userAge}歳</p>
+				<p><span class="pet-dot">・</span><span class="pet-label">性別：</span>${reserveView.userGender}</p>
+			</td>
 
-				<td>${reserveView.formattedReserveTime}</td>
+			<td>
+				<p><span class="pet-dot">・</span><span class="pet-label">電話番号：</span>${reserveView.userTel}</p>
+				<p><span class="pet-dot">・</span><span class="pet-label">メールアドレス：</span>${reserveView.userMail}</p>
+			</td>
 
-				<td>
-					<form action="ReservationEditServlet" method="get">
-						<input type="hidden" name="reservationID"
-							value="${reserveView.reservationID}"> <input
-							type="hidden" name="reserveTime"
-							value="${reserveView.reserveTime}"> <input type="submit"
-							value="予約日時の変更">
-					</form>
-				</td>
-			</tr>
+			<td>
+				<span class="reservation-time-badge">${reserveView.formattedReserveTime}</span>
+			</td>
 
-		</c:forEach>
+			<td>
+				<form action="ReservationEditServlet" method="get" class="reservation-edit-form">
+					<input type="hidden" name="reservationID"
+						value="${reserveView.reservationID}"> <input
+						type="hidden" name="reserveTime"
+						value="${reserveView.reserveTime}"> <input type="submit"
+						value="予約日時の変更">
+				</form>
+			</td>
+		</tr>
 
-	</table>
+	</c:forEach>
 
-	<p>予約の対応完了およびキャンセルの場合は、修正から予約の削除を行ってください。</p>
+</table>
 
-	<form action="FacilityPageServlet" method="get">
+</div>
+
+<p class="reservation-note">予約の対応完了およびキャンセルの場合は、修正から予約の削除を行ってください。</p>
+
+<form action="FacilityPageServlet" method="get" class="reservation-back-form">
+	<div class="form-button-area center-button-area">
 		<button type="submit">戻る</button>
-	</form>
+	</div>
+</form>
+
+</div>
+
+
+</div>
+
 </body>
 </html>
