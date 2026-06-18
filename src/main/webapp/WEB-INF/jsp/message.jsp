@@ -11,98 +11,112 @@ pageEncoding="UTF-8"%>
 <link rel="stylesheet" href="${pageContext.request.contextPath}/style.css">
 </head>
 
-<body>
-
-<div class="page-container">
-
-<div class="site-header">
-
-    <div class="site-logo-wrap">
-        <h1 class="site-logo">PET MATCH</h1>
-    </div>
-
-</div>
-
-<div class="chat-card">
+<body class="chat-page">
 
 <c:if test="${not empty errorMessage}">
-	<script>
-		alert("${errorMessage}");
-		window.location.href = "MessageListServlet";
-	</script>
+
+<script>
+alert("${errorMessage}");
+window.location.href = "MessageListServlet";
+</script>
+
 </c:if>
 
 <h1>メッセージ</h1>
 
-<p class="welcome-message">
-    メッセージを入力してください。。
-</p>
+<div class="container">
 
-<div class="chat-message-area">
+<%-- ★ ① タイトルを出し分け --%>
+<c:choose>
+<c:when test="${not empty sessionScope.userId}">
+<c:choose>
+<c:when test="${not empty messageList}"> <h2>店舗(${messageList[0].facilityName})とのメッセージ</h2>
+</c:when>
+<c:otherwise> <h2>店舗(${param.facilityId})とのメッセージ</h2>
+</c:otherwise>
+</c:choose>
+</c:when>
 
+
+<c:otherwise>
+	<c:choose>
+		<c:when test="${not empty messageList}">
+			<h2>${messageList[0].userName}さんとのメッセージ</h2>
+		</c:when>
+		<c:otherwise>
+			<h2>${param.userId}さんとのメッセージ</h2>
+		</c:otherwise>
+	</c:choose>
+</c:otherwise>
+
+
+</c:choose>
+
+<div class="chat-box">
+
+<%-- ★ ② メッセージ表示 --%>
 <c:forEach var="m" items="${messageList}">
 	<c:choose>
+
+		<%-- ユーザー --%>
 		<c:when test="${m.senderType == 'USER'}">
-			<p class="chat-user-message" style="text-align: right;">
-				${m.userId}：${m.messageText}(${m.createdAt })</p>
+			<div class="message user">
+				<div class="text">${m.messageText}</div>
+				<div class="time">${m.formattedTime}</div>
+			</div>
 		</c:when>
 
-		<%--店舗側 --%>
+		<%-- 店舗 --%>
 		<c:otherwise>
-			<p class="chat-facility-message" style="text-align: left;">
-				店舗(${m.facilityId})：${m.messageText} (${m.createdAt})</p>
+			<div class="message facility">
+				<div class="text">${m.messageText}</div>
+				<div class="time">${m.formattedTime}</div>
+			</div>
 		</c:otherwise>
+
 	</c:choose>
 </c:forEach>
 
+
 </div>
 
+<%-- 入力フォーム --%>
 
-<form class="chat-form" action="MessageServlet" method="post">
+<div class="chat-footer">
+<form action="MessageServlet" method="post" class="chat-form">
 	<input type="hidden" name="petID" value="${petDetail.petID}">
-	<input type="hidden" name="userId" value="${param.userId}"> <input
-		type="hidden" name="facilityId" value="${param.facilityId}">
+	<input type="hidden" name="userId" value="${param.userId}">
+	<input type="hidden" name="facilityId" value="${param.facilityId}">
 	<input type="hidden" name="from" value="${from}">
 
-	<p>
-		<input type="text" name="messageText">
-	</p>
 
-    <div class="form-button-area center-button-area">
-	    <button type="submit">送信</button>
-    </div>
+<input type="text" name="messageText">
+<button type="submit">送信</button>
+
+
 </form>
 
-<%--<c:choose>
-
-
-<c:when test="${sessionScope.user != null}"> <a href="MessageListServlet?petID=${petDetail.petID}">戻る</a>
-</c:when>
-<c:when test="${sessionScope.facilityId != null}"> <a href="MessageListServlet?petID=${petDetail.petID}">戻る</a>
-</c:when>
-</c:choose>--%>
-
-<div class="form-button-area center-button-area">
-
+<%-- 戻る --%>
 <c:choose>
-
-	<c:when test="${from != 'list'}">
-		<a class="clear-button" href="PetDetailServlet?petID=${petDetail.petID}&from=${from}">
-			戻る </a>
-	</c:when>
-
-	<c:otherwise>
-		<a class="clear-button" href="MessageListServlet"> 戻る </a>
-	</c:otherwise>
-
+<c:when test="${from != 'list'}"> <a href="PetDetailServlet?petID=${petDetail.petID}&from=${from}" class="back-link">
+戻る </a>
+</c:when>
+<c:otherwise> <a href="MessageListServlet" class="back-link">戻る</a>
+</c:otherwise>
 </c:choose>
 
 </div>
 
 </div>
 
-
-</div>
+<script>
+function scrollToBottom() {
+    const chatBox = document.querySelector(".chat-box");
+    chatBox.scrollTop = chatBox.scrollHeight;
+}
+ 
+window.onload = scrollToBottom;
+</script>
 
 </body>
 </html>

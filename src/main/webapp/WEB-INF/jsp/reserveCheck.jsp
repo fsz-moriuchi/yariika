@@ -87,7 +87,7 @@ pageEncoding="UTF-8"%>
 
 </c:choose>
 
-<p class="notice">予約日時の変更・キャンセルについては、直接店舗へお問い合わせください。<br>
+<p class="notice reserve-warning-note">予約日時の変更・キャンセルについては、直接店舗へお問い合わせください。<br>
 無断キャンセルや遅刻など、他のお客様や店舗の運営に支障をきたす行為はおやめ下さい。</p>
 
 <div class="form-button-area center-button-area">

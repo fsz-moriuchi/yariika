@@ -1303,6 +1303,40 @@ tr:nth-child(even) {
     margin: 0;
 }
 /* =========================
+Favorite Page Image
+Show Full Image
+========================= */
+
+.favorite-card .pet-image {
+width: auto !important;
+height: auto !important;
+max-width: 100%;
+max-height: none;
+
+object-fit: contain !important;
+display: block;
+margin: 0 auto 18px auto;
+
+border-radius: 24px;
+border: 3px solid #fff2b8;
+background: #fffdf4;
+
+box-shadow:
+    0 5px 0 #e7c45d,
+    0 10px 16px rgba(120, 90, 40, 0.18);
+
+
+}
+
+.favorite-card .pet-card {
+align-items: center;
+}
+
+.favorite-card .pet-card img {
+object-fit: contain !important;
+}
+
+/* =========================
    Message / メッセージ一覧
 ========================= */
 
@@ -2125,4 +2159,3061 @@ tr:nth-child(even) {
     box-shadow: none;
     padding: 0;
     margin: 0;
+}
+/* =========================
+Chat Page / メッセージ画面
+PET MATCH Theme
+========================= */
+
+.chat-page {
+margin: 0;
+height: 100vh;
+display: flex;
+flex-direction: column;
+background:
+radial-gradient(circle at 10% 10%, rgba(255, 138, 101, 0.18) 0, transparent 22%),
+radial-gradient(circle at 90% 18%, rgba(123, 207, 166, 0.22) 0, transparent 24%),
+linear-gradient(180deg, #fff7d6 0%, #fff2c2 100%);
+font-family: "Comic Sans MS", "Trebuchet MS", "Yu Gothic", "Hiragino Sans", "Meiryo", sans-serif;
+color: var(--text);
+}
+
+.chat-page h1 {
+text-align: center;
+margin: 18px 0 8px;
+color: var(--text);
+font-size: 34px;
+font-weight: 900;
+letter-spacing: 1px;
+text-shadow:
+2px 2px 0 #fffdf4,
+5px 5px 0 var(--main),
+8px 8px 0 var(--accent);
+}
+
+.chat-page h1::before {
+content: "🐾 ";
+}
+
+.chat-page h1::after {
+content: " 🐾";
+}
+
+.chat-page .header {
+flex: 0 0 auto;
+padding: 10px;
+text-align: center;
+font-size: 20px;
+}
+
+/* =========================
+全体コンテナ
+========================= */
+
+.chat-page .container {
+flex: 1;
+display: flex;
+flex-direction: column;
+align-items: center;
+height: 100%;
+overflow: hidden;
+}
+
+/* =========================
+タイトル
+========================= */
+
+.chat-page .container h2 {
+margin: 6px 0 16px;
+color: var(--text);
+font-size: 22px;
+font-weight: 900;
+text-shadow:
+2px 2px 0 #fffdf4,
+4px 4px 0 var(--main-soft);
+}
+
+.chat-page .container h2::before {
+content: "💬 ";
+}
+
+/* =========================
+LINE風 Chat Page
+PET MATCH Theme
+空間調整版
+========================= */
+
+.chat-page {
+margin: 0;
+min-height: 100vh;
+height: 100vh;
+display: flex;
+flex-direction: column;
+background:
+radial-gradient(circle at 10% 10%, rgba(255, 138, 101, 0.14) 0, transparent 22%),
+radial-gradient(circle at 90% 18%, rgba(123, 207, 166, 0.20) 0, transparent 24%),
+linear-gradient(180deg, #fff7d6 0%, #fff2c2 100%);
+font-family: "Comic Sans MS", "Trebuchet MS", "Yu Gothic", "Hiragino Sans", "Meiryo", sans-serif;
+color: var(--text);
+}
+
+.chat-page h1 {
+flex: 0 0 auto;
+text-align: center;
+margin: 18px 0 12px;
+color: var(--text);
+font-size: 34px;
+font-weight: 900;
+letter-spacing: 1px;
+text-shadow:
+2px 2px 0 #fffdf4,
+5px 5px 0 var(--main),
+8px 8px 0 var(--accent);
+}
+
+.chat-page h1::before {
+content: "🐾 ";
+}
+
+.chat-page h1::after {
+content: " 🐾";
+}
+
+/* 外框不要太滿，留上下左右空間 */
+.chat-page .container {
+flex: 1;
+width: 86%;
+max-width: 860px;
+margin: 0 auto 28px auto;
+
+
+display: flex;
+flex-direction: column;
+align-items: stretch;
+overflow: hidden;
+
+background: linear-gradient(180deg, #ffffff 0%, var(--card) 100%);
+border: 3px solid var(--border);
+border-radius: 32px;
+box-shadow:
+    0 8px 0 #e5bd62,
+    0 18px 28px rgba(160, 120, 40, 0.20);
+
+
+}
+
+/* 上方對話對象標題 */
+.chat-page .container h2 {
+flex: 0 0 auto;
+margin: 0;
+padding: 16px 20px;
+text-align: center;
+color: var(--text);
+font-size: 20px;
+font-weight: 900;
+background: linear-gradient(180deg, #fff8cf 0%, #ffeaa6 100%);
+border-bottom: 2px solid var(--border);
+}
+
+.chat-page .container h2::before {
+content: "💬 ";
+}
+
+/* 聊天區：內距加大，邊框感放鬆 */
+.chat-page .chat-box {
+flex: 1;
+height: 0;
+overflow-y: auto;
+
+
+padding: 32px 36px;
+box-sizing: border-box;
+
+background:
+    radial-gradient(circle at 15% 15%, rgba(255, 138, 101, 0.07) 0, transparent 18%),
+    radial-gradient(circle at 85% 25%, rgba(123, 207, 166, 0.09) 0, transparent 20%),
+    #fffdf4;
+
+
+}
+
+.chat-page .chat-box::-webkit-scrollbar {
+width: 10px;
+}
+
+.chat-page .chat-box::-webkit-scrollbar-track {
+background: #fff2c2;
+border-radius: 999px;
+}
+
+.chat-page .chat-box::-webkit-scrollbar-thumb {
+background: linear-gradient(180deg, var(--main) 0%, var(--accent) 100%);
+border-radius: 999px;
+}
+
+/* 訊息泡泡：變柔和、留距離 */
+.chat-page .message {
+max-width: 64%;
+width: fit-content;
+min-width: 72px;
+
+
+padding: 11px 15px;
+margin-bottom: 20px;
+
+border-radius: 20px;
+word-break: break-word;
+
+font-weight: 900;
+line-height: 1.65;
+position: relative;
+box-sizing: border-box;
+
+
+}
+
+/* 自分：右側・黃色泡泡 */
+.chat-page .message.user {
+margin-left: auto;
+margin-right: 10px;
+
+
+background: linear-gradient(180deg, #fff3b8 0%, #f6c85f 100%);
+color: var(--text);
+border: 2px solid #e4b84c;
+
+box-shadow:
+    0 3px 0 #d9a83d,
+    0 7px 12px rgba(160, 120, 40, 0.14);
+
+
+}
+
+/* 自分泡泡尾巴 */
+.chat-page .message.user::after {
+content: "";
+position: absolute;
+right: -8px;
+top: 16px;
+
+
+width: 0;
+height: 0;
+border-top: 7px solid transparent;
+border-bottom: 7px solid transparent;
+border-left: 8px solid #e4b84c;
+
+
+}
+
+/* 相手：左側・薄荷綠泡泡 */
+.chat-page .message.facility {
+margin-right: auto;
+margin-left: 10px;
+
+
+background: linear-gradient(180deg, #e8fbf1 0%, #aeeacb 100%);
+color: var(--text);
+border: 2px solid var(--mint-dark);
+
+box-shadow:
+    0 3px 0 #4fa77c,
+    0 7px 12px rgba(80, 150, 110, 0.14);
+
+
+}
+
+/* 相手泡泡尾巴 */
+.chat-page .message.facility::before {
+content: "";
+position: absolute;
+left: -8px;
+top: 16px;
+
+
+width: 0;
+height: 0;
+border-top: 7px solid transparent;
+border-bottom: 7px solid transparent;
+border-right: 8px solid var(--mint-dark);
+
+
+}
+
+.chat-page .text {
+font-size: 15px;
+}
+
+.chat-page .time {
+font-size: 11px;
+color: rgba(74, 59, 42, 0.62);
+text-align: right;
+margin-top: 6px;
+}
+
+/* 下方輸入區：不要貼太緊 */
+.chat-page .chat-footer {
+flex: 0 0 auto;
+padding: 18px 24px 22px 24px;
+box-sizing: border-box;
+
+
+background: linear-gradient(180deg, #fff8cf 0%, #ffeaa6 100%);
+border-top: 2px solid var(--border);
+
+
+}
+
+/* フォーム横並び */
+.chat-page .chat-form {
+display: flex;
+gap: 12px;
+align-items: center;
+
+
+background: none;
+border: none;
+box-shadow: none;
+padding: 0;
+margin: 0;
+
+
+}
+
+.chat-page .chat-form input[type="text"] {
+flex: 1;
+height: 48px;
+padding: 0 18px;
+box-sizing: border-box;
+
+
+border-radius: 999px;
+border: 2px solid #eacb70;
+background: #ffffff;
+color: var(--text);
+font-size: 15px;
+font-weight: 900;
+
+box-shadow:
+    inset 0 2px 4px rgba(120, 90, 40, 0.08),
+    0 3px 0 #f1d888;
+
+
+}
+
+.chat-page .chat-form input[type="text"]:focus {
+outline: none;
+border-color: var(--accent);
+box-shadow:
+0 0 0 4px rgba(255, 138, 101, 0.16),
+inset 0 2px 4px rgba(120, 90, 40, 0.08);
+}
+
+.chat-page .chat-form button {
+min-width: 110px;
+height: 48px;
+padding: 0 20px;
+
+
+border: 2px solid #fff2ba;
+background: linear-gradient(180deg, #ffd978 0%, var(--main) 100%);
+color: var(--text);
+border-radius: 999px;
+
+cursor: pointer;
+font-weight: 900;
+
+box-shadow:
+    0 5px 0 #d9a83d,
+    0 10px 16px rgba(160, 120, 40, 0.18);
+transition: 0.18s;
+
+
+}
+
+.chat-page .chat-form button::before {
+content: "🐾 ";
+}
+
+.chat-page .chat-form button:hover {
+background: linear-gradient(180deg, #ffa27f 0%, var(--accent) 100%);
+color: #ffffff;
+transform: translateY(2px);
+box-shadow:
+0 3px 0 #d85f3f,
+0 8px 14px rgba(255, 138, 101, 0.22);
+}
+
+/* 戻るリンク */
+.chat-page .back-link {
+display: inline-flex;
+align-items: center;
+justify-content: center;
+
+
+min-width: 140px;
+height: 44px;
+margin-top: 16px;
+padding: 0 22px;
+box-sizing: border-box;
+
+background: linear-gradient(180deg, #9ee5c0 0%, var(--mint) 100%);
+color: #ffffff;
+border: 2px solid #c7f3dd;
+border-radius: 999px;
+
+text-decoration: none;
+font-weight: 900;
+
+box-shadow:
+    0 5px 0 #4fa77c,
+    0 10px 16px rgba(80, 150, 110, 0.18);
+transition: 0.18s;
+
+
+}
+
+.chat-page .back-link::before {
+content: "← ";
+}
+
+.chat-page .back-link:hover {
+background: linear-gradient(180deg, #8adbad 0%, var(--mint-dark) 100%);
+color: #ffffff;
+text-decoration: none;
+transform: translateY(2px);
+box-shadow:
+0 3px 0 #438e69,
+0 8px 14px rgba(80, 150, 110, 0.22);
+}
+
+
+/* =========================
+入力エリア
+========================= */
+
+.chat-page .chat-footer {
+flex: 0 0 auto;
+padding: 14px 18px 18px 18px;
+box-sizing: border-box;
+
+
+background: linear-gradient(180deg, #fff8cf 0%, #ffeaa6 100%);
+border-top: 3px solid var(--border);
+
+
+}
+
+/* フォーム横並び */
+.chat-page .chat-form {
+display: flex;
+gap: 10px;
+align-items: center;
+
+
+background: none;
+border: none;
+box-shadow: none;
+padding: 0;
+margin: 0;
+
+
+}
+
+/* 入力欄 */
+.chat-page .chat-form input[type="text"] {
+flex: 1;
+height: 48px;
+padding: 0 16px;
+box-sizing: border-box;
+
+border-radius: 999px;
+border: 3px solid #eacb70;
+background: #ffffff;
+color: var(--text);
+font-size: 15px;
+font-weight: 900;
+
+box-shadow:
+    inset 0 2px 4px rgba(120, 90, 40, 0.08),
+    0 3px 0 #f1d888;
+
+
+}
+
+.chat-page .chat-form input[type="text"]:focus {
+outline: none;
+border-color: var(--accent);
+box-shadow:
+0 0 0 4px rgba(255, 138, 101, 0.18),
+inset 0 2px 4px rgba(120, 90, 40, 0.08);
+}
+
+/* 送信ボタン */
+.chat-page .chat-form button {
+min-width: 110px;
+height: 48px;
+padding: 0 20px;
+
+
+border: 2px solid #fff2ba;
+background: linear-gradient(180deg, #ffd978 0%, var(--main) 100%);
+color: var(--text);
+border-radius: 999px;
+
+cursor: pointer;
+font-weight: 900;
+
+box-shadow:
+    0 5px 0 #d9a83d,
+    0 10px 16px rgba(160, 120, 40, 0.2);
+transition: 0.18s;
+
+
+}
+
+.chat-page .chat-form button::before {
+content: "🐾 ";
+}
+
+.chat-page .chat-form button:hover {
+background: linear-gradient(180deg, #ffa27f 0%, var(--accent) 100%);
+color: #ffffff;
+transform: translateY(2px);
+box-shadow:
+0 3px 0 #d85f3f,
+0 8px 14px rgba(255, 138, 101, 0.24);
+}
+
+/* 戻るリンク */
+.chat-page .back-link {
+display: inline-flex;
+align-items: center;
+justify-content: center;
+
+
+min-width: 140px;
+height: 44px;
+margin-top: 12px;
+padding: 0 22px;
+box-sizing: border-box;
+
+background: linear-gradient(180deg, #9ee5c0 0%, var(--mint) 100%);
+color: #ffffff;
+border: 2px solid #c7f3dd;
+border-radius: 999px;
+
+text-decoration: none;
+font-weight: 900;
+
+box-shadow:
+    0 5px 0 #4fa77c,
+    0 10px 16px rgba(80, 150, 110, 0.2);
+transition: 0.18s;
+
+
+}
+
+.chat-page .back-link::before {
+content: "← ";
+}
+
+.chat-page .back-link:hover {
+background: linear-gradient(180deg, #8adbad 0%, var(--mint-dark) 100%);
+color: #ffffff;
+text-decoration: none;
+transform: translateY(2px);
+box-shadow:
+0 3px 0 #438e69,
+0 8px 14px rgba(80, 150, 110, 0.25);
+}
+/* =========================
+   Complete / 予約完了
+========================= */
+
+.complete-card {
+    width: 100%;
+    max-width: 820px;
+    margin: 0 auto;
+    background: linear-gradient(180deg, #ffffff 0%, var(--card) 100%);
+    border: 4px solid var(--border);
+    border-radius: 36px;
+    padding: 42px;
+    text-align: center;
+    box-shadow:
+        0 10px 0 #e5bd62,
+        0 22px 34px rgba(160, 120, 40, 0.24);
+    position: relative;
+    overflow: hidden;
+}
+
+.complete-card::before {
+    content: "🐾";
+    position: absolute;
+    top: 24px;
+    right: 34px;
+    font-size: 44px;
+    opacity: 0.22;
+    transform: rotate(16deg);
+}
+
+.complete-card::after {
+    content: "";
+    position: absolute;
+    left: -40px;
+    bottom: -40px;
+    width: 160px;
+    height: 160px;
+    background: radial-gradient(circle, rgba(123, 207, 166, 0.28) 0%, transparent 70%);
+    pointer-events: none;
+}
+
+.complete-info-box {
+    text-align: left;
+    background: #fffdf4;
+    border: 3px solid var(--border);
+    border-radius: 28px;
+    padding: 22px 28px;
+    margin: 24px auto;
+    box-shadow:
+        0 6px 0 #e5bd62,
+        0 12px 18px rgba(160, 120, 40, 0.18);
+}
+
+.complete-info-box p {
+    margin: 9px 0;
+    font-weight: 900;
+    line-height: 1.7;
+}
+
+.complete-section-title {
+    text-align: center;
+    font-size: 22px;
+    color: var(--text);
+    margin-top: 0 !important;
+    margin-bottom: 16px !important;
+}
+
+.complete-section-title::before {
+    content: "🐾 ";
+}
+
+.complete-card .center-button-area form {
+    background: none;
+    border: none;
+    box-shadow: none;
+    padding: 0;
+    margin: 0;
+}
+/* =========================店舗側========================= */
+/* =========================店舗側========================= */
+/* =========================店舗側========================= */
+/* =========================店舗側========================= */
+/* =========================店舗側========================= */
+
+/* =========================
+Facility Dashboard
+Data UI Version
+========================= */
+
+.facility-dashboard-card {
+width: 100%;
+max-width: 1120px;
+margin: 0 auto;
+background: linear-gradient(180deg, #ffffff 0%, var(--card) 100%);
+border: 4px solid var(--border);
+border-radius: 36px;
+padding: 42px;
+text-align: center;
+box-shadow:
+0 10px 0 #e5bd62,
+0 22px 34px rgba(160, 120, 40, 0.24);
+position: relative;
+overflow: hidden;
+}
+
+.facility-dashboard-card::before {
+content: "🐾";
+position: absolute;
+top: 24px;
+right: 34px;
+font-size: 44px;
+opacity: 0.22;
+transform: rotate(16deg);
+}
+
+.facility-dashboard-card::after {
+content: "";
+position: absolute;
+left: -40px;
+bottom: -40px;
+width: 180px;
+height: 180px;
+background: radial-gradient(circle, rgba(123, 207, 166, 0.28) 0%, transparent 70%);
+pointer-events: none;
+}
+
+.dashboard-title-area h1 {
+margin-top: 0;
+}
+
+/* =========================
+KPI Cards
+========================= */
+
+.dashboard-summary-grid {
+display: grid;
+grid-template-columns: repeat(4, 1fr);
+gap: 18px;
+margin: 26px 0 34px 0;
+}
+
+.dashboard-summary-card {
+background: linear-gradient(180deg, #fffef8 0%, #fff7d6 100%);
+border: 3px solid var(--border);
+border-radius: 28px;
+padding: 22px 18px;
+box-shadow:
+0 7px 0 #e5bd62,
+0 14px 22px rgba(160, 120, 40, 0.18);
+position: relative;
+overflow: hidden;
+}
+
+.dashboard-summary-card::after {
+content: "";
+position: absolute;
+right: -24px;
+bottom: -24px;
+width: 90px;
+height: 90px;
+background: radial-gradient(circle, rgba(255, 138, 101, 0.18) 0%, transparent 68%);
+}
+
+.summary-icon {
+font-size: 34px;
+margin-bottom: 8px;
+}
+
+.summary-label {
+font-size: 14px;
+font-weight: 900;
+color: var(--sub-text);
+margin-bottom: 8px;
+}
+
+.summary-number {
+font-size: 34px;
+font-weight: 900;
+color: var(--text);
+text-shadow:
+2px 2px 0 #fffdf4,
+4px 4px 0 var(--main-soft);
+}
+
+.summary-number span {
+font-size: 16px;
+margin-left: 3px;
+}
+
+.summary-status {
+display: inline-flex;
+align-items: center;
+justify-content: center;
+margin-top: 12px;
+padding: 5px 12px;
+border-radius: 999px;
+font-size: 13px;
+font-weight: 900;
+}
+
+.good-status {
+background: linear-gradient(180deg, #9ee5c0 0%, var(--mint) 100%);
+color: #ffffff;
+}
+
+.normal-status {
+background: linear-gradient(180deg, #ffd978 0%, var(--main) 100%);
+color: var(--text);
+}
+
+.alert-status {
+background: linear-gradient(180deg, #ffa27f 0%, var(--accent) 100%);
+color: #ffffff;
+}
+
+/* =========================
+Status Panels
+========================= */
+
+.dashboard-status-grid {
+display: grid;
+grid-template-columns: 1.1fr 0.9fr;
+gap: 26px;
+margin-bottom: 30px;
+}
+
+.dashboard-status-panel,
+.dashboard-panel {
+background: #fffdf4;
+border: 3px solid var(--border);
+border-radius: 30px;
+padding: 26px;
+text-align: left;
+box-shadow:
+0 7px 0 #e5bd62,
+0 14px 22px rgba(160, 120, 40, 0.18);
+}
+
+.dashboard-status-panel h2,
+.dashboard-panel h2 {
+text-align: center;
+margin-top: 0;
+margin-bottom: 22px;
+font-size: 24px;
+font-weight: 900;
+}
+
+.dashboard-status-panel h2::before,
+.dashboard-panel h2::before {
+content: "🐾 ";
+}
+
+.status-row {
+display: flex;
+align-items: center;
+justify-content: space-between;
+gap: 14px;
+margin-top: 18px;
+}
+
+.status-row-main {
+display: flex;
+align-items: center;
+gap: 10px;
+}
+
+.status-icon {
+font-size: 22px;
+}
+
+.status-title {
+font-weight: 900;
+color: var(--text);
+}
+
+.status-value {
+font-weight: 900;
+color: var(--accent-dark);
+background: #fff4ee;
+border-radius: 999px;
+padding: 5px 12px;
+}
+
+.status-track {
+width: 100%;
+height: 16px;
+background: #fff2c2;
+border: 2px solid #f1d381;
+border-radius: 999px;
+overflow: hidden;
+margin-top: 10px;
+box-shadow: inset 0 2px 4px rgba(120, 90, 40, 0.12);
+}
+
+.status-fill {
+height: 100%;
+width: 18%;
+border-radius: 999px;
+transition: 0.2s;
+}
+
+.reserve-fill {
+background: linear-gradient(90deg, var(--main) 0%, var(--accent) 100%);
+}
+
+.unread-fill {
+background: linear-gradient(90deg, var(--accent) 0%, #ffb39c 100%);
+}
+
+.pet-fill {
+background: linear-gradient(90deg, var(--mint) 0%, var(--main) 100%);
+}
+
+.active-fill {
+width: 72%;
+}
+
+.clear-fill {
+width: 100%;
+background: linear-gradient(90deg, var(--mint) 0%, #b6e8cf 100%);
+}
+
+/* =========================
+Next Reserve Timeline
+========================= */
+
+.next-reserve-timeline {
+display: grid;
+grid-template-columns: 54px 1fr;
+gap: 14px;
+background: linear-gradient(180deg, #ffffff 0%, #fff9e8 100%);
+border: 3px solid #f1d381;
+border-radius: 26px;
+padding: 20px 22px;
+box-shadow:
+0 5px 0 #e0bd5b,
+0 10px 16px rgba(160, 120, 40, 0.14);
+}
+
+.timeline-dot {
+width: 48px;
+height: 48px;
+background: linear-gradient(180deg, #ffa27f 0%, var(--accent) 100%);
+color: #ffffff;
+border-radius: 50%;
+display: flex;
+align-items: center;
+justify-content: center;
+box-shadow:
+0 4px 0 #d85f3f,
+0 8px 14px rgba(255, 138, 101, 0.22);
+}
+
+.timeline-content p {
+margin: 7px 0;
+font-weight: 900;
+line-height: 1.6;
+}
+
+/* =========================
+Main Dashboard Panels
+========================= */
+
+.dashboard-main-grid {
+display: grid;
+grid-template-columns: 1fr 1fr;
+gap: 26px;
+align-items: start;
+}
+
+.panel-section-title {
+text-align: center;
+font-size: 19px;
+font-weight: 900;
+margin-top: 0;
+margin-bottom: 14px;
+color: var(--text);
+}
+
+.latest-pet-box {
+background: linear-gradient(180deg, #ffffff 0%, #fff9e8 100%);
+border: 3px solid #f1d381;
+border-radius: 26px;
+padding: 20px 22px;
+box-shadow:
+0 5px 0 #e0bd5b,
+0 10px 16px rgba(160, 120, 40, 0.14);
+}
+
+.latest-pet-box p {
+margin: 8px 0;
+font-weight: 900;
+line-height: 1.7;
+}
+
+.latest-pet-image {
+width: 220px;
+height: 180px;
+object-fit: cover;
+display: block;
+margin: 0 auto 18px auto;
+border-radius: 24px;
+border: 3px solid #fff2b8;
+box-shadow:
+0 5px 0 #e7c45d,
+0 10px 16px rgba(120, 90, 40, 0.18);
+}
+
+/* =========================
+Access Visual
+========================= */
+
+.access-visual-box {
+display: flex;
+align-items: center;
+justify-content: center;
+gap: 28px;
+flex-wrap: wrap;
+}
+
+.access-ring {
+width: 180px;
+height: 180px;
+border-radius: 50%;
+background:
+conic-gradient(
+var(--accent) 0deg 110deg,
+var(--main) 110deg 250deg,
+var(--mint) 250deg 360deg
+);
+border: 5px solid #ffffff;
+box-shadow:
+0 7px 0 #e5bd62,
+0 14px 22px rgba(160, 120, 40, 0.20);
+position: relative;
+}
+
+.access-ring-inner {
+position: absolute;
+width: 104px;
+height: 104px;
+left: 50%;
+top: 50%;
+transform: translate(-50%, -50%);
+background: #fffdf4;
+border-radius: 50%;
+display: flex;
+flex-direction: column;
+align-items: center;
+justify-content: center;
+box-shadow: inset 0 3px 6px rgba(120, 90, 40, 0.12);
+}
+
+.access-ring-inner span {
+font-size: 28px;
+font-weight: 900;
+color: var(--text);
+}
+
+.access-ring-inner small {
+font-weight: 900;
+color: var(--sub-text);
+}
+
+.access-text {
+max-width: 260px;
+}
+
+.access-text p {
+font-weight: 900;
+line-height: 1.7;
+}
+
+/* =========================
+Empty
+========================= */
+
+.empty-dashboard-box {
+background: #fffdf4;
+border: 3px dashed var(--mint);
+border-radius: 26px;
+padding: 28px 22px;
+text-align: center;
+color: var(--sub-text);
+font-weight: 900;
+}
+
+.empty-icon {
+font-size: 42px;
+margin-bottom: 10px;
+}
+
+/* =========================
+Facility Page Menu
+========================= */
+
+.facility-page-card {
+width: 100%;
+max-width: 980px;
+margin: 0 auto;
+background: linear-gradient(180deg, #ffffff 0%, var(--card) 100%);
+border: 4px solid var(--border);
+border-radius: 36px;
+padding: 42px;
+text-align: center;
+box-shadow:
+0 10px 0 #e5bd62,
+0 22px 34px rgba(160, 120, 40, 0.24);
+position: relative;
+overflow: hidden;
+}
+
+.facility-page-card::before {
+content: "🐾";
+position: absolute;
+top: 24px;
+right: 34px;
+font-size: 44px;
+opacity: 0.22;
+transform: rotate(16deg);
+}
+
+.facility-page-card::after {
+content: "";
+position: absolute;
+left: -40px;
+bottom: -40px;
+width: 170px;
+height: 170px;
+background: radial-gradient(circle, rgba(123, 207, 166, 0.28) 0%, transparent 70%);
+pointer-events: none;
+}
+
+.facility-page-card h1 {
+margin-top: 0;
+}
+
+.facility-menu-grid {
+display: grid;
+grid-template-columns: repeat(2, 1fr);
+gap: 22px;
+margin: 34px 0 30px 0;
+position: relative;
+z-index: 1;
+}
+
+.facility-menu-grid br {
+display: none;
+}
+
+.facility-menu-card {
+min-height: 150px;
+padding: 24px 22px;
+box-sizing: border-box;
+
+display: flex;
+flex-direction: column;
+align-items: center;
+justify-content: center;
+gap: 8px;
+
+background: linear-gradient(180deg, #fffef8 0%, #fff7d6 100%);
+border: 3px solid var(--border);
+border-radius: 30px;
+color: var(--text);
+text-decoration: none;
+font-weight: 900;
+
+box-shadow:
+    0 7px 0 #e5bd62,
+    0 14px 22px rgba(160, 120, 40, 0.18);
+transition: 0.18s;
+position: relative;
+overflow: hidden;
+
+
+}
+
+.facility-menu-card::after {
+content: "";
+position: absolute;
+right: -24px;
+bottom: -24px;
+width: 90px;
+height: 90px;
+background: radial-gradient(circle, rgba(255, 138, 101, 0.18) 0%, transparent 68%);
+}
+
+.facility-menu-card:hover {
+background: linear-gradient(180deg, #fff3b8 0%, var(--main) 100%);
+color: var(--text);
+text-decoration: none;
+transform: translateY(3px);
+box-shadow:
+0 4px 0 #d9a83d,
+0 10px 18px rgba(160, 120, 40, 0.20);
+}
+
+.facility-menu-icon {
+font-size: 38px;
+line-height: 1;
+}
+
+.facility-menu-title {
+font-size: 18px;
+color: var(--text);
+}
+
+.facility-menu-text {
+font-size: 13px;
+color: var(--sub-text);
+line-height: 1.5;
+}
+
+.facility-page-card .center-button-area {
+margin-top: 24px;
+}
+/* =========================
+Facility Information Confirm
+========================= */
+
+.facility-info-card {
+width: 100%;
+max-width: 900px;
+margin: 0 auto;
+background: linear-gradient(180deg, #ffffff 0%, var(--card) 100%);
+border: 4px solid var(--border);
+border-radius: 36px;
+padding: 42px;
+text-align: center;
+box-shadow:
+0 10px 0 #e5bd62,
+0 22px 34px rgba(160, 120, 40, 0.24);
+position: relative;
+overflow: hidden;
+}
+
+.facility-info-card::before {
+content: "🏠";
+position: absolute;
+top: 24px;
+right: 34px;
+font-size: 44px;
+opacity: 0.22;
+transform: rotate(12deg);
+}
+
+.facility-info-card::after {
+content: "";
+position: absolute;
+left: -40px;
+bottom: -40px;
+width: 170px;
+height: 170px;
+background: radial-gradient(circle, rgba(123, 207, 166, 0.28) 0%, transparent 70%);
+pointer-events: none;
+}
+
+.facility-info-card h1 {
+margin-top: 0;
+}
+
+.facility-info-table-wrap {
+margin-top: 30px;
+background: #fffdf4;
+border: 3px solid var(--border);
+border-radius: 30px;
+padding: 24px;
+box-shadow:
+0 7px 0 #e5bd62,
+0 14px 22px rgba(160, 120, 40, 0.18);
+position: relative;
+z-index: 1;
+}
+
+.facility-info-table {
+width: 100%;
+border-collapse: separate;
+border-spacing: 0 12px;
+border: none;
+background: transparent;
+box-shadow: none;
+margin: 0;
+}
+
+.facility-info-table th,
+.facility-info-table td {
+border: none;
+padding: 16px 18px;
+font-weight: 900;
+line-height: 1.7;
+}
+
+.facility-info-table th {
+width: 28%;
+background: linear-gradient(180deg, #ffd978 0%, var(--main) 100%);
+color: var(--text);
+text-align: center;
+border-radius: 18px 0 0 18px;
+box-shadow: 0 4px 0 #d9a83d;
+}
+
+.facility-info-table th::before {
+content: "🐾 ";
+}
+
+.facility-info-table td {
+background: #ffffff;
+color: var(--text);
+text-align: left;
+border-radius: 0 18px 18px 0;
+box-shadow:
+0 4px 0 #f1d888,
+0 8px 14px rgba(160, 120, 40, 0.12);
+}
+
+.facility-info-card .center-button-area {
+margin-top: 28px;
+gap: 16px;
+}
+
+.facility-info-card .center-button-area form {
+background: none;
+border: none;
+box-shadow: none;
+padding: 0;
+margin: 0;
+}
+/* =========================
+Facility Information Edit
+========================= */
+
+.facility-edit-card {
+width: 100%;
+max-width: 940px;
+margin: 0 auto;
+background: linear-gradient(180deg, #ffffff 0%, var(--card) 100%);
+border: 4px solid var(--border);
+border-radius: 36px;
+padding: 42px;
+text-align: center;
+box-shadow:
+0 10px 0 #e5bd62,
+0 22px 34px rgba(160, 120, 40, 0.24);
+position: relative;
+overflow: hidden;
+}
+
+.facility-edit-card::before {
+content: "✏️";
+position: absolute;
+top: 24px;
+right: 34px;
+font-size: 44px;
+opacity: 0.22;
+transform: rotate(12deg);
+}
+
+.facility-edit-card::after {
+content: "";
+position: absolute;
+left: -40px;
+bottom: -40px;
+width: 170px;
+height: 170px;
+background: radial-gradient(circle, rgba(123, 207, 166, 0.28) 0%, transparent 70%);
+pointer-events: none;
+}
+
+.facility-edit-card h1 {
+margin-top: 0;
+}
+
+.facility-edit-form {
+margin-top: 30px;
+background: #fffdf4;
+border: 3px solid var(--border);
+border-radius: 30px;
+padding: 30px;
+text-align: left;
+box-shadow:
+0 7px 0 #e5bd62,
+0 14px 22px rgba(160, 120, 40, 0.18);
+position: relative;
+z-index: 1;
+}
+
+.facility-form-grid {
+display: grid;
+grid-template-columns: 1fr 1fr;
+gap: 22px;
+}
+
+.facility-form-row {
+display: flex;
+flex-direction: column;
+gap: 8px;
+}
+
+.facility-form-full {
+grid-column: 1 / 3;
+}
+
+.facility-form-row label {
+display: inline-flex;
+align-items: center;
+width: fit-content;
+padding: 6px 14px;
+border-radius: 999px;
+background: linear-gradient(180deg, #ffd978 0%, var(--main) 100%);
+color: var(--text);
+font-size: 14px;
+font-weight: 900;
+box-shadow: 0 3px 0 #d9a83d;
+}
+
+.facility-form-row label::before {
+content: "🐾 ";
+}
+
+.facility-edit-form input[type="text"],
+.facility-edit-form input[type="time"] {
+width: 100%;
+height: 48px;
+padding: 0 16px;
+box-sizing: border-box;
+border-radius: 18px;
+border: 3px solid #eacb70;
+background: #ffffff;
+color: var(--text);
+font-size: 15px;
+font-weight: 900;
+box-shadow:
+inset 0 2px 4px rgba(120, 90, 40, 0.08),
+0 3px 0 #f1d888;
+}
+
+.facility-edit-form input[type="text"]:focus,
+.facility-edit-form input[type="time"]:focus {
+outline: none;
+border-color: var(--accent);
+box-shadow:
+0 0 0 4px rgba(255, 138, 101, 0.16),
+inset 0 2px 4px rgba(120, 90, 40, 0.08);
+}
+
+/* 定休日 */
+.closed-day-box {
+margin-top: 28px;
+background: linear-gradient(180deg, #ffffff 0%, #fff9e8 100%);
+border: 3px solid #f1d381;
+border-radius: 28px;
+padding: 24px;
+box-shadow:
+0 5px 0 #e0bd5b,
+0 10px 16px rgba(160, 120, 40, 0.14);
+}
+
+.closed-day-title {
+text-align: center;
+font-size: 20px;
+font-weight: 900;
+color: var(--text);
+margin: 0 0 18px 0;
+}
+
+.closed-day-title::before {
+content: "📅 ";
+}
+
+.closed-day-list {
+display: grid;
+grid-template-columns: repeat(4, 1fr);
+gap: 12px;
+}
+
+.closed-day-item {
+display: inline-flex;
+align-items: center;
+justify-content: center;
+gap: 7px;
+min-height: 44px;
+padding: 0 12px;
+box-sizing: border-box;
+
+
+background: #ffffff;
+border: 3px solid #eacb70;
+border-radius: 999px;
+color: var(--text);
+font-weight: 900;
+cursor: pointer;
+
+box-shadow:
+    0 4px 0 #f1d888,
+    0 8px 14px rgba(160, 120, 40, 0.12);
+transition: 0.18s;
+
+
+}
+
+.closed-day-item:hover {
+background: #fff3b8;
+transform: translateY(2px);
+box-shadow:
+0 2px 0 #d9a83d,
+0 6px 12px rgba(160, 120, 40, 0.16);
+}
+
+.closed-day-item input[type="checkbox"] {
+accent-color: var(--accent);
+transform: scale(1.1);
+}
+
+.facility-edit-card .center-button-area {
+margin-top: 28px;
+}
+
+.facility-edit-card .center-button-area form,
+.facility-back-form {
+background: none;
+border: none;
+box-shadow: none;
+padding: 0;
+margin: 0;
+}
+
+.facility-back-form {
+position: relative;
+z-index: 1;
+}
+
+.facility-back-form input[type="submit"] {
+background: linear-gradient(180deg, #9ee5c0 0%, var(--mint) 100%);
+color: #ffffff;
+box-shadow:
+0 5px 0 #4fa77c,
+0 10px 16px rgba(80, 150, 110, 0.2);
+}
+
+.facility-back-form input[type="submit"]:hover {
+background: linear-gradient(180deg, #8adbad 0%, var(--mint-dark) 100%);
+color: #ffffff;
+box-shadow:
+0 3px 0 #438e69,
+0 8px 14px rgba(80, 150, 110, 0.25);
+}
+/* =========================
+Reservation Confirm
+予約番号 + 写真 合併版
+========================= */
+
+.reservation-confirm-card {
+width: 96%;
+max-width: 1480px;
+margin: 0 auto;
+background: linear-gradient(180deg, #ffffff 0%, var(--card) 100%);
+border: 4px solid var(--border);
+border-radius: 36px;
+padding: 38px;
+text-align: center;
+box-shadow:
+0 10px 0 #e5bd62,
+0 22px 34px rgba(160, 120, 40, 0.24);
+position: relative;
+overflow: hidden;
+}
+
+.reservation-confirm-card::before {
+content: "📅";
+position: absolute;
+top: 24px;
+right: 34px;
+font-size: 44px;
+opacity: 0.22;
+transform: rotate(12deg);
+}
+
+.reservation-confirm-card::after {
+content: "";
+position: absolute;
+left: -40px;
+bottom: -40px;
+width: 180px;
+height: 180px;
+background: radial-gradient(circle, rgba(123, 207, 166, 0.28) 0%, transparent 70%);
+pointer-events: none;
+}
+
+.reservation-confirm-card h1 {
+margin-top: 0;
+}
+
+/* =========================
+Filter Area
+========================= */
+
+.reservation-filter-box {
+background: #fffdf4;
+border: 3px solid var(--border);
+border-radius: 30px;
+padding: 24px 28px;
+margin: 30px 0 24px 0;
+box-shadow:
+0 7px 0 #e5bd62,
+0 14px 22px rgba(160, 120, 40, 0.18);
+position: relative;
+z-index: 1;
+}
+
+.reservation-section-title {
+font-size: 20px;
+font-weight: 900;
+color: var(--text);
+margin: 0 0 18px 0;
+}
+
+.reservation-section-title::before {
+content: "🐾 ";
+}
+
+.reservation-filter-form {
+background: none;
+border: none;
+box-shadow: none;
+padding: 0;
+margin: 0;
+
+
+display: flex;
+justify-content: center;
+gap: 14px;
+flex-wrap: wrap;
+
+
+}
+
+.reservation-filter-form button {
+min-width: 150px;
+}
+
+/* =========================
+Count Box
+========================= */
+
+.reservation-count-box {
+width: fit-content;
+margin: 0 auto 24px auto;
+display: inline-flex;
+align-items: center;
+gap: 8px;
+
+
+background: linear-gradient(180deg, #fffef8 0%, #fff7d6 100%);
+border: 3px solid var(--border);
+border-radius: 999px;
+padding: 10px 22px;
+box-shadow:
+    0 5px 0 #e5bd62,
+    0 10px 16px rgba(160, 120, 40, 0.18);
+font-weight: 900;
+
+
+}
+
+.reservation-count-label {
+color: var(--sub-text);
+}
+
+.reservation-count-number {
+color: var(--accent-dark);
+font-size: 24px;
+}
+
+.reservation-count-unit {
+color: var(--text);
+}
+
+/* =========================
+Table
+========================= */
+
+.reservation-table-wrap {
+background: #fffdf4;
+border: 3px solid var(--border);
+border-radius: 30px;
+padding: 22px;
+box-shadow:
+0 7px 0 #e5bd62,
+0 14px 22px rgba(160, 120, 40, 0.18);
+position: relative;
+z-index: 1;
+
+
+overflow-x: auto;
+overflow-y: visible;
+
+
+}
+
+.reservation-table {
+width: 100%;
+min-width: 1220px;
+border-collapse: separate;
+border-spacing: 0 14px;
+border: none;
+background: transparent;
+box-shadow: none;
+margin: 0;
+table-layout: auto;
+}
+
+.reservation-table th {
+background: linear-gradient(180deg, #ffd978 0%, var(--main) 100%);
+color: var(--text);
+border: none;
+padding: 14px 12px;
+font-weight: 900;
+text-align: center;
+box-shadow: 0 4px 0 #d9a83d;
+white-space: nowrap;
+}
+
+.reservation-table th:first-child {
+border-radius: 18px 0 0 18px;
+}
+
+.reservation-table th:last-child {
+border-radius: 0 18px 18px 0;
+}
+
+.reservation-table td {
+background: #ffffff;
+border: none;
+padding: 18px 16px;
+font-weight: 900;
+line-height: 1.65;
+vertical-align: top;
+box-shadow:
+0 5px 0 #f1d888,
+0 10px 16px rgba(160, 120, 40, 0.12);
+
+
+word-break: break-word;
+overflow-wrap: anywhere;
+
+
+}
+
+.reservation-table td:first-child {
+border-radius: 20px 0 0 20px;
+}
+
+.reservation-table td:last-child {
+border-radius: 0 20px 20px 0;
+}
+
+.reservation-table td p {
+margin: 5px 0;
+text-align: left;
+}
+
+/* =========================
+6欄版 各欄寬度
+========================= */
+
+.reservation-table th:nth-child(1),
+.reservation-table td:nth-child(1) {
+width: 190px;
+text-align: center;
+}
+
+.reservation-table th:nth-child(2),
+.reservation-table td:nth-child(2) {
+width: 240px;
+}
+
+.reservation-table th:nth-child(3),
+.reservation-table td:nth-child(3) {
+width: 230px;
+}
+
+.reservation-table th:nth-child(4),
+.reservation-table td:nth-child(4) {
+width: 300px;
+}
+
+.reservation-table th:nth-child(5),
+.reservation-table td:nth-child(5) {
+width: 190px;
+text-align: center;
+}
+
+.reservation-table th:nth-child(6),
+.reservation-table td:nth-child(6) {
+width: 160px;
+text-align: center;
+}
+
+/* =========================
+予約番号 + 写真
+========================= */
+
+.reservation-photo-cell {
+display: flex;
+flex-direction: column;
+align-items: center;
+gap: 14px;
+}
+
+.reservation-id-badge {
+display: inline-flex;
+align-items: center;
+justify-content: center;
+background: linear-gradient(180deg, #fff3b8 0%, var(--main) 100%);
+border: 2px solid #f1d381;
+border-radius: 999px;
+padding: 7px 12px;
+color: var(--text);
+font-weight: 900;
+white-space: nowrap;
+}
+
+.reservation-id-badge::before {
+content: "No. ";
+}
+
+.reservation-pet-image {
+width: 130px;
+height: 130px;
+object-fit: cover;
+border-radius: 24px;
+border: 3px solid #fff2b8;
+box-shadow:
+0 5px 0 #e7c45d,
+0 10px 16px rgba(120, 90, 40, 0.18);
+}
+
+.no-image-box {
+width: 130px;
+height: 130px;
+border-radius: 24px;
+border: 3px dashed var(--mint);
+background: #fffdf4;
+color: var(--sub-text);
+font-weight: 900;
+display: flex;
+align-items: center;
+justify-content: center;
+}
+
+/* =========================
+Badges
+========================= */
+
+.reservation-time-badge {
+display: inline-flex;
+align-items: center;
+justify-content: center;
+background: linear-gradient(180deg, #e8fbf1 0%, #aeeacb 100%);
+border: 2px solid var(--mint-dark);
+border-radius: 18px;
+padding: 10px 12px;
+color: var(--text);
+font-weight: 900;
+line-height: 1.5;
+white-space: normal;
+}
+
+.reservation-time-badge::before {
+content: "🕒 ";
+}
+
+/* =========================
+Action Form
+========================= */
+
+.reservation-edit-form {
+background: none;
+border: none;
+box-shadow: none;
+padding: 0;
+margin: 0;
+}
+
+.reservation-edit-form input[type="submit"] {
+min-width: 130px;
+height: 44px;
+padding: 0 14px;
+font-size: 14px;
+}
+
+/* =========================
+Note / Back
+========================= */
+
+.reservation-note {
+margin: 28px auto 20px auto;
+background: #fff4ee;
+border: 3px solid var(--accent);
+border-radius: 24px;
+padding: 16px 20px;
+color: var(--text);
+font-weight: 900;
+line-height: 1.7;
+max-width: 780px;
+}
+
+.reservation-note::before {
+content: "💡 ";
+}
+
+.reservation-back-form {
+background: none;
+border: none;
+box-shadow: none;
+padding: 0;
+margin: 0;
+}
+
+.reservation-back-form button {
+background: linear-gradient(180deg, #9ee5c0 0%, var(--mint) 100%);
+color: #ffffff;
+box-shadow:
+0 5px 0 #4fa77c,
+0 10px 16px rgba(80, 150, 110, 0.2);
+}
+
+.reservation-back-form button:hover {
+background: linear-gradient(180deg, #8adbad 0%, var(--mint-dark) 100%);
+color: #ffffff;
+box-shadow:
+0 3px 0 #438e69,
+0 8px 14px rgba(80, 150, 110, 0.25);
+}
+/* =========================
+Reservation Edit / Delete
+========================= */
+
+.reservation-edit-card {
+width: 100%;
+max-width: 900px;
+margin: 0 auto;
+background: linear-gradient(180deg, #ffffff 0%, var(--card) 100%);
+border: 4px solid var(--border);
+border-radius: 36px;
+padding: 42px;
+text-align: center;
+box-shadow:
+0 10px 0 #e5bd62,
+0 22px 34px rgba(160, 120, 40, 0.24);
+position: relative;
+overflow: hidden;
+}
+
+.reservation-edit-card::before {
+content: "📅";
+position: absolute;
+top: 24px;
+right: 34px;
+font-size: 44px;
+opacity: 0.22;
+transform: rotate(12deg);
+}
+
+.reservation-edit-card::after {
+content: "";
+position: absolute;
+left: -40px;
+bottom: -40px;
+width: 170px;
+height: 170px;
+background: radial-gradient(circle, rgba(123, 207, 166, 0.28) 0%, transparent 70%);
+pointer-events: none;
+}
+
+.reservation-edit-card h1 {
+margin-top: 0;
+}
+
+/* 現在予約日時 */
+
+.current-reserve-box {
+width: fit-content;
+min-width: 360px;
+margin: 30px auto;
+background: linear-gradient(180deg, #fffef8 0%, #fff7d6 100%);
+border: 3px solid var(--border);
+border-radius: 28px;
+padding: 20px 30px;
+box-shadow:
+0 7px 0 #e5bd62,
+0 14px 22px rgba(160, 120, 40, 0.18);
+position: relative;
+z-index: 1;
+}
+
+.current-reserve-title {
+margin: 0 0 8px 0;
+color: var(--sub-text);
+font-weight: 900;
+}
+
+.current-reserve-title::before {
+content: "🕒 ";
+}
+
+.current-reserve-time {
+margin: 0;
+color: var(--text);
+font-size: 24px;
+font-weight: 900;
+text-shadow:
+2px 2px 0 #fffdf4,
+4px 4px 0 var(--main-soft);
+}
+
+/* Section */
+
+.reservation-edit-section {
+background: #fffdf4;
+border: 3px solid var(--border);
+border-radius: 30px;
+padding: 28px 32px;
+margin: 28px 0;
+text-align: center;
+box-shadow:
+0 7px 0 #e5bd62,
+0 14px 22px rgba(160, 120, 40, 0.18);
+position: relative;
+z-index: 1;
+}
+
+.reservation-edit-section h2 {
+margin-top: 0;
+margin-bottom: 24px;
+font-size: 24px;
+font-weight: 900;
+}
+
+.reservation-edit-section h2::before {
+content: "🐾 ";
+}
+
+/* Forms */
+
+.reservation-date-form,
+.reservation-time-form,
+.reservation-cancel-form,
+.reservation-delete-form {
+background: none;
+border: none;
+box-shadow: none;
+padding: 0;
+margin: 0;
+}
+
+.reservation-date-row {
+max-width: 420px;
+margin: 0 auto 24px auto;
+display: flex;
+flex-direction: column;
+gap: 10px;
+text-align: left;
+}
+
+.reservation-date-row label {
+display: inline-flex;
+align-items: center;
+width: fit-content;
+padding: 6px 14px;
+border-radius: 999px;
+background: linear-gradient(180deg, #ffd978 0%, var(--main) 100%);
+color: var(--text);
+font-size: 14px;
+font-weight: 900;
+box-shadow: 0 3px 0 #d9a83d;
+}
+
+.reservation-date-row label::before {
+content: "📅 ";
+}
+
+.reservation-date-form input[type="date"] {
+width: 100%;
+height: 48px;
+padding: 0 16px;
+box-sizing: border-box;
+border-radius: 18px;
+border: 3px solid #eacb70;
+background: #ffffff;
+color: var(--text);
+font-size: 15px;
+font-weight: 900;
+box-shadow:
+inset 0 2px 4px rgba(120, 90, 40, 0.08),
+0 3px 0 #f1d888;
+}
+
+.reservation-date-form input[type="date"]:focus {
+outline: none;
+border-color: var(--accent);
+box-shadow:
+0 0 0 4px rgba(255, 138, 101, 0.16),
+inset 0 2px 4px rgba(120, 90, 40, 0.08);
+}
+
+/* Time List */
+
+.reservation-time-list {
+display: grid;
+grid-template-columns: repeat(4, 1fr);
+gap: 14px;
+margin: 0 auto 24px auto;
+}
+
+.reservation-time-list br {
+display: none;
+}
+
+.reservation-time-item {
+min-height: 48px;
+padding: 0 12px;
+box-sizing: border-box;
+
+
+display: inline-flex;
+align-items: center;
+justify-content: center;
+gap: 8px;
+
+background: #ffffff;
+border: 3px solid #eacb70;
+border-radius: 999px;
+color: var(--text);
+font-weight: 900;
+cursor: pointer;
+
+box-shadow:
+    0 4px 0 #f1d888,
+    0 8px 14px rgba(160, 120, 40, 0.12);
+transition: 0.18s;
+
+
+}
+
+.reservation-time-item:hover {
+background: #fff3b8;
+transform: translateY(2px);
+box-shadow:
+0 2px 0 #d9a83d,
+0 6px 12px rgba(160, 120, 40, 0.16);
+}
+
+.reservation-time-item input[type="radio"] {
+accent-color: var(--accent);
+transform: scale(1.12);
+}
+
+/* Bottom Buttons */
+
+.reservation-edit-bottom {
+display: flex;
+justify-content: center;
+gap: 18px;
+flex-wrap: wrap;
+margin-top: 30px;
+position: relative;
+z-index: 1;
+}
+
+.reservation-cancel-form button {
+background: linear-gradient(180deg, #9ee5c0 0%, var(--mint) 100%);
+color: #ffffff;
+box-shadow:
+0 5px 0 #4fa77c,
+0 10px 16px rgba(80, 150, 110, 0.2);
+}
+
+.reservation-cancel-form button:hover {
+background: linear-gradient(180deg, #8adbad 0%, var(--mint-dark) 100%);
+color: #ffffff;
+box-shadow:
+0 3px 0 #438e69,
+0 8px 14px rgba(80, 150, 110, 0.25);
+}
+
+.reservation-delete-form input[type="submit"] {
+background: linear-gradient(180deg, #ffa27f 0%, var(--accent) 100%);
+color: #ffffff;
+box-shadow:
+0 5px 0 #d85f3f,
+0 10px 16px rgba(255, 138, 101, 0.22);
+}
+
+.reservation-delete-form input[type="submit"]:hover {
+background: linear-gradient(180deg, #ff8a65 0%, #e85f3f 100%);
+color: #ffffff;
+box-shadow:
+0 3px 0 #bf4d33,
+0 8px 14px rgba(255, 138, 101, 0.28);
+}
+
+/* Error */
+
+.reservation-edit-card .error-message {
+max-width: 680px;
+margin: 24px auto;
+}
+/* =========================
+Pet Management
+Simple Text Table Version
+========================= */
+
+.pet-management-card {
+width: 96%;
+max-width: 1280px;
+margin: 0 auto;
+background: linear-gradient(180deg, #ffffff 0%, var(--card) 100%);
+border: 4px solid var(--border);
+border-radius: 36px;
+padding: 38px;
+text-align: center;
+box-shadow:
+0 10px 0 #e5bd62,
+0 22px 34px rgba(160, 120, 40, 0.24);
+position: relative;
+overflow: hidden;
+}
+
+.pet-management-card::before {
+content: "🐾";
+position: absolute;
+top: 24px;
+right: 34px;
+font-size: 46px;
+opacity: 0.22;
+transform: rotate(14deg);
+}
+
+.pet-management-card::after {
+content: "";
+position: absolute;
+left: -40px;
+bottom: -40px;
+width: 180px;
+height: 180px;
+background: radial-gradient(circle, rgba(123, 207, 166, 0.28) 0%, transparent 70%);
+pointer-events: none;
+}
+
+.pet-management-card h1 {
+margin-top: 0;
+}
+
+/* Top Area */
+
+.pet-management-top {
+display: flex;
+justify-content: center;
+margin: 30px 0 26px 0;
+position: relative;
+z-index: 1;
+}
+
+.pet-register-form {
+background: none;
+border: none;
+box-shadow: none;
+padding: 0;
+margin: 0;
+}
+
+.pet-register-form input[type="submit"] {
+min-width: 220px;
+}
+
+/* Table Wrap */
+
+.pet-management-table-wrap {
+background: #fffdf4;
+border: 3px solid var(--border);
+border-radius: 30px;
+padding: 22px;
+box-shadow:
+0 7px 0 #e5bd62,
+0 14px 22px rgba(160, 120, 40, 0.18);
+position: relative;
+z-index: 1;
+overflow-x: auto;
+}
+
+.pet-management-table {
+width: 100%;
+min-width: 1080px;
+border-collapse: separate;
+border-spacing: 0 12px;
+border: none;
+background: transparent;
+box-shadow: none;
+margin: 0;
+table-layout: auto;
+}
+
+.pet-management-table th {
+background: linear-gradient(180deg, #ffd978 0%, var(--main) 100%);
+color: var(--text);
+border: none;
+padding: 14px 12px;
+font-weight: 900;
+text-align: center;
+box-shadow: 0 4px 0 #d9a83d;
+white-space: nowrap;
+}
+
+.pet-management-table th:first-child {
+border-radius: 18px 0 0 18px;
+}
+
+.pet-management-table th:last-child {
+border-radius: 0 18px 18px 0;
+}
+
+/* 表格資料列：保留卡片列，但文字本身不加框 */
+
+.pet-management-table td {
+background: #ffffff;
+border: none;
+padding: 18px 16px;
+color: var(--text);
+font-size: 15px;
+font-weight: 900;
+line-height: 1.7;
+vertical-align: middle;
+text-align: center;
+box-shadow:
+0 5px 0 #f1d888,
+0 10px 16px rgba(160, 120, 40, 0.12);
+word-break: break-word;
+}
+
+.pet-management-table td:first-child {
+border-radius: 20px 0 0 20px;
+}
+
+.pet-management-table td:last-child {
+border-radius: 0 20px 20px 0;
+}
+
+/* Column Width */
+
+.pet-management-table th:nth-child(1),
+.pet-management-table td:nth-child(1) {
+width: 150px;
+}
+
+.pet-management-table th:nth-child(2),
+.pet-management-table td:nth-child(2) {
+width: 100px;
+}
+
+.pet-management-table th:nth-child(3),
+.pet-management-table td:nth-child(3) {
+width: 130px;
+}
+
+.pet-management-table th:nth-child(4),
+.pet-management-table td:nth-child(4) {
+width: 100px;
+}
+
+.pet-management-table th:nth-child(5),
+.pet-management-table td:nth-child(5) {
+width: 90px;
+}
+
+.pet-management-table th:nth-child(6),
+.pet-management-table td:nth-child(6) {
+width: 130px;
+}
+
+.pet-management-table th:nth-child(7),
+.pet-management-table td:nth-child(7) {
+width: 130px;
+}
+
+.pet-management-table th:nth-child(8),
+.pet-management-table td:nth-child(8) {
+width: 220px;
+}
+
+/* Image */
+
+.pet-management-image {
+width: 125px;
+height: 125px;
+object-fit: cover;
+border-radius: 24px;
+border: 3px solid #fff2b8;
+box-shadow:
+0 5px 0 #e7c45d,
+0 10px 16px rgba(120, 90, 40, 0.18);
+}
+
+.pet-management-no-image {
+width: 125px;
+height: 125px;
+margin: 0 auto;
+border-radius: 24px;
+border: 3px dashed var(--mint);
+background: #fffdf4;
+color: var(--sub-text);
+font-weight: 900;
+display: flex;
+align-items: center;
+justify-content: center;
+}
+
+/* Actions */
+
+.pet-action-area {
+display: flex;
+flex-direction: column;
+align-items: center;
+gap: 10px;
+}
+
+.pet-action-form {
+background: none;
+border: none;
+box-shadow: none;
+padding: 0;
+margin: 0;
+}
+
+.pet-action-form input[type="submit"] {
+min-width: 150px;
+height: 42px;
+padding: 0 14px;
+font-size: 14px;
+}
+
+/* おすすめ中：框框拿掉，只保留狀態文字 */
+
+.current-recommend-text {
+margin: 2px 0;
+color: var(--mint-dark);
+font-weight: 900;
+font-size: 14px;
+line-height: 1.5;
+}
+
+/* Back */
+
+.pet-management-back-form {
+background: none;
+border: none;
+box-shadow: none;
+padding: 0;
+margin: 30px 0 0 0;
+}
+
+.pet-management-back-form input[type="submit"] {
+background: linear-gradient(180deg, #9ee5c0 0%, var(--mint) 100%);
+color: #ffffff;
+box-shadow:
+0 5px 0 #4fa77c,
+0 10px 16px rgba(80, 150, 110, 0.2);
+}
+
+.pet-management-back-form input[type="submit"]:hover {
+background: linear-gradient(180deg, #8adbad 0%, var(--mint-dark) 100%);
+color: #ffffff;
+box-shadow:
+0 3px 0 #438e69,
+0 8px 14px rgba(80, 150, 110, 0.25);
+}
+/* =========================
+Pet Register / Edit
+========================= */
+
+.pet-register-card {
+width: 100%;
+max-width: 980px;
+margin: 0 auto;
+background: linear-gradient(180deg, #ffffff 0%, var(--card) 100%);
+border: 4px solid var(--border);
+border-radius: 36px;
+padding: 42px;
+text-align: center;
+box-shadow:
+0 10px 0 #e5bd62,
+0 22px 34px rgba(160, 120, 40, 0.24);
+position: relative;
+overflow: hidden;
+}
+
+.pet-register-card::before {
+content: "🐾";
+position: absolute;
+top: 24px;
+right: 34px;
+font-size: 46px;
+opacity: 0.22;
+transform: rotate(14deg);
+}
+
+.pet-register-card::after {
+content: "";
+position: absolute;
+left: -40px;
+bottom: -40px;
+width: 180px;
+height: 180px;
+background: radial-gradient(circle, rgba(123, 207, 166, 0.28) 0%, transparent 70%);
+pointer-events: none;
+}
+
+.pet-register-card h1 {
+margin-top: 0;
+}
+
+.pet-register-edit-form {
+margin-top: 30px;
+background: none;
+border: none;
+box-shadow: none;
+padding: 0;
+text-align: left;
+position: relative;
+z-index: 1;
+}
+
+/* Section */
+
+.pet-register-section {
+background: #fffdf4;
+border: 3px solid var(--border);
+border-radius: 30px;
+padding: 30px 34px;
+margin: 26px 0;
+box-shadow:
+0 7px 0 #e5bd62,
+0 14px 22px rgba(160, 120, 40, 0.18);
+}
+
+.pet-register-section h2 {
+text-align: center;
+margin-top: 0;
+margin-bottom: 26px;
+font-size: 24px;
+font-weight: 900;
+}
+
+.pet-register-section h2::before {
+content: "🐾 ";
+}
+
+/* Form Row */
+
+.pet-form-row {
+margin: 22px 0;
+}
+
+.pet-form-label {
+display: inline-flex;
+align-items: center;
+width: fit-content;
+padding: 6px 14px;
+margin: 0 0 12px 0;
+border-radius: 999px;
+background: linear-gradient(180deg, #ffd978 0%, var(--main) 100%);
+color: var(--text);
+font-size: 14px;
+font-weight: 900;
+box-shadow: 0 3px 0 #d9a83d;
+}
+
+.pet-form-label::before {
+content: "🐾 ";
+}
+
+/* Input */
+
+.pet-register-edit-form input[type="text"],
+.pet-register-edit-form input[type="number"],
+.pet-register-edit-form input[type="file"],
+.pet-register-edit-form textarea {
+width: 100%;
+box-sizing: border-box;
+border-radius: 18px;
+border: 3px solid #eacb70;
+background: #ffffff;
+color: var(--text);
+font-size: 15px;
+font-weight: 900;
+box-shadow:
+inset 0 2px 4px rgba(120, 90, 40, 0.08),
+0 3px 0 #f1d888;
+}
+
+.pet-register-edit-form input[type="text"],
+.pet-register-edit-form input[type="number"],
+.pet-register-edit-form input[type="file"] {
+min-height: 48px;
+padding: 10px 16px;
+}
+
+.pet-register-edit-form textarea {
+min-height: 140px;
+padding: 14px 16px;
+resize: vertical;
+}
+
+.pet-register-edit-form input[type="text"]:focus,
+.pet-register-edit-form input[type="number"]:focus,
+.pet-register-edit-form textarea:focus {
+outline: none;
+border-color: var(--accent);
+box-shadow:
+0 0 0 4px rgba(255, 138, 101, 0.16),
+inset 0 2px 4px rgba(120, 90, 40, 0.08);
+}
+
+/* Choice */
+
+.pet-choice-list {
+display: flex;
+flex-wrap: wrap;
+gap: 12px;
+}
+
+.pet-choice-list br {
+display: none;
+}
+
+.pet-choice-item {
+min-height: 44px;
+padding: 0 16px;
+box-sizing: border-box;
+
+display: inline-flex;
+align-items: center;
+justify-content: center;
+gap: 7px;
+
+background: #ffffff;
+border: 3px solid #eacb70;
+border-radius: 999px;
+color: var(--text);
+font-weight: 900;
+cursor: pointer;
+
+box-shadow:
+    0 4px 0 #f1d888,
+    0 8px 14px rgba(160, 120, 40, 0.12);
+transition: 0.18s;
+
+}
+
+.pet-choice-item:hover {
+background: #fff3b8;
+transform: translateY(2px);
+box-shadow:
+0 2px 0 #d9a83d,
+0 6px 12px rgba(160, 120, 40, 0.16);
+}
+
+.pet-choice-item input[type="radio"],
+.pet-choice-item input[type="checkbox"] {
+accent-color: var(--accent);
+transform: scale(1.1);
+}
+
+.color-choice-list {
+gap: 10px;
+}
+
+/* Facility ID */
+
+.facility-id-box {
+display: inline-flex;
+align-items: center;
+min-height: 44px;
+padding: 0 18px;
+box-sizing: border-box;
+border-radius: 999px;
+background: #ffffff;
+border: 3px solid #eacb70;
+color: var(--text);
+font-weight: 900;
+box-shadow:
+0 4px 0 #f1d888,
+0 8px 14px rgba(160, 120, 40, 0.12);
+}
+
+/* Current Image */
+
+.current-pet-image-box {
+margin-top: 24px;
+text-align: center;
+}
+
+.current-pet-image-box img {
+width: 220px;
+height: 180px;
+object-fit: cover;
+border-radius: 24px;
+border: 3px solid #fff2b8;
+box-shadow:
+0 5px 0 #e7c45d,
+0 10px 16px rgba(120, 90, 40, 0.18);
+}
+
+/* Buttons */
+
+.pet-register-button-area {
+display: flex;
+justify-content: center;
+gap: 16px;
+flex-wrap: wrap;
+margin-top: 32px;
+}
+
+.pet-register-button-area input[type="submit"] {
+min-width: 150px;
+}
+
+.pet-register-button-area input[type="submit"][value="削除"] {
+background: linear-gradient(180deg, #ffa27f 0%, var(--accent) 100%);
+color: #ffffff;
+box-shadow:
+0 5px 0 #d85f3f,
+0 10px 16px rgba(255, 138, 101, 0.22);
+}
+
+.pet-register-button-area input[type="submit"][value="削除"]:hover {
+background: linear-gradient(180deg, #ff8a65 0%, #e85f3f 100%);
+color: #ffffff;
+box-shadow:
+0 3px 0 #bf4d33,
+0 8px 14px rgba(255, 138, 101, 0.28);
+}
+/* =========================
+Pet Survey
+========================= */
+
+.pet-survey-card {
+width: 100%;
+max-width: 920px;
+margin: 0 auto;
+background: linear-gradient(180deg, #ffffff 0%, var(--card) 100%);
+border: 4px solid var(--border);
+border-radius: 36px;
+padding: 42px;
+text-align: center;
+box-shadow:
+0 10px 0 #e5bd62,
+0 22px 34px rgba(160, 120, 40, 0.24);
+position: relative;
+overflow: hidden;
+}
+
+.pet-survey-card::before {
+content: "📝";
+position: absolute;
+top: 24px;
+right: 34px;
+font-size: 44px;
+opacity: 0.22;
+transform: rotate(12deg);
+}
+
+.pet-survey-card::after {
+content: "";
+position: absolute;
+left: -40px;
+bottom: -40px;
+width: 170px;
+height: 170px;
+background: radial-gradient(circle, rgba(123, 207, 166, 0.28) 0%, transparent 70%);
+pointer-events: none;
+}
+
+.pet-survey-card h1 {
+margin-top: 0;
+}
+
+.pet-survey-form {
+margin-top: 30px;
+background: none;
+border: none;
+box-shadow: none;
+padding: 0;
+text-align: left;
+position: relative;
+z-index: 1;
+}
+
+.pet-survey-question-box {
+background: #fffdf4;
+border: 3px solid var(--border);
+border-radius: 30px;
+padding: 26px 30px;
+margin: 24px 0;
+box-shadow:
+0 7px 0 #e5bd62,
+0 14px 22px rgba(160, 120, 40, 0.18);
+}
+
+.pet-survey-question-title {
+margin: 0 0 18px 0;
+font-size: 18px;
+font-weight: 900;
+color: var(--text);
+line-height: 1.7;
+}
+
+.pet-survey-question-title::before {
+content: "🐾 ";
+}
+
+.pet-survey-choice-list {
+display: flex;
+flex-wrap: wrap;
+gap: 12px;
+}
+
+.pet-survey-choice-list br {
+display: none;
+}
+
+.pet-survey-choice-item {
+min-height: 44px;
+padding: 0 16px;
+box-sizing: border-box;
+
+
+display: inline-flex;
+align-items: center;
+justify-content: center;
+gap: 7px;
+
+background: #ffffff;
+border: 3px solid #eacb70;
+border-radius: 999px;
+color: var(--text);
+font-weight: 900;
+cursor: pointer;
+
+box-shadow:
+    0 4px 0 #f1d888,
+    0 8px 14px rgba(160, 120, 40, 0.12);
+transition: 0.18s;
+
+
+}
+
+.pet-survey-choice-item:hover {
+background: #fff3b8;
+transform: translateY(2px);
+box-shadow:
+0 2px 0 #d9a83d,
+0 6px 12px rgba(160, 120, 40, 0.16);
+}
+
+.pet-survey-choice-item input[type="radio"] {
+accent-color: var(--accent);
+transform: scale(1.12);
+}
+
+.pet-survey-card .center-button-area {
+margin-top: 32px;
+}
+
+.pet-survey-card .center-button-area input[type="submit"] {
+min-width: 150px;
+}
+/* =========================
+Pet Survey Confirm
+========================= */
+
+.pet-survey-confirm-card {
+width: 100%;
+max-width: 940px;
+margin: 0 auto;
+background: linear-gradient(180deg, #ffffff 0%, var(--card) 100%);
+border: 4px solid var(--border);
+border-radius: 36px;
+padding: 42px;
+text-align: center;
+box-shadow:
+0 10px 0 #e5bd62,
+0 22px 34px rgba(160, 120, 40, 0.24);
+position: relative;
+overflow: hidden;
+}
+
+.pet-survey-confirm-card::before {
+content: "📝";
+position: absolute;
+top: 24px;
+right: 34px;
+font-size: 44px;
+opacity: 0.22;
+transform: rotate(12deg);
+}
+
+.pet-survey-confirm-card::after {
+content: "";
+position: absolute;
+left: -40px;
+bottom: -40px;
+width: 170px;
+height: 170px;
+background: radial-gradient(circle, rgba(123, 207, 166, 0.28) 0%, transparent 70%);
+pointer-events: none;
+}
+
+.pet-survey-confirm-card h1 {
+margin-top: 0;
+}
+
+.pet-survey-confirm-card h2 {
+margin-top: 12px;
+margin-bottom: 12px;
+font-size: 24px;
+font-weight: 900;
+}
+
+.pet-survey-confirm-card h2::before {
+content: "🐾 ";
+}
+
+/* Table Wrap */
+
+.pet-survey-confirm-table-wrap {
+margin-top: 30px;
+background: #fffdf4;
+border: 3px solid var(--border);
+border-radius: 30px;
+padding: 24px;
+box-shadow:
+0 7px 0 #e5bd62,
+0 14px 22px rgba(160, 120, 40, 0.18);
+position: relative;
+z-index: 1;
+}
+
+/* Table */
+
+.pet-survey-confirm-table {
+width: 100%;
+border-collapse: separate;
+border-spacing: 0 14px;
+border: none;
+background: transparent;
+box-shadow: none;
+margin: 0;
+table-layout: auto;
+}
+
+.pet-survey-confirm-table th {
+background: linear-gradient(180deg, #ffd978 0%, var(--main) 100%);
+color: var(--text);
+border: none;
+padding: 15px 18px;
+font-weight: 900;
+text-align: center;
+box-shadow: 0 4px 0 #d9a83d;
+}
+
+.pet-survey-confirm-table th:first-child {
+border-radius: 18px 0 0 18px;
+}
+
+.pet-survey-confirm-table th:last-child {
+border-radius: 0 18px 18px 0;
+}
+
+.pet-survey-confirm-table td {
+background: #ffffff;
+border: none;
+padding: 20px 22px;
+color: var(--text);
+font-size: 15px;
+font-weight: 900;
+line-height: 1.8;
+vertical-align: middle;
+box-shadow:
+0 5px 0 #f1d888,
+0 10px 16px rgba(160, 120, 40, 0.12);
+word-break: break-word;
+}
+
+.pet-survey-confirm-table td:first-child {
+width: 65%;
+text-align: left;
+border-radius: 20px 0 0 20px;
+}
+
+.pet-survey-confirm-table td:first-child::before {
+content: "Q. ";
+color: var(--accent-dark);
+font-weight: 900;
+}
+
+.pet-survey-confirm-table td:last-child {
+width: 35%;
+text-align: center;
+border-radius: 0 20px 20px 0;
+color: var(--mint-dark);
+}
+
+.pet-survey-confirm-table td:last-child::before {
+content: "A. ";
+color: var(--accent-dark);
+font-weight: 900;
+}
+
+/* Back */
+
+.pet-survey-confirm-back-form {
+background: none;
+border: none;
+box-shadow: none;
+padding: 0;
+margin: 30px 0 0 0;
+}
+
+.pet-survey-confirm-back-form button {
+background: linear-gradient(180deg, #9ee5c0 0%, var(--mint) 100%);
+color: #ffffff;
+box-shadow:
+0 5px 0 #4fa77c,
+0 10px 16px rgba(80, 150, 110, 0.2);
+}
+
+.pet-survey-confirm-back-form button:hover {
+background: linear-gradient(180deg, #8adbad 0%, var(--mint-dark) 100%);
+color: #ffffff;
+box-shadow:
+0 3px 0 #438e69,
+0 8px 14px rgba(80, 150, 110, 0.25);
+}
+/* =========================
+Reserve Warning Note
+========================= */
+
+.reserve-warning-note {
+max-width: 860px;
+margin: 30px auto 24px auto;
+padding: 20px 26px;
+
+
+background: linear-gradient(180deg, #fff8f4 0%, #fff0e8 100%);
+border: 4px solid var(--accent);
+border-radius: 26px;
+
+color: var(--text);
+font-size: 16px;
+font-weight: 900;
+line-height: 1.9;
+text-align: center;
+
+box-shadow:
+    0 7px 0 #d85f3f,
+    0 14px 22px rgba(255, 138, 101, 0.22);
+
+
+}
+
+.reserve-warning-note::before {
+content: "⚠️ 注意 ";
+display: inline-flex;
+align-items: center;
+justify-content: center;
+
+margin-right: 8px;
+margin-bottom: 8px;
+padding: 5px 14px;
+
+background: linear-gradient(180deg, #ffa27f 0%, var(--accent) 100%);
+color: #ffffff;
+border-radius: 999px;
+
+font-size: 14px;
+font-weight: 900;
+
 }
