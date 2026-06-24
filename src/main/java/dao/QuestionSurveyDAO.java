@@ -11,34 +11,42 @@ import util.DButil;
 
 public class QuestionSurveyDAO {
 
+	private static final String JDBC_DRIVER = "com.microsoft.sqlserver.jdbc.SQLServerDriver";
+	private static final String SQL_FIND_ALL_QUESTIONS = "SELECT * FROM QuestionSurvey";
+
 	public List<Question> findAllQuestion() {
-		List<Question> questionSurveyList = new ArrayList<>();
+		List<Question> questionList = new ArrayList<>();
 
 		try {
-			Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
+			loadJdbcDriver();
 		} catch (ClassNotFoundException e) {
 			throw new IllegalStateException("JDBCドライバを読み込めませんでした");
 		}
-		try (Connection conn = DButil.getConnection()) {
 
-			String sql = "SELECT * FROM QuestionSurvey";
-			PreparedStatement pStmt = conn.prepareStatement(sql);
-
-			ResultSet rs = pStmt.executeQuery();
+		try (Connection conn = DButil.getConnection();
+				PreparedStatement stmt = conn.prepareStatement(SQL_FIND_ALL_QUESTIONS);
+				ResultSet rs = stmt.executeQuery()) {
 
 			while (rs.next()) {
-				int QuestionID = rs.getInt("QuestionID");
-				String userQuestion = rs.getString("userQuestion");
-				String petQuestion = rs.getString("petQuestion");
-				Question question = new Question(QuestionID, userQuestion, petQuestion);
-				questionSurveyList.add(question);
+				questionList.add(toQuestion(rs));
 			}
 
 		} catch (Exception e) {
 			e.printStackTrace();
 			return null;
 		}
-		return questionSurveyList;
+
+		return questionList;
 	}
 
+	private void loadJdbcDriver() throws ClassNotFoundException {
+		Class.forName(JDBC_DRIVER);
+	}
+
+	private Question toQuestion(ResultSet rs) throws Exception {
+		int questionId = rs.getInt("QuestionID");
+		String userQuestion = rs.getString("userQuestion");
+		String petQuestion = rs.getString("petQuestion");
+		return new Question(questionId, userQuestion, petQuestion);
+	}
 }

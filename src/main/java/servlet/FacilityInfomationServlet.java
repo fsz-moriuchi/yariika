@@ -12,7 +12,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
 import dao.FacilityClosedDayDAO;
-import dao.FacilityInfomationDAO;
+import dao.FacilityInformationDAO;
 import model.FacilityInformation;
 
 @WebServlet("/FacilityInfomationServlet")
@@ -66,7 +66,7 @@ public class FacilityInfomationServlet extends HttpServlet {
 		FacilityInformation facilityInfo = new FacilityInformation(facilityId, facilityName, tel, address, mail,
 				openTime, closeTime);
 
-		FacilityInfomationDAO dao1 = new FacilityInfomationDAO();
+		FacilityInformationDAO dao1 = new FacilityInformationDAO();
 		FacilityInformation oldInfo = dao1.findByFacilityId(facilityId);
 
 		boolean result;

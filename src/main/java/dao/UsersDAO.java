@@ -12,182 +12,195 @@ import model.UserSurvey;
 import util.DButil;
 
 public class UsersDAO {
-	public User findByLogin(UserLogin login){
+
+	private static final String JDBC_DRIVER = "com.microsoft.sqlserver.jdbc.SQLServerDriver";
+	private static final String SQL_FIND_BY_LOGIN = "SELECT USER_ID, PASSWORD_HASH FROM USERS WHERE USER_ID = ? AND PASSWORD_HASH = ?";
+	private static final String SQL_REGISTER_USER = "INSERT INTO USERS(USER_ID, PASSWORD_HASH) VALUES(?, ?)";
+	private static final String SQL_CREATE_USER_SURVEY = "INSERT INTO UserSurvey(USER_ID,QuestionID,SurveyChoiceID) VALUES(?,?,?)";
+	private static final String SQL_UPDATE_USER_SURVEY = "UPDATE UserSurvey SET SurveyChoiceID = ? WHERE USER_ID = ? AND QuestionID = ?";
+	private static final String SQL_INSERT_USER_SURVEY = "INSERT INTO UserSurvey (USER_ID, QuestionID, SurveyChoiceID) VALUES(?, ?, ?)";
+	private static final String SQL_SHOW_USER_SURVEY = "SELECT * FROM UserSurvey WHERE USER_ID = ?";
+	private static final String SQL_UPDATE_USER_PASSWORD = "UPDATE USERS SET PASSWORD_HASH = ? WHERE USER_ID = ?";
+
+	public User findByLogin(UserLogin login) {
 		User user = null;
 
 		try {
-			Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
+			loadJdbcDriver();
 		} catch (ClassNotFoundException e) {
 			throw new IllegalStateException("JDBCドライバを読み込めませんでした");
 		}
 
-		try (Connection conn = DButil.getConnection()) {
+		try (Connection conn = DButil.getConnection();
+				PreparedStatement stmt = conn.prepareStatement(SQL_FIND_BY_LOGIN)) {
 
-			String sql = "SELECT USER_ID, PASSWORD_HASH FROM USERS WHERE USER_ID = ? AND PASSWORD_HASH= ?";
-			PreparedStatement pStmt = conn.prepareStatement(sql);
-			pStmt.setString(1, login.getUserId());
-			pStmt.setString(2, login.getPasswordHash());
+			stmt.setString(1, login.getUserId());
+			stmt.setString(2, login.getPasswordHash());
 
-			ResultSet rs = pStmt.executeQuery();
-
-			if (rs.next()) {
-				String userId = rs.getString("USER_ID");
-				String passwordHash = rs.getString("PASSWORD_HASH");
-				user = new User(userId, passwordHash);
+			try (ResultSet rs = stmt.executeQuery()) {
+				if (rs.next()) {
+					user = new User(rs.getString("USER_ID"), rs.getString("PASSWORD_HASH"));
+				}
 			}
+
 		} catch (Exception e) {
 			e.printStackTrace();
 			return null;
 		}
+
 		return user;
 	}
 
-	public boolean registerUser(User user){
+	public boolean registerUser(User user) {
 		try {
-			Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
+			loadJdbcDriver();
 		} catch (ClassNotFoundException e) {
 			throw new IllegalStateException("JBDCドライバを読み込めませんでした");
 		}
-		try (Connection conn = DButil.getConnection()) {
 
-			String sql = "INSERT INTO USERS(USER_ID, PASSWORD_HASH) VALUES(?, ?)";
-			PreparedStatement pStmt = conn.prepareStatement(sql);
+		try (Connection conn = DButil.getConnection();
+				PreparedStatement stmt = conn.prepareStatement(SQL_REGISTER_USER)) {
 
-			pStmt.setString(1, user.getUserId());
-			pStmt.setString(2, user.getPasswordHash());
+			bindRegisterUser(stmt, user);
+			return stmt.executeUpdate() == 1;
 
-			int result = pStmt.executeUpdate();
-			if (result != 1) {
-				return false;
-			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			return false;
 		}
-		return true;
 	}
-	
-	
-//新規ユーザーアンケート
+
+	// 新規ユーザーアンケート
 	public boolean createUserSurvey(UserSurvey userSurvey) {
 		try {
-			Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
+			loadJdbcDriver();
 		} catch (ClassNotFoundException e) {
 			throw new IllegalStateException("JDBCドライバを読み込めませんでした");
 		}
 
-		try (Connection conn = DButil.getConnection()) {
+		try (Connection conn = DButil.getConnection();
+				PreparedStatement stmt = conn.prepareStatement(SQL_CREATE_USER_SURVEY)) {
 
-			String sql = "INSERT INTO UserSurvey(USER_ID,QuestionID,SurveyChoiceID) VALUES(?,?,?)";
-			PreparedStatement pStmt = conn.prepareStatement(sql);
-
-			pStmt.setString(1, userSurvey.getUserId());
-			pStmt.setInt(2, userSurvey.getQuestionID());
-			pStmt.setInt(3,userSurvey.getSurveyChoiceID());
-
-			int result = pStmt.executeUpdate();
-			return result == 1;
+			bindCreateUserSurvey(stmt, userSurvey);
+			return stmt.executeUpdate() == 1;
 
 		} catch (Exception e) {
 			e.printStackTrace();
 			return false;
 		}
-		
 	}
-//修正ユーザーアンケート
-	public boolean updateUserSurvey(String userId,int questionID,int surveyChoiceID) {
+
+	// 修正ユーザーアンケート
+	public boolean updateUserSurvey(String userId, int questionID, int surveyChoiceID) {
 		try {
-			Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
+			loadJdbcDriver();
 		} catch (ClassNotFoundException e) {
 			throw new IllegalStateException("JDBCドライバを読み込めませんでした");
 		}
 
 		try (Connection conn = DButil.getConnection()) {
-
-			String updateSql = "UPDATE UserSurvey SET SurveyChoiceID = ? WHERE USER_ID = ? AND QuestionID = ?";
-			PreparedStatement updatepStmt = conn.prepareStatement(updateSql);
-
-			updatepStmt.setInt(1,surveyChoiceID);
-			updatepStmt.setString(2, userId);
-			updatepStmt.setInt(3, questionID);
-			int updateResult = updatepStmt.executeUpdate();
-			
-			//既存問題があれば更新成功
-			if(updateResult == 1) {
+			if (updateExistingUserSurvey(conn, userId, questionID, surveyChoiceID)) {
 				return true;
 			}
-			
-			//アンケート新規問題があるとき　insert new question
-			String insertSql = "INSERT INTO UserSurvey (USER_ID, QuestionID, SurveyChoiceID) VALUES(?, ?, ?)";
-			PreparedStatement insertpStmt = conn.prepareStatement(insertSql);
-			
-			insertpStmt.setString(1, userId);
-			insertpStmt.setInt(2, questionID);
-			insertpStmt.setInt(3,surveyChoiceID);
-
-			int insertResult = insertpStmt.executeUpdate();
-
-			return insertResult == 1;
+			return insertUserSurvey(conn, userId, questionID, surveyChoiceID);
 
 		} catch (Exception e) {
 			e.printStackTrace();
 			return false;
 		}
 	}
-//show ユーザーアンケート
-	public List<UserSurvey> showUserSurvey(String userId){
+
+	// show ユーザーアンケート
+	public List<UserSurvey> showUserSurvey(String userId) {
 		List<UserSurvey> userSurveyList = new ArrayList<>();
 
 		try {
-			Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
+			loadJdbcDriver();
 		} catch (ClassNotFoundException e) {
 			throw new IllegalStateException("JDBCドライバは読み込めませんでした");
 		}
 
-		try (Connection conn = DButil.getConnection()) {
+		try (Connection conn = DButil.getConnection();
+				PreparedStatement stmt = conn.prepareStatement(SQL_SHOW_USER_SURVEY)) {
 
-			String sql = "SELECT * FROM UserSurvey WHERE USER_ID = ?";
-			PreparedStatement pStmt = conn.prepareStatement(sql);
-			pStmt.setString(1, userId);
-			ResultSet rs = pStmt.executeQuery();
+			stmt.setString(1, userId);
 
-			while (rs.next()) {
-				int questionID = rs.getInt("QuestionID");
-				int surveyChoiceID = rs.getInt("SurveyChoiceID");
-				UserSurvey userSurvey = new UserSurvey(userId,questionID,surveyChoiceID);	
-				userSurveyList.add(userSurvey);
+			try (ResultSet rs = stmt.executeQuery()) {
+				while (rs.next()) {
+					userSurveyList.add(toUserSurvey(userId, rs));
+				}
 			}
+
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		return userSurveyList;
 
-		}
-	
-//パスワード変更
-	public boolean updateUserPassword(User user){
+		return userSurveyList;
+	}
+
+	// パスワード変更
+	public boolean updateUserPassword(User user) {
 		try {
-			Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
+			loadJdbcDriver();
 		} catch (ClassNotFoundException e) {
 			throw new IllegalStateException("JBDCドライバを読み込めませんでした");
 		}
-		try (Connection conn = DButil.getConnection()) {
 
-			String sql = "UPDATE USERS SET PASSWORD_HASH = ? WHERE USER_ID = ?";
-			PreparedStatement pStmt = conn.prepareStatement(sql);
+		try (Connection conn = DButil.getConnection();
+				PreparedStatement stmt = conn.prepareStatement(SQL_UPDATE_USER_PASSWORD)) {
 
-			pStmt.setString(1, user.getPasswordHash());
-			pStmt.setString(2, user.getUserId());
-			
+			bindUpdateUserPassword(stmt, user);
+			return stmt.executeUpdate() == 1;
 
-			int result = pStmt.executeUpdate();
-			if (result != 1) {
-				return false;
-			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			return false;
 		}
-		return true;
+	}
+
+	private void loadJdbcDriver() throws ClassNotFoundException {
+		Class.forName(JDBC_DRIVER);
+	}
+
+	private void bindRegisterUser(PreparedStatement stmt, User user) throws Exception {
+		stmt.setString(1, user.getUserId());
+		stmt.setString(2, user.getPasswordHash());
+	}
+
+	private void bindCreateUserSurvey(PreparedStatement stmt, UserSurvey userSurvey) throws Exception {
+		stmt.setString(1, userSurvey.getUserId());
+		stmt.setInt(2, userSurvey.getQuestionID());
+		stmt.setInt(3, userSurvey.getSurveyChoiceID());
+	}
+
+	private boolean updateExistingUserSurvey(Connection conn, String userId, int questionID, int surveyChoiceID)
+			throws Exception {
+		try (PreparedStatement stmt = conn.prepareStatement(SQL_UPDATE_USER_SURVEY)) {
+			stmt.setInt(1, surveyChoiceID);
+			stmt.setString(2, userId);
+			stmt.setInt(3, questionID);
+			return stmt.executeUpdate() == 1;
+		}
+	}
+
+	private boolean insertUserSurvey(Connection conn, String userId, int questionID, int surveyChoiceID)
+			throws Exception {
+		try (PreparedStatement stmt = conn.prepareStatement(SQL_INSERT_USER_SURVEY)) {
+			stmt.setString(1, userId);
+			stmt.setInt(2, questionID);
+			stmt.setInt(3, surveyChoiceID);
+			return stmt.executeUpdate() == 1;
+		}
+	}
+
+	private UserSurvey toUserSurvey(String userId, ResultSet rs) throws Exception {
+		int questionID = rs.getInt("QuestionID");
+		int surveyChoiceID = rs.getInt("SurveyChoiceID");
+		return new UserSurvey(userId, questionID, surveyChoiceID);
+	}
+
+	private void bindUpdateUserPassword(PreparedStatement stmt, User user) throws Exception {
+		stmt.setString(1, user.getPasswordHash());
+		stmt.setString(2, user.getUserId());
 	}
 }

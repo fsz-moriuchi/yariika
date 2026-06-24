@@ -61,7 +61,7 @@ public class ReserveCompleteServlet extends HttpServlet {
 
 		if (result) {
 			FacilityInformationDAO dao2 = new FacilityInformationDAO();
-			FacilityInformation facilityInformation = dao2.findByFacilityID(facilityID);
+			FacilityInformation facilityInformation = dao2.findByFacilityId(facilityID);
 			request.setAttribute("reserveDate", reserveDate);
 			request.setAttribute("reserveTime", reserveTime);
 			request.setAttribute("facilityInformation", facilityInformation);

@@ -13,7 +13,7 @@ import jakarta.servlet.http.HttpSession;
 
 import dao.FacilitiesDAO;
 import dao.FacilityClosedDayDAO;
-import dao.FacilityInfomationDAO;
+import dao.FacilityInformationDAO;
 import model.Facility;
 import model.FacilityInformation;
 import util.PasswordUtil;
@@ -36,7 +36,7 @@ public class FacilityRegisterServlet extends HttpServlet {
 		String facilityId = request.getParameter("facilityId");
 		String password = request.getParameter("password");
 		String hash = PasswordUtil.hashPassword(password);
-		
+
 		//店舗情報
 		String facilityName = request.getParameter("facilityName");
 		String tel = request.getParameter("tel");
@@ -49,13 +49,13 @@ public class FacilityRegisterServlet extends HttpServlet {
 		LocalTime closeTime = LocalTime.parse(closeTimeStr);
 
 		String[] closedDays = request.getParameterValues("closedDay");
-		
+
 		//DAO
 		FacilitiesDAO dao = new FacilitiesDAO();
-		FacilityInfomationDAO dao1 = new FacilityInfomationDAO();
+		FacilityInformationDAO dao1 = new FacilityInformationDAO();
 		FacilityInformation oldInfo = dao1.findByFacilityId(facilityId);
 		FacilityClosedDayDAO dao2 = new FacilityClosedDayDAO();
-		
+
 		//ログイン情報登録
 		Facility facility = new Facility(facilityId, hash);
 		//FacilitiesDAO dao = new FacilitiesDAO();
@@ -67,27 +67,26 @@ public class FacilityRegisterServlet extends HttpServlet {
 			dispatcher.forward(request, response);
 			return;
 		}
-		
+
 		//店舗情報登録
 		FacilityInformation facilityInfo = new FacilityInformation(facilityId, facilityName, tel, address, mail,
 				openTime, closeTime);
-		
-		
+
 		//休日登録
 		if (closedDays != null) {
 			for (String closedDay : closedDays) {
 				//休日をテーブルに登録
-				boolean result2 =dao2.insertByFacilityID(facilityId, closedDay);
+				boolean result2 = dao2.insertByFacilityID(facilityId, closedDay);
 			}
 		}
-		
+
 		boolean result2;
 		if (oldInfo == null) {
 			result2 = dao1.insert(facilityInfo);
 		} else {
 			result2 = dao1.update(facilityInfo);
 		}
-		
+
 		HttpSession session = request.getSession();
 		session.setAttribute("facilityId", facilityId);
 

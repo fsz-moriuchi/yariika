@@ -67,7 +67,7 @@ public class ReserveServlet extends HttpServlet {
 		}
 
 		FacilityInformationDAO dao1 = new FacilityInformationDAO();
-		FacilityInformation facilityInformation = dao1.findByFacilityID(facilityID);
+		FacilityInformation facilityInformation = dao1.findByFacilityId(facilityID);
 
 		LocalTime openTime = facilityInformation.getOpenTime();
 		LocalTime closeTime = facilityInformation.getCloseTime();

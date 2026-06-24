@@ -74,7 +74,7 @@ public class ReservationEditServlet extends HttpServlet {
 
 			FacilityInformationDAO facilityDAO = new FacilityInformationDAO();
 
-			FacilityInformation facilityInformation = facilityDAO.findByFacilityID(facilityID);
+			FacilityInformation facilityInformation = facilityDAO.findByFacilityId(facilityID);
 
 			LocalTime openTime = facilityInformation.getOpenTime();
 

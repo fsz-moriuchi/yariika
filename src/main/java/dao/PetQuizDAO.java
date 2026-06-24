@@ -10,42 +10,53 @@ import model.PetQuiz;
 import util.DButil;
 
 public class PetQuizDAO {
+
+	private static final String JDBC_DRIVER = "com.microsoft.sqlserver.jdbc.SQLServerDriver";
+	private static final String SQL_FIND_BY_CATEGORY = "SELECT * FROM PetQuiz WHERE CATEGORY_ID = ?";
+
 	// クイズ一覧取得
 	public List<PetQuiz> findByCategory(int categoryId) {
 		List<PetQuiz> quizList = new ArrayList<>();
-						
-		//JDBCドライバを読み込む
+
 		try {
-			Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
-		}catch(ClassNotFoundException e) {
+			loadJdbcDriver();
+		} catch (ClassNotFoundException e) {
 			throw new IllegalStateException("JDBCドライバを読み込めませんでした");
 		}
-		//データベースに接続
-		try (Connection conn = DButil.getConnection()) {
-			//SELECT文を準備
-			String sql = "SELECT * FROM PetQuiz WHERE CATEGORY_ID = ?";
-			PreparedStatement pStmt = conn.prepareStatement(sql);
-			pStmt.setInt(1, categoryId);
-			
-			ResultSet rs = pStmt.executeQuery();
-							
-			while (rs.next()) {
-				int quizId = rs.getInt("QUIZ_ID");
-				String question = rs.getString("QUESTION");
-				String choice1 = rs.getString("CHOICE1");
-				String choice2 = rs.getString("CHOICE2");
-				String choice3 = rs.getString("CHOICE3");
-				String choice4 = rs.getString("CHOICE4");
-				int answer = rs.getInt("ANSWER");
-				int category = rs.getInt("CATEGORY_ID");
-				PetQuiz quiz = new PetQuiz(quizId, question, choice1,choice2, choice3, choice4, answer, category);
-				quizList.add(quiz);	//listに一件ずつ追加
+
+		try (Connection conn = DButil.getConnection();
+				PreparedStatement stmt = conn.prepareStatement(SQL_FIND_BY_CATEGORY)) {
+
+			stmt.setInt(1, categoryId);
+
+			try (ResultSet rs = stmt.executeQuery()) {
+				while (rs.next()) {
+					quizList.add(toPetQuiz(rs));
+				}
 			}
-		}catch(Exception e) {
+
+		} catch (Exception e) {
 			e.printStackTrace();
 			return null;
 		}
-		//全件まとめて返す
+
 		return quizList;
+	}
+
+	private void loadJdbcDriver() throws ClassNotFoundException {
+		Class.forName(JDBC_DRIVER);
+	}
+
+	private PetQuiz toPetQuiz(ResultSet rs) throws Exception {
+		int quizId = rs.getInt("QUIZ_ID");
+		String question = rs.getString("QUESTION");
+		String choice1 = rs.getString("CHOICE1");
+		String choice2 = rs.getString("CHOICE2");
+		String choice3 = rs.getString("CHOICE3");
+		String choice4 = rs.getString("CHOICE4");
+		int answer = rs.getInt("ANSWER");
+		int category = rs.getInt("CATEGORY_ID");
+
+		return new PetQuiz(quizId, question, choice1, choice2, choice3, choice4, answer, category);
 	}
 }

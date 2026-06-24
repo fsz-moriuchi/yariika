@@ -12,7 +12,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
 import dao.FacilityClosedDayDAO;
-import dao.FacilityInfomationDAO;
+import dao.FacilityInformationDAO;
 import model.FacilityInformation;
 
 /**
@@ -35,7 +35,7 @@ public class FacilityInfomationConfirmServlet extends HttpServlet {
 
 		String facilityId = (String) session.getAttribute("facilityId");
 		//店舗情報の取得
-		FacilityInfomationDAO dao1 = new FacilityInfomationDAO();
+		FacilityInformationDAO dao1 = new FacilityInformationDAO();
 		FacilityInformation facilityInfo = dao1.findByFacilityId(facilityId);
 
 		//店舗の定休日の取得

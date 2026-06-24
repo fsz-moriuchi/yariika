@@ -10,7 +10,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
-import dao.FacilityInfomationDAO;
+import dao.FacilityInformationDAO;
 import model.FacilityInformation;
 
 @WebServlet("/FacilityPageServlet")
@@ -30,7 +30,7 @@ public class FacilityPageServlet extends HttpServlet {
 
 		String facilityId = (String) session.getAttribute("facilityId");
 
-		FacilityInfomationDAO dao = new FacilityInfomationDAO();
+		FacilityInformationDAO dao = new FacilityInformationDAO();
 		FacilityInformation facilityInfo = dao.findByFacilityId(facilityId);
 		boolean registered = (facilityInfo != null);
 		request.setAttribute("registered", registered);

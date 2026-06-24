@@ -19,54 +19,66 @@ import model.Reserve;
 
 @WebServlet("/DashboardServlet")
 public class DashboardServlet extends HttpServlet {
-private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
-protected void doGet(HttpServletRequest request, HttpServletResponse response)
-        throws ServletException, IOException {
+	@Override
+	protected void doGet(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
 
-    request.setCharacterEncoding("UTF-8");
+		request.setCharacterEncoding("UTF-8");
 
-    HttpSession session = request.getSession();
+		HttpSession session = request.getSession();
+		if (session == null || session.getAttribute("facilityId") == null) {
+			response.sendRedirect("WelcomeServlet");
+			return;
+		}
 
-    if (session == null || session.getAttribute("facilityId") == null) {
-        response.sendRedirect("WelcomeServlet");
-        return;
-    }
+		String facilityId = (String) session.getAttribute("facilityId");
 
-    String facilityId = (String) session.getAttribute("facilityId");
+		setTodayReserveCount(request, facilityId);
+		setPetCount(request, facilityId);
+		setNextReserve(request, facilityId);
+		setLatestPet(request, facilityId);
+		setViewCount(request, facilityId);
+		setUnreadMessageCount(request, facilityId);
 
-    // 本日の予約件数のカウント
-    ReserveDAO reserveDao = new ReserveDAO();
-    int countTodayReserve = reserveDao.countTodayReserve(facilityId);
-    request.setAttribute("countTodayReserve", countTodayReserve);
+		RequestDispatcher dispatcher = request.getRequestDispatcher("WEB-INF/jsp/dashboard.jsp");
+		dispatcher.forward(request, response);
+	}
 
-    // 登録しているペット数のカウント
-    PetListDAO petListDao = new PetListDAO();
-    int petCount = petListDao.countByfacilityID(facilityId);
-    request.setAttribute("petCount", petCount);
+	private void setTodayReserveCount(HttpServletRequest request, String facilityId) {
+		ReserveDAO reserveDAO = new ReserveDAO();
+		int countTodayReserve = reserveDAO.countTodayReserve(facilityId);
+		request.setAttribute("countTodayReserve", countTodayReserve);
+	}
 
-    // 直近の予約1件を表示
-    Reserve reserve = reserveDao.findnextReserve(facilityId);
-    request.setAttribute("reserve", reserve);
+	private void setPetCount(HttpServletRequest request, String facilityId) {
+		PetListDAO petListDAO = new PetListDAO();
+		int petCount = petListDAO.countByfacilityID(facilityId);
+		request.setAttribute("petCount", petCount);
+	}
 
-    // 最後に追加したペットの表示
-    FavoritePet latestPet = petListDao.findLatestPetByFacilityID(facilityId);
-    request.setAttribute("latestPet", latestPet);
+	private void setNextReserve(HttpServletRequest request, String facilityId) {
+		ReserveDAO reserveDAO = new ReserveDAO();
+		Reserve nextReserve = reserveDAO.findnextReserve(facilityId);
+		request.setAttribute("reserve", nextReserve);
+	}
 
-    // 施設ページアクセス数の表示
-    FacilityViewDAO facilityViewDao = new FacilityViewDAO();
-    int viewCount = facilityViewDao.getViewCount(facilityId);
-    request.setAttribute("viewCount", viewCount);
+	private void setLatestPet(HttpServletRequest request, String facilityId) {
+		PetListDAO petListDAO = new PetListDAO();
+		FavoritePet latestPet = petListDAO.findLatestPetByFacilityID(facilityId);
+		request.setAttribute("latestPet", latestPet);
+	}
 
-    // 施設側メッセージ未読数
-    MessageDAO messageDao = new MessageDAO();
-    int facilityUnreadCount = messageDao.countUnreadByFacilityId(facilityId);
-    request.setAttribute("facilityUnreadCount", facilityUnreadCount);
+	private void setViewCount(HttpServletRequest request, String facilityId) {
+		FacilityViewDAO facilityViewDAO = new FacilityViewDAO();
+		int viewCount = facilityViewDAO.getViewCount(facilityId);
+		request.setAttribute("viewCount", viewCount);
+	}
 
-    RequestDispatcher dispatcher =
-            request.getRequestDispatcher("WEB-INF/jsp/dashboard.jsp");
-    dispatcher.forward(request, response);
-}
-
-
+	private void setUnreadMessageCount(HttpServletRequest request, String facilityId) {
+		MessageDAO messageDAO = new MessageDAO();
+		int facilityUnreadCount = messageDAO.countUnreadByFacilityId(facilityId);
+		request.setAttribute("facilityUnreadCount", facilityUnreadCount);
+	}
 }

@@ -7,26 +7,37 @@ import model.QuizAnswer;
 import util.DButil;
 
 public class QuizAnswerDAO {
-	//userIdをインサート
+
+	private static final String JDBC_DRIVER = "com.microsoft.sqlserver.jdbc.SQLServerDriver";
+	private static final String SQL_INSERT_QUIZ_ANSWER = "INSERT INTO QuizAnswer (USER_ID, QUIZ_ID, USER_ANSWER, QUIZ_SESSION_ID) VALUES (?, ?, ?, ?)";
+
+	// userIdをインサート
 	public void insert(QuizAnswer answer) {
-		//JDBCドライバを読み込む
 		try {
-			Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
-		}catch(ClassNotFoundException e) {
+			loadJdbcDriver();
+		} catch (ClassNotFoundException e) {
 			throw new IllegalStateException("JDBCドライバを読み込めませんでした");
 		}
-		//データベースに接続
-		try (Connection conn = DButil.getConnection()) {
-			//SELECT文を準備
-			String sql = "INSERT INTO QuizAnswer (USER_ID, QUIZ_ID, USER_ANSWER, QUIZ_SESSION_ID) VALUES (?, ?, ?, ?)";
-			PreparedStatement pStmt = conn.prepareStatement(sql);
-			pStmt.setString(1, answer.getUserId());
-			pStmt.setInt(2, answer.getQuizId());
-			pStmt.setInt(3, answer.getUserAnswer());
-			pStmt.setString(4,  answer.getQuizSessionId());
-			pStmt.executeUpdate();
-		}catch (Exception e) {
+
+		try (Connection conn = DButil.getConnection();
+				PreparedStatement stmt = conn.prepareStatement(SQL_INSERT_QUIZ_ANSWER)) {
+
+			bindQuizAnswer(stmt, answer);
+			stmt.executeUpdate();
+
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+
+	private void loadJdbcDriver() throws ClassNotFoundException {
+		Class.forName(JDBC_DRIVER);
+	}
+
+	private void bindQuizAnswer(PreparedStatement stmt, QuizAnswer answer) throws Exception {
+		stmt.setString(1, answer.getUserId());
+		stmt.setInt(2, answer.getQuizId());
+		stmt.setInt(3, answer.getUserAnswer());
+		stmt.setString(4, answer.getQuizSessionId());
 	}
 }

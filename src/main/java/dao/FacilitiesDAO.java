@@ -10,85 +10,96 @@ import util.DButil;
 
 public class FacilitiesDAO {
 
-	public Facility findByLogin(FacilityLogin login) {
-		Facility facility = null;
+	private static final String JDBC_DRIVER = "com.microsoft.sqlserver.jdbc.SQLServerDriver";
+	private static final String SQL_FIND_BY_LOGIN = "SELECT FACILITY_ID, PASSWORD_HASH FROM FACILITIES WHERE FACILITY_ID = ? AND PASSWORD_HASH = ?";
+	private static final String SQL_INSERT_FACILITY = "INSERT INTO FACILITIES(FACILITY_ID, PASSWORD_HASH) VALUES(?, ?)";
+	private static final String SQL_UPDATE_PASSWORD = "UPDATE FACILITIES SET PASSWORD_HASH = ? WHERE FACILITY_ID = ?";
 
+	public Facility findByLogin(FacilityLogin login) {
 		try {
-			Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
+			loadJdbcDriver();
 		} catch (ClassNotFoundException e) {
 			throw new IllegalStateException("JDBCドライバを読み込めませんでした");
 		}
 
-		try (Connection conn = DButil.getConnection()) {
+		try (Connection conn = DButil.getConnection();
+				PreparedStatement stmt = conn.prepareStatement(SQL_FIND_BY_LOGIN)) {
 
-			String sql = "SELECT FACILITY_ID, PASSWORD_HASH FROM FACILITIES WHERE FACILITY_ID = ? AND PASSWORD_HASH= ?";
-			PreparedStatement pStmt = conn.prepareStatement(sql);
-			pStmt.setString(1, login.getFacilityId());
-			pStmt.setString(2, login.getPasswordHash());
+			bindLoginParameters(stmt, login);
 
-			ResultSet rs = pStmt.executeQuery();
-
-			if (rs.next()) {
-				String facilityId = rs.getString("FACILITY_ID");
-				String passwordHash = rs.getString("PASSWORD_HASH");
-				facility = new Facility(facilityId, passwordHash);
+			try (ResultSet rs = stmt.executeQuery()) {
+				if (rs.next()) {
+					return toFacility(rs);
+				}
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			return null;
 		}
-		return facility;
+
+		return null;
 	}
 
 	public boolean registerFacility(Facility facility) {
 		try {
-			Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
+			loadJdbcDriver();
 		} catch (ClassNotFoundException e) {
 			throw new IllegalStateException("JBDCドライバを読み込めませんでした");
 		}
-		try (Connection conn = DButil.getConnection()) {
 
-			String sql = "INSERT INTO FACILITIES(FACILITY_ID, PASSWORD_HASH) VALUES(?, ?)";
-			PreparedStatement pStmt = conn.prepareStatement(sql);
+		try (Connection conn = DButil.getConnection();
+				PreparedStatement stmt = conn.prepareStatement(SQL_INSERT_FACILITY)) {
 
-			pStmt.setString(1, facility.getFacilityId());
-			pStmt.setString(2, facility.getPasswordHash());
+			bindFacilityInsertParameters(stmt, facility);
 
-			int result = pStmt.executeUpdate();
-			if (result != 1) {
-				return false;
-			}
+			return stmt.executeUpdate() == 1;
 		} catch (Exception e) {
 			e.printStackTrace();
 			return false;
 		}
-		return true;
 	}
-	//パスワード変更
-		public boolean updateFacilityPassword(Facility facility){
-			try {
-				Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
-			} catch (ClassNotFoundException e) {
-				throw new IllegalStateException("JBDCドライバを読み込めませんでした");
-			}
-			try (Connection conn = DButil.getConnection()) {
 
-				String sql = "UPDATE FACILITIES SET PASSWORD_HASH = ? WHERE FACILITY_ID = ?";
-				PreparedStatement pStmt = conn.prepareStatement(sql);
-
-				pStmt.setString(1, facility.getPasswordHash());
-				pStmt.setString(2, facility.getFacilityId());
-				
-
-				int result = pStmt.executeUpdate();
-				if (result != 1) {
-					return false;
-				}
-			} catch (Exception e) {
-				e.printStackTrace();
-				return false;
-			}
-			return true;
+	public boolean updateFacilityPassword(Facility facility) {
+		try {
+			loadJdbcDriver();
+		} catch (ClassNotFoundException e) {
+			throw new IllegalStateException("JBDCドライバを読み込めませんでした");
 		}
 
+		try (Connection conn = DButil.getConnection();
+				PreparedStatement stmt = conn.prepareStatement(SQL_UPDATE_PASSWORD)) {
+
+			bindPasswordUpdateParameters(stmt, facility);
+
+			return stmt.executeUpdate() == 1;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		}
+	}
+
+	private void loadJdbcDriver() throws ClassNotFoundException {
+		Class.forName(JDBC_DRIVER);
+	}
+
+	private void bindLoginParameters(PreparedStatement stmt, FacilityLogin login) throws Exception {
+		stmt.setString(1, login.getFacilityId());
+		stmt.setString(2, login.getPasswordHash());
+	}
+
+	private void bindFacilityInsertParameters(PreparedStatement stmt, Facility facility) throws Exception {
+		stmt.setString(1, facility.getFacilityId());
+		stmt.setString(2, facility.getPasswordHash());
+	}
+
+	private void bindPasswordUpdateParameters(PreparedStatement stmt, Facility facility) throws Exception {
+		stmt.setString(1, facility.getPasswordHash());
+		stmt.setString(2, facility.getFacilityId());
+	}
+
+	private Facility toFacility(ResultSet rs) throws Exception {
+		String facilityId = rs.getString("FACILITY_ID");
+		String passwordHash = rs.getString("PASSWORD_HASH");
+		return new Facility(facilityId, passwordHash);
+	}
 }
