@@ -540,7 +540,7 @@ public class PetListDAO {
 
 	}
 
-	//条件検索
+	// 条件検索
 	public List<PetDetail> searchAllPet(
 			String categoryId,
 			String gender,
@@ -548,6 +548,7 @@ public class PetListDAO {
 			String pet_size,
 			String ageRange,
 			String priceRange) {
+
 		List<PetDetail> searchPetList = new ArrayList<>();
 
 		try {
@@ -555,137 +556,139 @@ public class PetListDAO {
 		} catch (ClassNotFoundException e) {
 			throw new IllegalStateException("JDBCドライバは読み込めませんでした");
 		}
-		try (Connection conn = DButil.getConnection()) {
-			String sql = "SELECT " +
-					"P.petID, " +
-					"P.CATEGORY_ID, " +
-					"P.FACILITY_ID, " +
-					"C.CATEGORY_NAME, " +
-					"PI.petInformationID, " +
-					"PI.name, " +
-					"PI.gender, " +
-					"PI.age, " +
-					"PI.color, " +
-					"PI.pet_size, " +
-					"PI.vaccine, " +
-					"PI.price, " +
-					"PI.commentText, " +
-					"PI.imagePath, " +
-					"FI.facilityName, " +
-					"FI.address, " +
-					"FI.tel " +
-					"FROM Pet P " +
-					"JOIN PetInformation PI ON P.petID = PI.petID " +
-					"JOIN Category C ON P.CATEGORY_ID = C.CATEGORY_ID " +
-					"JOIN FacilityInformation FI ON P.FACILITY_ID = FI.FACILITY_ID " +
-					"WHERE 1 = 1 ";
-			//WHERE 1 = 1 >> sql文の後ろに 'AND'で追加できる
 
-			//選択した条件の保存List：selectedList
-			List<Object> selectedList = new ArrayList<>();
+		String sql = "SELECT "
+				+ "P.petID, "
+				+ "P.CATEGORY_ID, "
+				+ "P.FACILITY_ID, "
+				+ "C.CATEGORY_NAME, "
+				+ "PI.petInformationID, "
+				+ "PI.name, "
+				+ "PI.gender, "
+				+ "PI.age, "
+				+ "PI.color, "
+				+ "PI.pet_size, "
+				+ "PI.vaccine, "
+				+ "PI.price, "
+				+ "PI.commentText, "
+				+ "PI.imagePath, "
+				+ "FI.facilityName, "
+				+ "FI.address, "
+				+ "FI.tel "
+				+ "FROM Pet P "
+				+ "JOIN PetInformation PI ON P.petID = PI.petID "
+				+ "JOIN Category C ON P.CATEGORY_ID = C.CATEGORY_ID "
+				+ "JOIN FacilityInformation FI ON P.FACILITY_ID = FI.FACILITY_ID "
+				+ "WHERE 1 = 1 ";
 
-			// カテゴリー
-			if (categoryId != null && !categoryId.isEmpty()) {
-				sql += "AND P.CATEGORY_ID = ? ";
-				selectedList.add(Integer.parseInt(categoryId));
+		List<Object> selectedList = new ArrayList<>();
+
+		if (categoryId != null && !categoryId.isEmpty()) {
+			sql += "AND P.CATEGORY_ID = ? ";
+			selectedList.add(Integer.parseInt(categoryId));
+		}
+
+		if (gender != null && !gender.isEmpty()) {
+			sql += "AND PI.gender = ? ";
+			selectedList.add(gender);
+		}
+
+		if (pet_size != null && !pet_size.isEmpty()) {
+			sql += "AND PI.pet_size = ? ";
+			selectedList.add(pet_size);
+		}
+
+		if (ageRange != null && !ageRange.isEmpty()) {
+			if ("age0".equals(ageRange)) {
+				sql += "AND PI.age = 0 ";
+			} else if ("age1to3".equals(ageRange)) {
+				sql += "AND PI.age BETWEEN 1 AND 3 ";
+			} else if ("age4up".equals(ageRange)) {
+				sql += "AND PI.age >= 4 ";
 			}
+		}
 
-			// 性別
-			if (gender != null && !gender.isEmpty()) {
-				sql += "AND PI.gender = ? ";
-				selectedList.add(gender);
+		if (priceRange != null && !priceRange.isEmpty()) {
+			if ("price0to100000".equals(priceRange)) {
+				sql += "AND PI.price BETWEEN 0 AND 100000 ";
+			} else if ("price100001to300000".equals(priceRange)) {
+				sql += "AND PI.price BETWEEN 100001 AND 300000 ";
+			} else if ("price300001to500000".equals(priceRange)) {
+				sql += "AND PI.price BETWEEN 300001 AND 500000 ";
+			} else if ("price500001up".equals(priceRange)) {
+				sql += "AND PI.price >= 500001 ";
 			}
+		}
 
-			// 色・柄：複数選択可能
-			if (colorArray != null && colorArray.length > 0) {
-				sql += "AND (";
-				for (int i = 0; i < colorArray.length; i++) {
-					sql += "PI.color LIKE ? ";
-					selectedList.add("%" + colorArray[i] + "%");
+		sql += "ORDER BY P.petID";
 
-					if (i < colorArray.length - 1) {
-						sql += "OR ";
-					}
-				}
-				sql += ") ";
-			}
+		try (Connection conn = DButil.getConnection();
+				PreparedStatement pStmt = conn.prepareStatement(sql)) {
 
-			// サイズ
-			if (pet_size != null && !pet_size.isEmpty()) {
-				sql += "AND PI.pet_size = ? ";
-				selectedList.add(pet_size);
-			}
-
-			// 年齢
-			if (ageRange != null && !ageRange.isEmpty()) {
-				if ("age0".equals(ageRange)) {
-					sql += "AND PI.age = 0 ";
-				} else if ("age1to3".equals(ageRange)) {
-					sql += "AND PI.age BETWEEN 1 AND 3 ";
-				} else if ("age4up".equals(ageRange)) {
-					sql += "AND PI.age >= 4 ";
-				}
-			}
-
-			// 価格
-			if (priceRange != null && !priceRange.isEmpty()) {
-				if ("price0to100000".equals(priceRange)) {
-					sql += "AND PI.price BETWEEN 0 AND 100000 ";
-				} else if ("price100001to300000".equals(priceRange)) {
-					sql += "AND PI.price BETWEEN 100001 AND 300000 ";
-				} else if ("price300001to500000".equals(priceRange)) {
-					sql += "AND PI.price BETWEEN 300001 AND 500000 ";
-				} else if ("price500001up".equals(priceRange)) {
-					sql += "AND PI.price >= 500001 ";
-				}
-			}
-
-			sql += "ORDER BY P.petID";
-
-			PreparedStatement pStmt = conn.prepareStatement(sql);
-
-			//Loop：selectedListで保存した値を一つ一つSQL文の'?'に入れる
 			for (int i = 0; i < selectedList.size(); i++) {
 				Object o = selectedList.get(i);
-				//中身を一つ一つチェック:Integer/String
-				//Integer：
 				if (o instanceof Integer) {
 					pStmt.setInt(i + 1, (Integer) o);
 				} else {
-					//String：
 					pStmt.setString(i + 1, (String) o);
 				}
 			}
 
-			ResultSet rs = pStmt.executeQuery();
+			try (ResultSet rs = pStmt.executeQuery()) {
+				while (rs.next()) {
+					PetDetail pet = new PetDetail(
+							rs.getInt("petID"),
+							rs.getInt("CATEGORY_ID"),
+							rs.getString("FACILITY_ID"),
+							rs.getString("CATEGORY_NAME"),
+							rs.getInt("petInformationID"),
+							rs.getString("name"),
+							rs.getString("gender"),
+							rs.getInt("age"),
+							rs.getString("color"),
+							rs.getString("pet_size"),
+							rs.getString("vaccine"),
+							rs.getInt("price"),
+							rs.getString("commentText"),
+							rs.getString("imagePath"),
+							rs.getString("facilityName"),
+							rs.getString("address"),
+							rs.getString("tel"));
 
-			while (rs.next()) {
-				PetDetail pet = new PetDetail(
-						rs.getInt("petID"),
-						rs.getInt("CATEGORY_ID"),
-						rs.getString("FACILITY_ID"),
-						rs.getString("CATEGORY_NAME"),
-						rs.getInt("petInformationID"),
-						rs.getString("name"),
-						rs.getString("gender"),
-						rs.getInt("age"),
-						rs.getString("color"),
-						rs.getString("pet_size"),
-						rs.getString("vaccine"),
-						rs.getInt("price"),
-						rs.getString("commentText"),
-						rs.getString("imagePath"),
-						rs.getString("facilityName"),
-						rs.getString("address"),
-						rs.getString("tel"));
+					if (!matchesColors(pet.getColor(), colorArray)) {
+						continue;
+					}
 
-				searchPetList.add(pet);
+					searchPetList.add(pet);
+				}
 			}
 
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+
 		return searchPetList;
+	}
+
+	private boolean matchesColors(String dbColor, String[] selectedColors) {
+		if (selectedColors == null || selectedColors.length == 0) {
+			return true;
+		}
+		if (dbColor == null || dbColor.isEmpty()) {
+			return false;
+		}
+
+		List<String> dbColorList = new ArrayList<>();
+		for (String color : dbColor.split(",")) {
+			dbColorList.add(color.trim());
+		}
+
+		for (String selectedColor : selectedColors) {
+			if (!dbColorList.contains(selectedColor)) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	//登録ペット数の表示(店舗側)

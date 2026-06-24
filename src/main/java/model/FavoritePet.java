@@ -1,6 +1,6 @@
 package model;
 
-public class FavoritePet {
+public class FavoritePet implements PetSortable {
 
 	private String facilityName;
 	private int petID;
@@ -36,6 +36,7 @@ public class FavoritePet {
 		return facilityName;
 	}
 
+	@Override
 	public int getPetID() {
 		return petID;
 	}
@@ -48,10 +49,12 @@ public class FavoritePet {
 		return gender;
 	}
 
+	@Override
 	public int getAge() {
 		return age;
 	}
 
+	@Override
 	public int getPrice() {
 		return price;
 	}
@@ -60,10 +63,12 @@ public class FavoritePet {
 		return imagePath;
 	}
 
+	@Override
 	public int getMatchRate() {
 		return matchRate;
 	}
 
+	@Override
 	public void setMatchRate(int matchRate) {
 		this.matchRate = matchRate;
 	}
