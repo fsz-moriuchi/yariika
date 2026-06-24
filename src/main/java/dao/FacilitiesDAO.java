@@ -10,18 +10,11 @@ import util.DButil;
 
 public class FacilitiesDAO {
 
-	private static final String JDBC_DRIVER = "com.microsoft.sqlserver.jdbc.SQLServerDriver";
 	private static final String SQL_FIND_BY_LOGIN = "SELECT FACILITY_ID, PASSWORD_HASH FROM FACILITIES WHERE FACILITY_ID = ? AND PASSWORD_HASH = ?";
 	private static final String SQL_INSERT_FACILITY = "INSERT INTO FACILITIES(FACILITY_ID, PASSWORD_HASH) VALUES(?, ?)";
 	private static final String SQL_UPDATE_PASSWORD = "UPDATE FACILITIES SET PASSWORD_HASH = ? WHERE FACILITY_ID = ?";
 
 	public Facility findByLogin(FacilityLogin login) {
-		try {
-			loadJdbcDriver();
-		} catch (ClassNotFoundException e) {
-			throw new IllegalStateException("JDBCドライバを読み込めませんでした");
-		}
-
 		try (Connection conn = DButil.getConnection();
 				PreparedStatement stmt = conn.prepareStatement(SQL_FIND_BY_LOGIN)) {
 
@@ -32,6 +25,7 @@ public class FacilitiesDAO {
 					return toFacility(rs);
 				}
 			}
+
 		} catch (Exception e) {
 			e.printStackTrace();
 			return null;
@@ -41,18 +35,12 @@ public class FacilitiesDAO {
 	}
 
 	public boolean registerFacility(Facility facility) {
-		try {
-			loadJdbcDriver();
-		} catch (ClassNotFoundException e) {
-			throw new IllegalStateException("JBDCドライバを読み込めませんでした");
-		}
-
 		try (Connection conn = DButil.getConnection();
 				PreparedStatement stmt = conn.prepareStatement(SQL_INSERT_FACILITY)) {
 
 			bindFacilityInsertParameters(stmt, facility);
-
 			return stmt.executeUpdate() == 1;
+
 		} catch (Exception e) {
 			e.printStackTrace();
 			return false;
@@ -60,26 +48,16 @@ public class FacilitiesDAO {
 	}
 
 	public boolean updateFacilityPassword(Facility facility) {
-		try {
-			loadJdbcDriver();
-		} catch (ClassNotFoundException e) {
-			throw new IllegalStateException("JBDCドライバを読み込めませんでした");
-		}
-
 		try (Connection conn = DButil.getConnection();
 				PreparedStatement stmt = conn.prepareStatement(SQL_UPDATE_PASSWORD)) {
 
 			bindPasswordUpdateParameters(stmt, facility);
-
 			return stmt.executeUpdate() == 1;
+
 		} catch (Exception e) {
 			e.printStackTrace();
 			return false;
 		}
-	}
-
-	private void loadJdbcDriver() throws ClassNotFoundException {
-		Class.forName(JDBC_DRIVER);
 	}
 
 	private void bindLoginParameters(PreparedStatement stmt, FacilityLogin login) throws Exception {
