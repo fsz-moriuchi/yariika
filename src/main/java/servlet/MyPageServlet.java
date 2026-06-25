@@ -21,44 +21,64 @@ import model.UserSurvey;
 public class MyPageServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
+	private static final String LOGIN_REDIRECT_URL = "WelcomeServlet";
+	private static final String USER_LOGIN_REDIRECT_URL = "UserLoginServlet";
+	private static final String MY_PAGE_JSP_PATH = "WEB-INF/jsp/mypage.jsp";
+	private static final String SESSION_USER_ID_KEY = "userId";
+	private static final String SESSION_USER_KEY = "user";
+	private static final String REQUEST_USER_INFO_KEY = "userInfo";
+	private static final String REQUEST_USER_SURVEY_LIST_KEY = "userSurveyList";
+
+	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 
-		//ログインユーザーをセッションから取得
-		HttpSession session = request.getSession();
+		HttpSession session = request.getSession(false);
 
-		// 未ログインならログイン画面へ
-		if (session == null || session.getAttribute("userId") == null) {
-			response.sendRedirect("WelcomeServlet");
+		if (isNotLoggedIn(session)) {
+			response.sendRedirect(LOGIN_REDIRECT_URL);
 			return;
 		}
 
-		User login = (User) session.getAttribute("user");
-
-		String userId = login.getUserId();
-
-		//DBから取得
-		UserInfoDAO dao = new UserInfoDAO();
-		UserInfo userInfo = dao.findByUserId(userId);
-
-		//JSPへ渡す
-		request.setAttribute("userInfo", userInfo);
+		User loginUser = (User) session.getAttribute(SESSION_USER_KEY);
+		String userId = loginUser.getUserId();
 
 		if (userId == null) {
-			response.sendRedirect("UserLoginServlet");
+			response.sendRedirect(USER_LOGIN_REDIRECT_URL);
 			return;
 		}
-		UsersDAO dao1 = new UsersDAO();
-		List<UserSurvey> userSurveyList = dao1.showUserSurvey(userId);
-		request.setAttribute("userSurveyList", userSurveyList);
 
-		RequestDispatcher dispatcher = request.getRequestDispatcher("WEB-INF/jsp/mypage.jsp");
+		UserInfo userInfo = fetchUserInfo(userId);
+		List<UserSurvey> userSurveyList = fetchUserSurveyList(userId);
+
+		request.setAttribute(REQUEST_USER_INFO_KEY, userInfo);
+		request.setAttribute(REQUEST_USER_SURVEY_LIST_KEY, userSurveyList);
+
+		forwardToMyPage(request, response);
+	}
+
+	private boolean isNotLoggedIn(HttpSession session) {
+		return session == null || session.getAttribute(SESSION_USER_ID_KEY) == null;
+	}
+
+	private UserInfo fetchUserInfo(String userId) {
+		UserInfoDAO userInfoDAO = new UserInfoDAO();
+		return userInfoDAO.findByUserId(userId);
+	}
+
+	private List<UserSurvey> fetchUserSurveyList(String userId) {
+		UsersDAO usersDAO = new UsersDAO();
+		return usersDAO.showUserSurvey(userId);
+	}
+
+	private void forwardToMyPage(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+		RequestDispatcher dispatcher = request.getRequestDispatcher(MY_PAGE_JSP_PATH);
 		dispatcher.forward(request, response);
 	}
 
+	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-
 	}
-
 }

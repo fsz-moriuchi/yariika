@@ -20,42 +20,63 @@ import model.PetInformationView;
 public class StoreServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
+	private static final String LOGIN_REDIRECT_URL = "WelcomeServlet";
+	private static final String PET_MANAGEMENT_JSP_PATH = "WEB-INF/jsp/petManagement.jsp";
+	private static final String SESSION_FACILITY_ID_KEY = "facilityId";
+	private static final String REQUEST_FACILITY_LIST_KEY = "facilityList";
+	private static final String REQUEST_FAVORITE_PET_ID_KEY = "favoritePetId";
+
+	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 
 		HttpSession session = request.getSession(false);
-
-		// 未ログインならログイン画面へ
-		if (session == null || session.getAttribute("facilityId") == null) {
-			response.sendRedirect("WelcomeServlet");
+		if (!isLoggedIn(session)) {
+			response.sendRedirect(LOGIN_REDIRECT_URL);
 			return;
 		}
 
-		String facilityId = (String) session.getAttribute("facilityId");
+		String facilityId = (String) session.getAttribute(SESSION_FACILITY_ID_KEY);
+		List<PetInformationView> facilityList = loadFacilityList(facilityId);
+		applyFavoriteCounts(facilityList);
+		Integer favoritePetId = loadFavoritePetId(facilityId);
 
-		PetListDAO dao = new PetListDAO();
-		List<PetInformationView> facilityList = dao.showListByFacility(facilityId);
+		request.setAttribute(REQUEST_FACILITY_LIST_KEY, facilityList);
+		request.setAttribute(REQUEST_FAVORITE_PET_ID_KEY, favoritePetId);
 
+		forwardToPetManagementPage(request, response);
+	}
+
+	private boolean isLoggedIn(HttpSession session) {
+		return session != null && session.getAttribute(SESSION_FACILITY_ID_KEY) != null;
+	}
+
+	private List<PetInformationView> loadFacilityList(String facilityId) {
+		PetListDAO petListDAO = new PetListDAO();
+		return petListDAO.showListByFacility(facilityId);
+	}
+
+	private void applyFavoriteCounts(List<PetInformationView> facilityList) {
 		FavoriteDAO favoriteDAO = new FavoriteDAO();
-
 		for (PetInformationView pet : facilityList) {
-			int count = favoriteDAO.countFavorite(pet.getPetID());
-			pet.setFavoriteCount(count);
+			int favoriteCount = favoriteDAO.countFavorite(pet.getPetID());
+			pet.setFavoriteCount(favoriteCount);
 		}
+	}
 
-		FacilityInformationDAO infoDao = new FacilityInformationDAO();
+	private Integer loadFavoritePetId(String facilityId) {
+		FacilityInformationDAO infoDAO = new FacilityInformationDAO();
+		return infoDAO.findFavoritePetId(facilityId);
+	}
 
-		Integer favoritePetId = infoDao.findFavoritePetId(facilityId);
-
-		request.setAttribute("facilityList", facilityList);
-		request.setAttribute("favoritePetId", favoritePetId);
-		RequestDispatcher dispatcher = request.getRequestDispatcher("WEB-INF/jsp/petManagement.jsp");
+	private void forwardToPetManagementPage(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+		RequestDispatcher dispatcher = request.getRequestDispatcher(PET_MANAGEMENT_JSP_PATH);
 		dispatcher.forward(request, response);
 	}
 
+	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-
 	}
-
 }

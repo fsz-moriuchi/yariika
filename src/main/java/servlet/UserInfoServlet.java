@@ -18,44 +18,59 @@ import model.UserInfo;
 public class UserInfoServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
+	private static final String LOGIN_REDIRECT_URL = "WelcomeServlet";
+	private static final String USER_INFO_JSP_PATH = "WEB-INF/jsp/userInfo.jsp";
+	private static final String SESSION_USER_KEY = "user";
+	private static final String SESSION_USER_ID_KEY = "userId";
+	private static final String REQUEST_USER_INFO_KEY = "userInfo";
+
+	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 
-		//セッションからuserID取得
 		HttpSession session = request.getSession(false);
-		
-		// セッションが存在しない
-		if (session == null) {
-			response.sendRedirect("WelcomeServlet");
+		if (!isLoggedIn(session)) {
+			response.sendRedirect(LOGIN_REDIRECT_URL);
 			return;
 		}
 
-		// ログインユーザー取得
-		User user = (User) session.getAttribute("user");
-
-		// 未ログイン
-		if (user == null) {
-			response.sendRedirect("WelcomeServlet");
+		User user = getSessionUser(session);
+		if (user == null || isEmpty(user.getUserId())) {
+			response.sendRedirect(LOGIN_REDIRECT_URL);
 			return;
 		}
-		
-		String userId = user.getUserId();
 
-		//UserDAOでDBからユーザー情報を取得
-		UserInfoDAO dao = new UserInfoDAO();
-		UserInfo userInfo = dao.findByUserId(userId);
+		UserInfo userInfo = loadUserInfo(user.getUserId());
+		request.setAttribute(REQUEST_USER_INFO_KEY, userInfo);
 
-		//リクエストにセット
-		request.setAttribute("userInfo", userInfo);
-
-		//フォワード
-		RequestDispatcher dispatcher = request.getRequestDispatcher("WEB-INF/jsp/userInfo.jsp");
-		dispatcher.forward(request, response);
+		forwardToUserInfoPage(request, response);
 	}
 
+	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-
 	}
 
+	private boolean isLoggedIn(HttpSession session) {
+		return session != null && session.getAttribute(SESSION_USER_ID_KEY) != null;
+	}
+
+	private boolean isEmpty(String value) {
+		return value == null || value.isEmpty();
+	}
+
+	private User getSessionUser(HttpSession session) {
+		return session == null ? null : (User) session.getAttribute(SESSION_USER_KEY);
+	}
+
+	private UserInfo loadUserInfo(String userId) {
+		UserInfoDAO userInfoDAO = new UserInfoDAO();
+		return userInfoDAO.findByUserId(userId);
+	}
+
+	private void forwardToUserInfoPage(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+		RequestDispatcher dispatcher = request.getRequestDispatcher(USER_INFO_JSP_PATH);
+		dispatcher.forward(request, response);
+	}
 }

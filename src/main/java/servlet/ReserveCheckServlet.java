@@ -17,26 +17,49 @@ import model.Reserve;
 public class ReserveCheckServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
+	private static final String LOGIN_REDIRECT_URL = "WelcomeServlet";
+	private static final String RESERVE_CHECK_JSP_PATH = "WEB-INF/jsp/reserveCheck.jsp";
+	private static final String SESSION_USER_ID_KEY = "userId";
+	private static final String REQUEST_RESERVE_KEY = "reserve";
+
+	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 
 		HttpSession session = request.getSession(false);
-
-		// 未ログインならログイン画面へ
-		if (session == null || session.getAttribute("userId") == null) {
-			response.sendRedirect("WelcomeServlet");
+		if (!isLoggedIn(session)) {
+			response.sendRedirect(LOGIN_REDIRECT_URL);
 			return;
 		}
 
-		String userId = (String) session.getAttribute("userId");
+		String userId = (String) session.getAttribute(SESSION_USER_ID_KEY);
+		if (isEmpty(userId)) {
+			response.sendRedirect(LOGIN_REDIRECT_URL);
+			return;
+		}
 
-		ReserveDAO dao = new ReserveDAO();
-		Reserve reserve = dao.reserveCheck(userId);
+		Reserve reserve = loadReserve(userId);
+		request.setAttribute(REQUEST_RESERVE_KEY, reserve);
 
-		request.setAttribute("reserve", reserve);
-
-		RequestDispatcher dispatcher = request.getRequestDispatcher("WEB-INF/jsp/reserveCheck.jsp");
-		dispatcher.forward(request, response);
+		forwardToReserveCheckPage(request, response);
 	}
 
+	private boolean isLoggedIn(HttpSession session) {
+		return session != null && session.getAttribute(SESSION_USER_ID_KEY) != null;
+	}
+
+	private boolean isEmpty(String value) {
+		return value == null || value.isEmpty();
+	}
+
+	private Reserve loadReserve(String userId) {
+		ReserveDAO reserveDAO = new ReserveDAO();
+		return reserveDAO.reserveCheck(userId);
+	}
+
+	private void forwardToReserveCheckPage(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+		RequestDispatcher dispatcher = request.getRequestDispatcher(RESERVE_CHECK_JSP_PATH);
+		dispatcher.forward(request, response);
+	}
 }

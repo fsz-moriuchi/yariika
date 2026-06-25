@@ -14,21 +14,23 @@ public class SurveyChoiceDAO {
 	private static final String JDBC_DRIVER = "com.microsoft.sqlserver.jdbc.SQLServerDriver";
 	private static final String SQL_FIND_ALL_CHOICES = "SELECT * FROM SurveyChoice";
 
-	public List<Choice> findAllChoices() {
-		List<Choice> choiceList = new ArrayList<>();
-
+	static {
 		try {
-			loadJdbcDriver();
+			Class.forName(JDBC_DRIVER);
 		} catch (ClassNotFoundException e) {
-			throw new IllegalStateException("JDBCドライバを読み込めませんでした");
+			throw new ExceptionInInitializerError("JDBCドライバを読み込めませんでした");
 		}
+	}
 
-		try (Connection conn = DButil.getConnection();
-				PreparedStatement stmt = conn.prepareStatement(SQL_FIND_ALL_CHOICES);
-				ResultSet rs = stmt.executeQuery()) {
+	public List<Choice> findAllChoices() {
+		List<Choice> choices = new ArrayList<>();
 
-			while (rs.next()) {
-				choiceList.add(toChoice(rs));
+		try (Connection connection = DButil.getConnection();
+				PreparedStatement statement = connection.prepareStatement(SQL_FIND_ALL_CHOICES);
+				ResultSet resultSet = statement.executeQuery()) {
+
+			while (resultSet.next()) {
+				choices.add(mapChoice(resultSet));
 			}
 
 		} catch (Exception e) {
@@ -36,17 +38,13 @@ public class SurveyChoiceDAO {
 			return null;
 		}
 
-		return choiceList;
+		return choices;
 	}
 
-	private void loadJdbcDriver() throws ClassNotFoundException {
-		Class.forName(JDBC_DRIVER);
-	}
-
-	private Choice toChoice(ResultSet rs) throws Exception {
-		int surveyChoiceId = rs.getInt("SurveyChoiceID");
-		int questionId = rs.getInt("QuestionID");
-		String choiceText = rs.getString("Choice");
+	private Choice mapChoice(ResultSet resultSet) throws Exception {
+		int surveyChoiceId = resultSet.getInt("SurveyChoiceID");
+		int questionId = resultSet.getInt("QuestionID");
+		String choiceText = resultSet.getString("Choice");
 		return new Choice(surveyChoiceId, questionId, choiceText);
 	}
 }

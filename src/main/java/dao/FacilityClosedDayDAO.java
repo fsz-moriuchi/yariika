@@ -9,7 +9,6 @@ import java.util.List;
 import util.DButil;
 
 public class FacilityClosedDayDAO {
-	private static final String JDBC_DRIVER = "com.microsoft.sqlserver.jdbc.SQLServerDriver";
 	private static final String SQL_FIND_BY_FACILITY_ID = "SELECT closedDay FROM FacilityClosedDay " +
 			"WHERE FACILITY_ID = ? " +
 			"ORDER BY CASE closedDay " +
@@ -25,20 +24,13 @@ public class FacilityClosedDayDAO {
 	private static final String SQL_DELETE_BY_FACILITY_ID = "DELETE FROM FacilityClosedDay WHERE FACILITY_ID = ?";
 	private static final String SQL_INSERT = "INSERT INTO FacilityClosedDay(FACILITY_ID, closedDay) VALUES(?, ?)";
 
-	// 予約判定のための定休日一覧取得
 	public List<String> findByFacilityID(String facilityID) {
 		List<String> closedDayList = new ArrayList<>();
-
-		try {
-			loadJdbcDriver();
-		} catch (ClassNotFoundException e) {
-			throw new IllegalStateException("JDBCドライバを読み込めませんでした");
-		}
 
 		try (Connection conn = DButil.getConnection();
 				PreparedStatement stmt = conn.prepareStatement(SQL_FIND_BY_FACILITY_ID)) {
 
-			bindFacilityId(stmt, facilityID);
+			stmt.setString(1, facilityID);
 
 			try (ResultSet rs = stmt.executeQuery()) {
 				while (rs.next()) {
@@ -53,59 +45,42 @@ public class FacilityClosedDayDAO {
 		return closedDayList;
 	}
 
-	// 定休日を一旦削除する
-	public boolean deleteByFacilityID(String facilityID) {
-		try {
-			loadJdbcDriver();
-		} catch (ClassNotFoundException e) {
-			throw new IllegalStateException("JDBCドライバを読み込めませんでした");
-		}
-
-		try (Connection conn = DButil.getConnection();
-				PreparedStatement stmt = conn.prepareStatement(SQL_DELETE_BY_FACILITY_ID)) {
-
-			bindFacilityId(stmt, facilityID);
-			stmt.executeUpdate();
-			return true;
-
+	public boolean deleteByFacilityID(Connection connection, String facilityID) {
+		try (PreparedStatement stmt = connection.prepareStatement(SQL_DELETE_BY_FACILITY_ID)) {
+			stmt.setString(1, facilityID);
+			return stmt.executeUpdate() >= 0;
 		} catch (Exception e) {
 			e.printStackTrace();
 			return false;
 		}
 	}
 
-	// 定休日を1件追加する
-	public boolean insertByFacilityID(String facilityID, String closedDay) {
-		try {
-			loadJdbcDriver();
-		} catch (ClassNotFoundException e) {
-			throw new IllegalStateException("JDBCドライバを読み込めませんでした");
-		}
-
-		try (Connection conn = DButil.getConnection();
-				PreparedStatement stmt = conn.prepareStatement(SQL_INSERT)) {
-
-			bindFacilityIdAndClosedDay(stmt, facilityID, closedDay);
-			stmt.executeUpdate();
-			return true;
-
+	public boolean insertByFacilityID(Connection connection, String facilityID, String closedDay) {
+		try (PreparedStatement stmt = connection.prepareStatement(SQL_INSERT)) {
+			stmt.setString(1, facilityID);
+			stmt.setString(2, closedDay);
+			return stmt.executeUpdate() == 1;
 		} catch (Exception e) {
 			e.printStackTrace();
 			return false;
 		}
 	}
 
-	private void loadJdbcDriver() throws ClassNotFoundException {
-		Class.forName(JDBC_DRIVER);
-	}
+	public boolean replaceByFacilityID(Connection connection, String facilityID, String[] closedDays) {
+		if (!deleteByFacilityID(connection, facilityID)) {
+			return false;
+		}
 
-	private void bindFacilityId(PreparedStatement stmt, String facilityID) throws Exception {
-		stmt.setString(1, facilityID);
-	}
+		if (closedDays == null || closedDays.length == 0) {
+			return true;
+		}
 
-	private void bindFacilityIdAndClosedDay(PreparedStatement stmt, String facilityID, String closedDay)
-			throws Exception {
-		stmt.setString(1, facilityID);
-		stmt.setString(2, closedDay);
+		for (String closedDay : closedDays) {
+			if (!insertByFacilityID(connection, facilityID, closedDay)) {
+				return false;
+			}
+		}
+
+		return true;
 	}
 }

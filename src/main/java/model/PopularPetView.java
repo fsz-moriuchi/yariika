@@ -1,6 +1,5 @@
 package model;
 
-//人気ランキング
 public class PopularPetView {
 
 	private int petID;
@@ -8,12 +7,7 @@ public class PopularPetView {
 	private String imagePath;
 	private int favoriteCount;
 
-	public PopularPetView(
-			int petID,
-			String name,
-			String imagePath,
-			int favoriteCount) {
-
+	public PopularPetView(int petID, String name, String imagePath, int favoriteCount) {
 		this.petID = petID;
 		this.name = name;
 		this.imagePath = imagePath;
@@ -35,5 +29,4 @@ public class PopularPetView {
 	public int getFavoriteCount() {
 		return favoriteCount;
 	}
-
 }

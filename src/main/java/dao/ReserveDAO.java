@@ -22,26 +22,20 @@ public class ReserveDAO {
 	private static final String JDBC_DRIVER = "com.microsoft.sqlserver.jdbc.SQLServerDriver";
 
 	private static final String SQL_INSERT_RESERVE = "INSERT INTO Reserve(petID, USER_ID, reserveTime) VALUES(?, ?, ?)";
-
 	private static final String SQL_FIND_RESERVED_TIME_BY_FACILITY_AND_DATE = "SELECT R.reserveTime "
 			+ "FROM Reserve R "
 			+ "JOIN Pet P ON P.petID = R.petID "
 			+ "WHERE P.FACILITY_ID = ? "
 			+ "AND CAST(R.reserveTime AS DATE) = ?";
-
 	private static final String SQL_EXISTS_RESERVE_BY_PET_ID = "SELECT COUNT(*) AS CNT FROM Reserve WHERE petID = ?";
-
 	private static final String SQL_FIND_BY_FACILITY_ID = "SELECT R.reservationID, R.petID, R.USER_ID, R.reserveTime "
 			+ "FROM Reserve R "
 			+ "JOIN Pet P "
 			+ "ON R.petID = P.petID "
 			+ "WHERE P.FACILITY_ID = ? "
 			+ "ORDER BY R.reserveTime";
-
 	private static final String SQL_DELETE_RESERVATION = "DELETE FROM Reserve WHERE reservationID = ?";
-
 	private static final String SQL_UPDATE_RESERVE_TIME = "UPDATE Reserve SET reserveTime = ? WHERE reservationID = ?";
-
 	private static final String SQL_RESERVE_CHECK = "SELECT r.reservationID,r.petID,r.USER_ID,r.reserveTime,\r\n"
 			+ "pi.name,pi.gender,pi.age,pi.imagePath,p.CATEGORY_ID,\r\n"
 			+ "fi.facilityName,fi.address,fi.tel,fi.mail,fi.openTime,fi.closeTime,STRING_AGG(fcd.closedDay,',') AS closedDay,\r\n"
@@ -54,9 +48,7 @@ public class ReserveDAO {
 			+ "LEFT JOIN UserInfo ui ON r.USER_ID = ui.USER_ID\n"
 			+ "WHERE r.USER_ID = ?\n"
 			+ "GROUP BY r.reservationID,r.petID,r.USER_ID,r.reserveTime,pi.name,pi.gender,pi.age,pi.imagePath,p.CATEGORY_ID,fi.facilityName,fi.address,fi.tel,fi.mail,fi.openTime,fi.closeTime,ui.USER_NAME,ui.USER_GENDER,ui.USER_BIRTHDAY,ui.USER_TEL,ui.USER_MAIL";
-
 	private static final String SQL_COUNT_TODAY_RESERVE = "SELECT COUNT(*) AS CNT FROM Reserve R JOIN Pet P ON R.petID = P.petID WHERE P.FACILITY_ID = ? AND CAST(R.reserveTime AS DATE) = ?";
-
 	private static final String SQL_FIND_NEXT_RESERVE = "SELECT TOP 1 "
 			+ "R.reservationID, "
 			+ "R.petID, "
@@ -68,7 +60,6 @@ public class ReserveDAO {
 			+ "WHERE P.FACILITY_ID = ? "
 			+ "AND R.reserveTime >= GETDATE() "
 			+ "ORDER BY R.reserveTime ASC";
-
 	private static final String SQL_FIND_BY_FACILITY_ID_FOR_VIEW = "SELECT "
 			+ "R.reservationID, "
 			+ "R.petID, "
@@ -92,271 +83,150 @@ public class ReserveDAO {
 			+ "WHERE P.FACILITY_ID = ? "
 			+ "ORDER BY R.reserveTime ASC";
 
-	// 予約を追加するメソッド
+	static {
+		try {
+			Class.forName(JDBC_DRIVER);
+		} catch (ClassNotFoundException e) {
+			throw new ExceptionInInitializerError("JDBCドライバを読み込めませんでした");
+		}
+	}
+
 	public boolean insertReserve(Reserve reserve) {
-		try {
-			loadJdbcDriver();
-		} catch (ClassNotFoundException e) {
-			throw new IllegalStateException("JDBCドライバを読み込めませんでした");
-		}
-
-		try (Connection conn = DButil.getConnection();
-				PreparedStatement stmt = conn.prepareStatement(SQL_INSERT_RESERVE)) {
-
-			bindInsertReserve(stmt, reserve);
-			return stmt.executeUpdate() == 1;
-
-		} catch (Exception e) {
-			e.printStackTrace();
-			return false;
-		}
+		return executeUpdate(SQL_INSERT_RESERVE, stmt -> bindInsertReserve(stmt, reserve));
 	}
 
-	// 予約時に日付を選択すると予約可能な時間を表示するためのメソッド
 	public List<LocalTime> findByFacilityAndDate(String facilityID, LocalDate reserveDate) {
-		List<LocalTime> reservedTimeList = new ArrayList<>();
-
-		try {
-			loadJdbcDriver();
-		} catch (ClassNotFoundException e) {
-			throw new IllegalStateException("JDBCドライバは読み込めませんでした");
-		}
-
-		try (Connection conn = DButil.getConnection();
-				PreparedStatement stmt = conn.prepareStatement(SQL_FIND_RESERVED_TIME_BY_FACILITY_AND_DATE)) {
-
-			stmt.setString(1, facilityID);
-			stmt.setDate(2, Date.valueOf(reserveDate));
-
-			try (ResultSet rs = stmt.executeQuery()) {
-				while (rs.next()) {
-					reservedTimeList.add(rs.getTimestamp("reserveTime").toLocalDateTime().toLocalTime());
-				}
-			}
-
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-
-		return reservedTimeList;
+		return executeQuery(SQL_FIND_RESERVED_TIME_BY_FACILITY_AND_DATE,
+				stmt -> {
+					stmt.setString(1, facilityID);
+					stmt.setDate(2, Date.valueOf(reserveDate));
+				},
+				rs -> {
+					List<LocalTime> reservedTimeList = new ArrayList<>();
+					while (rs.next()) {
+						reservedTimeList.add(rs.getTimestamp("reserveTime").toLocalDateTime().toLocalTime());
+					}
+					return reservedTimeList;
+				});
 	}
 
-	// すでにペットが予約されているか判定するメソッド
 	public boolean existsReserveByPetID(int petID) {
-		try {
-			loadJdbcDriver();
-		} catch (ClassNotFoundException e) {
-			throw new IllegalStateException("JDBCドライバを読み込めませんでした");
-		}
-
-		try (Connection conn = DButil.getConnection();
-				PreparedStatement stmt = conn.prepareStatement(SQL_EXISTS_RESERVE_BY_PET_ID)) {
-
-			stmt.setInt(1, petID);
-
-			try (ResultSet rs = stmt.executeQuery()) {
-				if (rs.next()) {
-					return rs.getInt("CNT") > 0;
-				}
-			}
-
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-
-		return false;
+		return executeQuery(SQL_EXISTS_RESERVE_BY_PET_ID,
+				stmt -> stmt.setInt(1, petID),
+				rs -> {
+					if (rs.next()) {
+						return rs.getInt("CNT") > 0;
+					}
+					return false;
+				});
 	}
 
-	// 施設の予約一覧を表示するためのメソッド(没)
 	public List<Reserve> findByFacilityID(String facilityID) {
-		List<Reserve> reservedDataList = new ArrayList<>();
-
-		try {
-			loadJdbcDriver();
-		} catch (ClassNotFoundException e) {
-			throw new IllegalStateException("JDBCドライバを読み込めませんでした");
-		}
-
-		try (Connection conn = DButil.getConnection();
-				PreparedStatement stmt = conn.prepareStatement(SQL_FIND_BY_FACILITY_ID)) {
-
-			stmt.setString(1, facilityID);
-
-			try (ResultSet rs = stmt.executeQuery()) {
-				while (rs.next()) {
-					reservedDataList.add(toReserve(rs));
-				}
-			}
-
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-
-		return reservedDataList;
+		return executeQuery(SQL_FIND_BY_FACILITY_ID,
+				stmt -> stmt.setString(1, facilityID),
+				rs -> {
+					List<Reserve> reservedDataList = new ArrayList<>();
+					while (rs.next()) {
+						reservedDataList.add(toReserve(rs));
+					}
+					return reservedDataList;
+				});
 	}
 
-	// 予約を削除するメソッド
 	public boolean deleteReservation(int reservationID) {
-		try {
-			loadJdbcDriver();
-		} catch (ClassNotFoundException e) {
-			throw new IllegalStateException("JDBCドライバを読み込めませんでした");
-		}
-
-		try (Connection conn = DButil.getConnection();
-				PreparedStatement stmt = conn.prepareStatement(SQL_DELETE_RESERVATION)) {
-
-			stmt.setInt(1, reservationID);
-			return stmt.executeUpdate() == 1;
-
-		} catch (Exception e) {
-			e.printStackTrace();
-			return false;
-		}
+		return executeUpdate(SQL_DELETE_RESERVATION, stmt -> stmt.setInt(1, reservationID));
 	}
 
-	// 予約日時を変更するためのメソッド
 	public boolean updateDateTime(int reservationID, LocalDateTime reserveTime) {
-		try {
-			loadJdbcDriver();
-		} catch (ClassNotFoundException e) {
-			throw new IllegalStateException("JDBCドライバを読み込めませんでした");
-		}
-
-		try (Connection conn = DButil.getConnection();
-				PreparedStatement stmt = conn.prepareStatement(SQL_UPDATE_RESERVE_TIME)) {
-
+		return executeUpdate(SQL_UPDATE_RESERVE_TIME, stmt -> {
 			stmt.setTimestamp(1, Timestamp.valueOf(reserveTime));
 			stmt.setInt(2, reservationID);
-			return stmt.executeUpdate() == 1;
-
-		} catch (Exception e) {
-			e.printStackTrace();
-			return false;
-		}
+		});
 	}
 
-	// ユーザーが予約を確認するメソッド
 	public Reserve reserveCheck(String userID) {
-		Reserve reserve = null;
-
-		try {
-			loadJdbcDriver();
-		} catch (ClassNotFoundException e) {
-			throw new IllegalStateException("JDBCドライバは読み込めませんでした");
-		}
-
-		try (Connection conn = DButil.getConnection();
-				PreparedStatement stmt = conn.prepareStatement(SQL_RESERVE_CHECK)) {
-
-			stmt.setString(1, userID);
-
-			try (ResultSet rs = stmt.executeQuery()) {
-				while (rs.next()) {
-					reserve = toReserveCheckResult(rs, userID);
-				}
-			}
-
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-
-		return reserve;
+		return executeQuery(SQL_RESERVE_CHECK,
+				stmt -> stmt.setString(1, userID),
+				rs -> {
+					Reserve reserve = null;
+					while (rs.next()) {
+						reserve = toReserveCheckResult(rs, userID);
+					}
+					return reserve;
+				});
 	}
 
-	// 今日の予約件数を数えるメソッド
 	public int countTodayReserve(String facilityID) {
-		int count = 0;
-
-		try {
-			loadJdbcDriver();
-		} catch (ClassNotFoundException e) {
-			throw new IllegalStateException("JDBCドライバを読み込めませんでした");
-		}
-
-		try (Connection conn = DButil.getConnection();
-				PreparedStatement stmt = conn.prepareStatement(SQL_COUNT_TODAY_RESERVE)) {
-
-			stmt.setString(1, facilityID);
-			stmt.setDate(2, Date.valueOf(LocalDate.now()));
-
-			try (ResultSet rs = stmt.executeQuery()) {
-				if (rs.next()) {
-					count = rs.getInt("CNT");
-				}
-			}
-
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-
+		Integer count = executeQuery(SQL_COUNT_TODAY_RESERVE,
+				stmt -> {
+					stmt.setString(1, facilityID);
+					stmt.setDate(2, Date.valueOf(LocalDate.now()));
+				},
+				rs -> {
+					if (rs.next()) {
+						return rs.getInt("CNT");
+					}
+					return 0;
+				});
 		return count;
 	}
 
-	// 次の予約を表示するためのメソッド
 	public Reserve findnextReserve(String facilityID) {
-		Reserve reserve = null;
-
-		try {
-			loadJdbcDriver();
-		} catch (ClassNotFoundException e) {
-			throw new IllegalStateException("JDBCドライバは読み込めませんでした");
-		}
-
-		try (Connection conn = DButil.getConnection();
-				PreparedStatement stmt = conn.prepareStatement(SQL_FIND_NEXT_RESERVE)) {
-
-			stmt.setString(1, facilityID);
-
-			try (ResultSet rs = stmt.executeQuery()) {
-				if (rs.next()) {
-					reserve = new Reserve(
-							rs.getInt("reservationID"),
-							rs.getInt("petID"),
-							rs.getString("USER_ID"),
-							rs.getTimestamp("reserveTime").toLocalDateTime());
-				}
-			}
-
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-
-		return reserve;
+		return executeQuery(SQL_FIND_NEXT_RESERVE,
+				stmt -> stmt.setString(1, facilityID),
+				rs -> {
+					if (rs.next()) {
+						return new Reserve(
+								rs.getInt("reservationID"),
+								rs.getInt("petID"),
+								rs.getString("USER_ID"),
+								rs.getTimestamp("reserveTime").toLocalDateTime());
+					}
+					return null;
+				});
 	}
 
-	// 施設の予約一覧を表示するためのメソッド
 	public List<ReserveView> findByFacilityIDForView(String facilityID) {
-		List<ReserveView> reserveViewList = new ArrayList<>();
+		return executeQuery(SQL_FIND_BY_FACILITY_ID_FOR_VIEW,
+				stmt -> stmt.setString(1, facilityID),
+				rs -> {
+					List<ReserveView> reserveViewList = new ArrayList<>();
+					DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy年MM月dd日 HH:mm");
 
-		try {
-			loadJdbcDriver();
-		} catch (ClassNotFoundException e) {
-			throw new IllegalStateException("JDBCドライバを読み込めませんでした");
+					while (rs.next()) {
+						reserveViewList.add(toReserveView(rs, formatter));
+					}
+					return reserveViewList;
+				});
+	}
+
+	private boolean executeUpdate(String sql, SqlStatementBinder binder) {
+		try (Connection connection = DButil.getConnection();
+				PreparedStatement statement = connection.prepareStatement(sql)) {
+
+			binder.bind(statement);
+			return statement.executeUpdate() == 1;
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
 		}
+	}
 
-		try (Connection conn = DButil.getConnection();
-				PreparedStatement stmt = conn.prepareStatement(SQL_FIND_BY_FACILITY_ID_FOR_VIEW)) {
+	private <T> T executeQuery(String sql, SqlStatementBinder binder, ResultSetMapper<T> mapper) {
+		try (Connection connection = DButil.getConnection();
+				PreparedStatement statement = connection.prepareStatement(sql)) {
 
-			stmt.setString(1, facilityID);
+			binder.bind(statement);
 
-			try (ResultSet rs = stmt.executeQuery()) {
-				DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy年MM月dd日 HH:mm");
-
-				while (rs.next()) {
-					reserveViewList.add(toReserveView(rs, formatter));
-				}
+			try (ResultSet resultSet = statement.executeQuery()) {
+				return mapper.map(resultSet);
 			}
 
 		} catch (Exception e) {
 			e.printStackTrace();
+			return null;
 		}
-
-		return reserveViewList;
-	}
-
-	private void loadJdbcDriver() throws ClassNotFoundException {
-		Class.forName(JDBC_DRIVER);
 	}
 
 	private void bindInsertReserve(PreparedStatement stmt, Reserve reserve) throws Exception {
@@ -457,5 +327,15 @@ public class ReserveDAO {
 				userMail,
 				reserveTime,
 				formattedReserveTime);
+	}
+
+	@FunctionalInterface
+	private interface SqlStatementBinder {
+		void bind(PreparedStatement statement) throws Exception;
+	}
+
+	@FunctionalInterface
+	private interface ResultSetMapper<T> {
+		T map(ResultSet resultSet) throws Exception;
 	}
 }

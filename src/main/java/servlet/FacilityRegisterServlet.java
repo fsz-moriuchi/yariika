@@ -1,6 +1,7 @@
 package servlet;
 
 import java.io.IOException;
+import java.sql.Connection;
 import java.time.LocalTime;
 
 import jakarta.servlet.RequestDispatcher;
@@ -16,87 +17,124 @@ import dao.FacilityClosedDayDAO;
 import dao.FacilityInformationDAO;
 import model.Facility;
 import model.FacilityInformation;
+import util.DButil;
 import util.PasswordUtil;
 
 @WebServlet("/FacilityRegisterServlet")
 public class FacilityRegisterServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
+	private static final String REGISTER_JSP_PATH = "/WEB-INF/jsp/facilityRegister.jsp";
+	private static final String INFORMATION_JSP_PATH = "/WEB-INF/jsp/facilityinfomation.jsp";
+	private static final String LOGIN_REDIRECT_URL = "FacilityLoginServlet";
+	private static final String SESSION_FACILITY_ID_KEY = "facilityId";
+	private static final String ERROR_DUPLICATE_ID = "その店舗IDは既に使用されています";
+	private static final String ERROR_REGISTER_FAILED = "店舗情報の登録に失敗しました。入力内容を確認してください。";
+
+	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-
-		RequestDispatcher dispatcher = request.getRequestDispatcher("WEB-INF/jsp/facilityRegister.jsp");
-		dispatcher.forward(request, response);
+		forwardToRegisterPage(request, response);
 	}
 
+	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 
 		request.setCharacterEncoding("UTF-8");
+
+		Facility facility = buildFacility(request);
+		FacilityInformation facilityInfo = buildFacilityInformation(request);
+
+		FacilitiesDAO facilitiesDAO = new FacilitiesDAO();
+		FacilityInformationDAO facilityInformationDAO = new FacilityInformationDAO();
+		FacilityClosedDayDAO closedDayDAO = new FacilityClosedDayDAO();
+
+		try (Connection connection = DButil.getConnection()) {
+			connection.setAutoCommit(false);
+
+			if (!registerLoginInfo(facilitiesDAO, facility)) {
+				connection.rollback();
+				showDuplicateIdError(request, response);
+				return;
+			}
+
+			boolean infoSaved = facilityInformationDAO.insert(facilityInfo);
+			boolean closedDaysSaved = saveClosedDays(connection, closedDayDAO, request, facility.getFacilityId());
+
+			if (infoSaved && closedDaysSaved) {
+				connection.commit();
+				saveFacilityIdToSession(request, facility.getFacilityId());
+				response.sendRedirect(LOGIN_REDIRECT_URL);
+				return;
+			}
+
+			connection.rollback();
+			showRegisterError(request, response);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new ServletException(e);
+		}
+	}
+
+	private void forwardToRegisterPage(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+		RequestDispatcher dispatcher = request.getRequestDispatcher(REGISTER_JSP_PATH);
+		dispatcher.forward(request, response);
+	}
+
+	private Facility buildFacility(HttpServletRequest request) {
 		String facilityId = request.getParameter("facilityId");
 		String password = request.getParameter("password");
 		String hash = PasswordUtil.hashPassword(password);
+		return new Facility(facilityId, hash);
+	}
 
-		//店舗情報
+	private FacilityInformation buildFacilityInformation(HttpServletRequest request) {
+		String facilityId = request.getParameter("facilityId");
 		String facilityName = request.getParameter("facilityName");
 		String tel = request.getParameter("tel");
 		String address = request.getParameter("address");
 		String mail = request.getParameter("mail");
-		String openTimeStr = request.getParameter("openTime");
-		String closeTimeStr = request.getParameter("closeTime");
+		LocalTime openTime = LocalTime.parse(request.getParameter("openTime"));
+		LocalTime closeTime = LocalTime.parse(request.getParameter("closeTime"));
 
-		LocalTime openTime = LocalTime.parse(openTimeStr);
-		LocalTime closeTime = LocalTime.parse(closeTimeStr);
+		return new FacilityInformation(
+				facilityId,
+				facilityName,
+				tel,
+				address,
+				mail,
+				openTime,
+				closeTime);
+	}
 
+	private boolean registerLoginInfo(FacilitiesDAO facilitiesDAO, Facility facility) {
+		return facilitiesDAO.registerFacility(facility);
+	}
+
+	private boolean saveClosedDays(Connection connection, FacilityClosedDayDAO closedDayDAO,
+			HttpServletRequest request, String facilityId) {
 		String[] closedDays = request.getParameterValues("closedDay");
+		return closedDayDAO.replaceByFacilityID(connection, facilityId, closedDays);
+	}
 
-		//DAO
-		FacilitiesDAO dao = new FacilitiesDAO();
-		FacilityInformationDAO dao1 = new FacilityInformationDAO();
-		FacilityInformation oldInfo = dao1.findByFacilityId(facilityId);
-		FacilityClosedDayDAO dao2 = new FacilityClosedDayDAO();
-
-		//ログイン情報登録
-		Facility facility = new Facility(facilityId, hash);
-		//FacilitiesDAO dao = new FacilitiesDAO();
-		boolean result = dao.registerFacility(facility);
-
-		if (!result) {
-			request.setAttribute("errorMsg", "その店舗IDは既に使用されています");
-			RequestDispatcher dispatcher = request.getRequestDispatcher("WEB-INF/jsp/facilityRegister.jsp");
-			dispatcher.forward(request, response);
-			return;
-		}
-
-		//店舗情報登録
-		FacilityInformation facilityInfo = new FacilityInformation(facilityId, facilityName, tel, address, mail,
-				openTime, closeTime);
-
-		//休日登録
-		if (closedDays != null) {
-			for (String closedDay : closedDays) {
-				//休日をテーブルに登録
-				boolean result2 = dao2.insertByFacilityID(facilityId, closedDay);
-			}
-		}
-
-		boolean result2;
-		if (oldInfo == null) {
-			result2 = dao1.insert(facilityInfo);
-		} else {
-			result2 = dao1.update(facilityInfo);
-		}
-
+	private void saveFacilityIdToSession(HttpServletRequest request, String facilityId) {
 		HttpSession session = request.getSession();
-		session.setAttribute("facilityId", facilityId);
+		session.setAttribute(SESSION_FACILITY_ID_KEY, facilityId);
+	}
 
-		if (result2) {
-			response.sendRedirect("FacilityLoginServlet");
-		} else {
-			request.setAttribute("errorMsg", "店舗情報の登録に失敗しました。入力内容を確認してください。");
-			RequestDispatcher dispatcher = request.getRequestDispatcher("WEB-INF/jsp/facilityinfomation.jsp");
-			dispatcher.forward(request, response);
-			return;
-		}
+	private void showDuplicateIdError(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+		request.setAttribute("errorMsg", ERROR_DUPLICATE_ID);
+		forwardToRegisterPage(request, response);
+	}
+
+	private void showRegisterError(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+		request.setAttribute("errorMsg", ERROR_REGISTER_FAILED);
+		RequestDispatcher dispatcher = request.getRequestDispatcher(INFORMATION_JSP_PATH);
+		dispatcher.forward(request, response);
 	}
 }

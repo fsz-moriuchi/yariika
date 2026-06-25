@@ -18,40 +18,65 @@ import util.PasswordUtil;
 public class FacilityLoginServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
+	private static final String LOGIN_JSP_PATH = "/WEB-INF/jsp/facilityLogin.jsp";
+	private static final String DASHBOARD_URL = "DashboardServlet";
+	private static final String SESSION_FACILITY_ID_KEY = "facilityId";
+	private static final String SESSION_USER_ID_KEY = "userId";
+	private static final String SESSION_USER_KEY = "user";
+	private static final String ERROR_MESSAGE = "ログインに失敗しました";
+
+	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		RequestDispatcher dispatcher = request.getRequestDispatcher("WEB-INF/jsp/facilityLogin.jsp");
-		dispatcher.forward(request, response);
+		forwardToLoginPage(request, response);
 	}
 
+	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 
 		request.setCharacterEncoding("UTF-8");
-		String facilityId = request.getParameter("facilityId");
-		String password = request.getParameter("password");
 
-		String hash = PasswordUtil.hashPassword(password);
+		FacilityLogin login = createFacilityLogin(request);
+		boolean loginSucceeded = authenticate(login);
 
-		FacilityLogin login = new FacilityLogin(facilityId, hash);
-		FacilityLoginLogic bo = new FacilityLoginLogic();
-		boolean result = bo.execute(login);
-
-		if (result) {
-			//追加
-			HttpSession session = request.getSession();
-
-			session.removeAttribute("userId");
-			session.removeAttribute("user");
-
-			session.setAttribute("facilityId", facilityId);
-			//
-			response.sendRedirect("DashboardServlet");
-		} else {
-			request.setAttribute("errorMsg", "ログインに失敗しました");
-			RequestDispatcher dispatcher = request.getRequestDispatcher("WEB-INF/jsp/facilityLogin.jsp");
-			dispatcher.forward(request, response);
+		if (loginSucceeded) {
+			saveFacilitySession(request, login.getFacilityId());
+			response.sendRedirect(DASHBOARD_URL);
+			return;
 		}
+
+		showLoginError(request, response);
 	}
 
+	private void forwardToLoginPage(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+		RequestDispatcher dispatcher = request.getRequestDispatcher(LOGIN_JSP_PATH);
+		dispatcher.forward(request, response);
+	}
+
+	private FacilityLogin createFacilityLogin(HttpServletRequest request) {
+		String facilityId = request.getParameter("facilityId");
+		String password = request.getParameter("password");
+		String hash = PasswordUtil.hashPassword(password);
+		return new FacilityLogin(facilityId, hash);
+	}
+
+	private boolean authenticate(FacilityLogin login) {
+		FacilityLoginLogic logic = new FacilityLoginLogic();
+		return logic.execute(login);
+	}
+
+	private void saveFacilitySession(HttpServletRequest request, String facilityId) {
+		HttpSession session = request.getSession();
+		session.removeAttribute(SESSION_USER_ID_KEY);
+		session.removeAttribute(SESSION_USER_KEY);
+		session.setAttribute(SESSION_FACILITY_ID_KEY, facilityId);
+	}
+
+	private void showLoginError(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+		request.setAttribute("errorMsg", ERROR_MESSAGE);
+		forwardToLoginPage(request, response);
+	}
 }

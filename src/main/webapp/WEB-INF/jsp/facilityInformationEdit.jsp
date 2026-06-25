@@ -121,7 +121,7 @@ pageEncoding="UTF-8"%>
 
 </form>
 
-<form action="FacilityInfomationConfirmServlet" method="get" class="facility-back-form">
+<form action="FacilityInformationConfirmServlet" method="get" class="facility-back-form">
 	<div class="form-button-area center-button-area">
 		<input type="submit" value="戻る">
 	</div>

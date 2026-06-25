@@ -13,10 +13,17 @@ import jakarta.servlet.http.HttpServletResponse;
 public class WelcomeServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
+	private static final String WELCOME_JSP_PATH = "WEB-INF/jsp/welcome.jsp";
+
+	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
+		forwardToWelcomePage(request, response);
+	}
 
-		RequestDispatcher dispatcher = request.getRequestDispatcher("WEB-INF/jsp/welcome.jsp");
+	private void forwardToWelcomePage(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+		RequestDispatcher dispatcher = request.getRequestDispatcher(WELCOME_JSP_PATH);
 		dispatcher.forward(request, response);
 	}
 }

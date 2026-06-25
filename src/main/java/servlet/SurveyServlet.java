@@ -25,111 +25,189 @@ import model.Question;
 public class SurveyServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
-	//PetSurveyServlet
+	private static final String LOGIN_REDIRECT_URL = "WelcomeServlet";
+	private static final String PET_SURVEY_JSP_PATH = "WEB-INF/jsp/petSurvey.jsp";
+	private static final String PET_REGISTER_SUCCESS_JSP_PATH = "WEB-INF/jsp/petRegisterSuccess.jsp";
+	private static final String SESSION_FACILITY_ID_KEY = "facilityId";
+	private static final String SESSION_PET_KEY = "pet";
+	private static final String SESSION_PET_INFORMATION_KEY = "petInformation";
+	private static final String REQUEST_PET_ID_KEY = "petID";
+	private static final String REQUEST_QUESTION_PREFIX = "q";
+	private static final int QUESTION_COUNT = 10;
+	private static final int PET_QUESTION_MAX_ID = 10;
+
+	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 
 		HttpSession session = request.getSession(false);
-
-		// 未ログインならログイン画面へ
-		if (session == null || session.getAttribute("facilityId") == null) {
-			response.sendRedirect("WelcomeServlet");
+		if (!isLoggedIn(session)) {
+			response.sendRedirect(LOGIN_REDIRECT_URL);
 			return;
 		}
 
-		QuestionSurveyDAO Qdao = new QuestionSurveyDAO();
-		SurveyChoiceDAO Cdao = new SurveyChoiceDAO();
-		List<Question> questionList = Qdao.findAllQuestion();
-		List<Question> petQuestionList = new ArrayList<>();
-
-		for (Question petQ : questionList) {
-			if (petQ.getQuestionID() <= 10) {
-				petQuestionList.add(petQ);
-			}
-		}
-
-		List<Choice> allChoiceList = Cdao.findAllChoices();
+		List<Question> petQuestionList = loadPetQuestionList();
+		List<Choice> allChoiceList = loadAllChoiceList();
 
 		request.setAttribute("petQuestionList", petQuestionList);
 		request.setAttribute("allChoiceList", allChoiceList);
 
-		RequestDispatcher dispatcher = request.getRequestDispatcher("WEB-INF/jsp/petSurvey.jsp");
+		forwardToPetSurveyPage(request, response);
+	}
+
+	@Override
+	protected void doPost(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+
+		request.setCharacterEncoding("UTF-8");
+
+		HttpSession session = request.getSession(false);
+		if (session == null) {
+			response.sendRedirect(LOGIN_REDIRECT_URL);
+			return;
+		}
+
+		String nowPetId = request.getParameter(REQUEST_PET_ID_KEY);
+
+		if (isEmpty(nowPetId)) {
+			handleNewPetRegistration(request, response, session);
+		} else {
+			handlePetSurveyUpdate(request, response, nowPetId);
+		}
+	}
+
+	private boolean isLoggedIn(HttpSession session) {
+		return session != null && session.getAttribute(SESSION_FACILITY_ID_KEY) != null;
+	}
+
+	private boolean isEmpty(String value) {
+		return value == null || value.isEmpty();
+	}
+
+	private List<Question> loadPetQuestionList() {
+		QuestionSurveyDAO questionSurveyDAO = new QuestionSurveyDAO();
+		List<Question> questionList = questionSurveyDAO.findAllQuestion();
+		List<Question> petQuestionList = new ArrayList<>();
+
+		for (Question question : questionList) {
+			if (question.getQuestionID() <= PET_QUESTION_MAX_ID) {
+				petQuestionList.add(question);
+			}
+		}
+		return petQuestionList;
+	}
+
+	private List<Choice> loadAllChoiceList() {
+		SurveyChoiceDAO surveyChoiceDAO = new SurveyChoiceDAO();
+		return surveyChoiceDAO.findAllChoices();
+	}
+
+	private void handleNewPetRegistration(HttpServletRequest request, HttpServletResponse response, HttpSession session)
+			throws ServletException, IOException {
+
+		Pet pet = (Pet) session.getAttribute(SESSION_PET_KEY);
+		PetInformation petInformation = (PetInformation) session.getAttribute(SESSION_PET_INFORMATION_KEY);
+
+		if (pet == null || petInformation == null) {
+			writeHtmlMessage(response, "ペット情報がありません。ペット情報入力画面から登録してください。");
+			return;
+		}
+
+		PetListDAO petListDAO = new PetListDAO();
+		int petId = petListDAO.createPet(pet);
+
+		if (petId == -1) {
+			writeHtmlMessage(response, "ペット情報の登録に失敗しました。");
+			return;
+		}
+
+		petInformation.setPetID(petId);
+		boolean petInformationResult = petListDAO.createPetInformation(petInformation);
+		boolean petSurveyResult = registerPetSurveyAnswers(request, petListDAO, petId);
+
+		session.removeAttribute(SESSION_PET_KEY);
+		session.removeAttribute(SESSION_PET_INFORMATION_KEY);
+
+		if (petInformationResult && petSurveyResult) {
+			forwardToPetRegisterSuccessPage(request, response);
+		} else {
+			writeHtmlMessage(response, "登録失敗");
+		}
+	}
+
+	private void handlePetSurveyUpdate(HttpServletRequest request, HttpServletResponse response, String nowPetId)
+			throws ServletException, IOException {
+
+		int petId;
+		try {
+			petId = Integer.parseInt(nowPetId);
+		} catch (NumberFormatException e) {
+			writeHtmlMessage(response, "更新失敗");
+			return;
+		}
+
+		PetListDAO petListDAO = new PetListDAO();
+		boolean petSurveyResult = updatePetSurveyAnswers(request, petListDAO, petId);
+
+		if (petSurveyResult) {
+			forwardToPetRegisterSuccessPage(request, response);
+		} else {
+			writeHtmlMessage(response, "更新失敗");
+		}
+	}
+
+	private boolean registerPetSurveyAnswers(HttpServletRequest request, PetListDAO petListDAO, int petId) {
+		for (int questionId = 1; questionId <= QUESTION_COUNT; questionId++) {
+			Integer surveyChoiceId = parseSurveyChoiceId(request.getParameter(REQUEST_QUESTION_PREFIX + questionId));
+			if (surveyChoiceId == null) {
+				return false;
+			}
+			PetSurvey petSurvey = new PetSurvey(petId, questionId, surveyChoiceId);
+			if (!petListDAO.createPetSurvey(petSurvey)) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	private boolean updatePetSurveyAnswers(HttpServletRequest request, PetListDAO petListDAO, int petId) {
+		for (int questionId = 1; questionId <= QUESTION_COUNT; questionId++) {
+			Integer surveyChoiceId = parseSurveyChoiceId(request.getParameter(REQUEST_QUESTION_PREFIX + questionId));
+			if (surveyChoiceId == null) {
+				return false;
+			}
+			if (!petListDAO.updatePetSurvey(petId, questionId, surveyChoiceId)) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	private Integer parseSurveyChoiceId(String value) {
+		if (isEmpty(value)) {
+			return null;
+		}
+		try {
+			return Integer.parseInt(value);
+		} catch (NumberFormatException e) {
+			return null;
+		}
+	}
+
+	private void forwardToPetSurveyPage(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+		RequestDispatcher dispatcher = request.getRequestDispatcher(PET_SURVEY_JSP_PATH);
 		dispatcher.forward(request, response);
 	}
 
-	protected void doPost(HttpServletRequest request, HttpServletResponse response)
+	private void forwardToPetRegisterSuccessPage(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		request.setCharacterEncoding("UTF-8");
-		HttpSession session = request.getSession();
-		String nowPetID = request.getParameter("petID");
+		RequestDispatcher dispatcher = request.getRequestDispatcher(PET_REGISTER_SUCCESS_JSP_PATH);
+		dispatcher.forward(request, response);
+	}
 
-		//新規入力
-		if (nowPetID == null || nowPetID.isEmpty()) {
-			Pet pet = (Pet) session.getAttribute("pet");
-			PetInformation petInformation = (PetInformation) session.getAttribute("petInformation");
-
-			if (pet == null || petInformation == null) {
-				response.setContentType("text/html; charset=UTF-8");
-				response.getWriter().println("ペット情報がありません。ペット情報入力画面から登録してください。");
-				return;
-			}
-
-			PetListDAO dao = new PetListDAO();
-			int petID = dao.createPet(pet);
-
-			//追加
-			if (petID == -1) {
-				response.setContentType("text/html; charset=UTF-8");
-				response.getWriter().println("ペット情報の登録に失敗しました。");
-				return;
-			}
-			//ここまで
-
-			petInformation.setPetID(petID);
-			boolean petInformationResult = dao.createPetInformation(petInformation);
-			boolean petSurveyResult = true;
-
-			for (int qID = 1; qID <= 10; qID++) {
-				int surveyChoiceID = Integer.parseInt(request.getParameter("q" + qID));
-				PetSurvey petSurvey = new PetSurvey(petID, qID, surveyChoiceID);
-				if (!dao.createPetSurvey(petSurvey)) {
-					petSurveyResult = false;
-					break;
-				}
-				;
-			}
-			session.removeAttribute("pet");
-			session.removeAttribute("petInformation");
-
-			if (petInformationResult && petSurveyResult) {
-				RequestDispatcher dispatcher = request.getRequestDispatcher("WEB-INF/jsp/petRegisterSuccess.jsp");
-				dispatcher.forward(request, response);
-			} else {
-				response.setContentType("text/html; charset=UTF-8");
-				response.getWriter().print("登録失敗");
-			}
-
-		}
-		//内容修正
-		else {
-			int petID = Integer.parseInt(nowPetID);
-			PetListDAO dao = new PetListDAO();
-			boolean petSurveyResult = true;
-			for (int qID = 1; qID <= 10; qID++) {
-				int surveyChoiceID = Integer.parseInt(request.getParameter("q" + qID));
-				if (!dao.updatePetSurvey(petID, qID, surveyChoiceID)) {
-					petSurveyResult = false;
-					break;
-				}
-				;
-			}
-			if (petSurveyResult) {
-				RequestDispatcher dispatcher = request.getRequestDispatcher("WEB-INF/jsp/petRegisterSuccess.jsp");
-				dispatcher.forward(request, response);
-			} else {
-				response.setContentType("text/html; charset=UTF-8");
-				response.getWriter().println("更新失敗");
-			}
-		}
+	private void writeHtmlMessage(HttpServletResponse response, String message) throws IOException {
+		response.setContentType("text/html; charset=UTF-8");
+		response.getWriter().println(message);
 	}
 }

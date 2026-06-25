@@ -20,45 +20,75 @@ import util.PasswordUtil;
 public class UserRegisterServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
+	private static final String USER_REGISTER_JSP_PATH = "WEB-INF/jsp/userRegister.jsp";
+	private static final String USER_LOGIN_REDIRECT_URL = "UserLoginServlet";
+	private static final String REQUEST_USER_ID_KEY = "userId";
+	private static final String REQUEST_PASSWORD_KEY = "password";
+	private static final String REQUEST_USER_NAME_KEY = "userName";
+	private static final String REQUEST_USER_GENDER_KEY = "userGender";
+	private static final String REQUEST_USER_BIRTHDAY_KEY = "userBirthday";
+	private static final String REQUEST_USER_TEL_KEY = "userTel";
+	private static final String REQUEST_USER_MAIL_KEY = "userMail";
+	private static final String REQUEST_USER_ADDRESS_KEY = "userAddress";
+	private static final String REQUEST_ERROR_MESSAGE_KEY = "errorMsg";
+	private static final String ERROR_DUPLICATE_USER_ID_MESSAGE = "そのユーザーIDは既に使用されています";
+
+	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-
-		RequestDispatcher dispatcher = request.getRequestDispatcher("WEB-INF/jsp/userRegister.jsp");
-		dispatcher.forward(request, response);
+		forwardToRegisterPage(request, response);
 	}
 
+	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 
 		request.setCharacterEncoding("UTF-8");
-		String userId = request.getParameter("userId");
-		String password = request.getParameter("password");
-		String userName = request.getParameter("userName");
-		String userGender = request.getParameter("userGender");
-		String birthdayStr = request.getParameter("userBirthday");
-		Date userBirthday = Date.valueOf(birthdayStr);
-		String userTel = request.getParameter("userTel");
-		String userMail = request.getParameter("userMail");
-		String userAddress = request.getParameter("userAddress");
-		UserInfo userInfo = new UserInfo(0, userId, userName, userGender, userBirthday, userTel, userMail, userAddress);
 
-		String hash = PasswordUtil.hashPassword(password);
+		UserInfo userInfo = buildUserInfo(request);
+		User user = buildUser(request);
 
-		User user = new User(userId, hash);
-		UsersDAO dao = new UsersDAO();
-		boolean result = dao.registerUser(user);	//Userテーブル登録(ログイン用)
-
-		if (result) {
-			 // 追加　UserInfoテーブルに個人情報を登録
-		    UserInfoDAO userInfoDao = new UserInfoDAO();
-		    userInfoDao.insert(userInfo);
-		    
-			response.sendRedirect("UserLoginServlet");
+		UsersDAO usersDAO = new UsersDAO();
+		if (usersDAO.registerUser(user)) {
+			saveUserInfo(userInfo);
+			response.sendRedirect(USER_LOGIN_REDIRECT_URL);
 		} else {
-			request.setAttribute("errorMsg", "そのユーザーIDは既に使用されています");
-			RequestDispatcher dispatcher = request.getRequestDispatcher("WEB-INF/jsp/userRegister.jsp");
-			dispatcher.forward(request, response);
+			showErrorAndReturn(request, response, ERROR_DUPLICATE_USER_ID_MESSAGE);
 		}
 	}
 
+	private UserInfo buildUserInfo(HttpServletRequest request) {
+		String userId = request.getParameter(REQUEST_USER_ID_KEY);
+		String userName = request.getParameter(REQUEST_USER_NAME_KEY);
+		String userGender = request.getParameter(REQUEST_USER_GENDER_KEY);
+		Date userBirthday = Date.valueOf(request.getParameter(REQUEST_USER_BIRTHDAY_KEY));
+		String userTel = request.getParameter(REQUEST_USER_TEL_KEY);
+		String userMail = request.getParameter(REQUEST_USER_MAIL_KEY);
+		String userAddress = request.getParameter(REQUEST_USER_ADDRESS_KEY);
+
+		return new UserInfo(0, userId, userName, userGender, userBirthday, userTel, userMail, userAddress);
+	}
+
+	private User buildUser(HttpServletRequest request) {
+		String userId = request.getParameter(REQUEST_USER_ID_KEY);
+		String password = request.getParameter(REQUEST_PASSWORD_KEY);
+		return new User(userId, PasswordUtil.hashPassword(password));
+	}
+
+	private void saveUserInfo(UserInfo userInfo) {
+		UserInfoDAO userInfoDAO = new UserInfoDAO();
+		userInfoDAO.insert(userInfo);
+	}
+
+	private void showErrorAndReturn(HttpServletRequest request, HttpServletResponse response, String message)
+			throws ServletException, IOException {
+		request.setAttribute(REQUEST_ERROR_MESSAGE_KEY, message);
+		forwardToRegisterPage(request, response);
+	}
+
+	private void forwardToRegisterPage(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+		RequestDispatcher dispatcher = request.getRequestDispatcher(USER_REGISTER_JSP_PATH);
+		dispatcher.forward(request, response);
+	}
 }

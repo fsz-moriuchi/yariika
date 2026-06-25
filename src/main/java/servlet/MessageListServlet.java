@@ -20,168 +20,169 @@ import model.User;
 public class MessageListServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
+	private static final String LOGIN_REDIRECT_URL = "WelcomeServlet";
+	private static final String MESSAGE_LIST_JSP_PATH = "/WEB-INF/jsp/messageList.jsp";
+	private static final String SESSION_USER_KEY = "user";
+	private static final String SESSION_FACILITY_ID_KEY = "facilityId";
+	private static final String REQUEST_ROLE_KEY = "role";
+	private static final String REQUEST_FACILITY_ID_KEY = "facilityId";
+	private static final String REQUEST_READ_STATUS_KEY = "readStatus";
+	private static final String REQUEST_KEYWORD_KEY = "keyword";
+	private static final String REQUEST_SORT_KEY = "sort";
+	private static final String REQUEST_MESSAGE_COUNT_KEY = "messageCount";
+	private static final String REQUEST_MESSAGE_LIST_KEY = "messageList";
+
+	private static final String ROLE_FACILITY = "facility";
+	private static final String ROLE_USER = "user";
+	private static final String READ_STATUS_ALL = "all";
+	private static final String READ_STATUS_UNREAD = "unread";
+	private static final String READ_STATUS_READ = "read";
+	private static final String SORT_TIME_ASC = "timeAsc";
+	private static final String DEFAULT_SORT = "timeDesc";
+
+	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		request.setCharacterEncoding("UTF-8");
 
 		HttpSession session = request.getSession(false);
-
-		// セッションが存在しない
-		if (session == null) {
-			response.sendRedirect("WelcomeServlet");
+		if (!isLoggedIn(session)) {
+			response.sendRedirect(LOGIN_REDIRECT_URL);
 			return;
 		}
 
-		// ログイン情報取得
-		User login = (User) session.getAttribute("user");
-		String facilityId = (String) session.getAttribute("facilityId");
+		User loginUser = (User) session.getAttribute(SESSION_USER_KEY);
+		String facilityId = (String) session.getAttribute(SESSION_FACILITY_ID_KEY);
 
-		// ユーザーでも施設でもない場合は未ログイン
-		if (login == null && facilityId == null) {
-			response.sendRedirect("WelcomeServlet");
+		MessageDAO messageDAO = new MessageDAO();
+		String role = resolveRole(loginUser, facilityId);
+		if (role == null) {
+			response.sendRedirect(LOGIN_REDIRECT_URL);
 			return;
 		}
 
-		String role = "";
+		List<MessageList> messageList = loadMessageList(messageDAO, loginUser, facilityId, role);
+		messageList = filterByReadStatus(messageList, request.getParameter(REQUEST_READ_STATUS_KEY));
+		messageList = filterByKeyword(messageList, request.getParameter(REQUEST_KEYWORD_KEY), role);
+		sortMessages(messageList, request.getParameter(REQUEST_SORT_KEY));
 
-		MessageDAO dao = new MessageDAO();
-		List<MessageList> messageList = null; //= dao.findMessageListByFacilityId(facilityId);
+		String readStatus = normalizeReadStatus(request.getParameter(REQUEST_READ_STATUS_KEY));
+		String keyword = request.getParameter(REQUEST_KEYWORD_KEY);
+		String sort = normalizeSort(request.getParameter(REQUEST_SORT_KEY));
 
-		if (facilityId == null && login == null) {
-			request.setAttribute("errorMessage", "ログインしてください");
-			response.sendRedirect("WelcomeServlet");
-			return;
-		}
+		request.setAttribute(REQUEST_FACILITY_ID_KEY, facilityId);
+		request.setAttribute(REQUEST_READ_STATUS_KEY, readStatus);
+		request.setAttribute(REQUEST_KEYWORD_KEY, keyword);
+		request.setAttribute(REQUEST_SORT_KEY, sort);
+		request.setAttribute(REQUEST_ROLE_KEY, role);
+		request.setAttribute(REQUEST_MESSAGE_COUNT_KEY, messageList.size());
+		request.setAttribute(REQUEST_MESSAGE_LIST_KEY, messageList);
 
-		if (facilityId != null) {
-			// 店舗
-			messageList = dao.findMessageListByFacilityId(facilityId);
-			role = "facility";
-			request.setAttribute("role", role);
-		} else if (login != null) {
-			// ユーザ
-			String userId = login.getUserId();
-			messageList = dao.findMessageListByUserId(userId);
-			role = "user";
-			request.setAttribute("role", role);
-		}
-
-		//キーワード検索・既読未読・並び替え
-		String readStatus = request.getParameter("readStatus");
-		String keyword = request.getParameter("keyword");
-		String sort = request.getParameter("sort");
-		//すべて表示
-		if (readStatus == null || readStatus.isEmpty()) {
-			readStatus = "all";
-		}
-		if (sort == null || sort.isEmpty()) {
-			sort = "timeDesc";
-		}
-
-		// 既読・未読フィルター
-		List<MessageList> showReadList = new ArrayList<>();
-
-		for (MessageList m : messageList) {
-			//すべてのメッセージ表示
-			boolean addIn = true;
-
-			if ("unread".equals(readStatus)) {
-				//未読を選択 >> 未読数=0、表示しないから showReadList に入れない
-				if (m.getUnreadCount() <= 0) {
-					addIn = false;
-				}
-				//既読を選択 >> 未読数>0、表示しないから showReadList に入れない
-			} else if ("read".equals(readStatus)) {
-				if (m.getUnreadCount() > 0) {
-					addIn = false;
-				}
-			}
-			//if(addIn is true)showReadList に入れる
-			if (addIn) {
-				showReadList.add(m);
-			}
-		}
-		//表示する
-		messageList = showReadList;
-
-		// 絞り込み検索
-		if (keyword != null && !keyword.trim().isEmpty()) {
-
-			String searchKeyword = keyword.trim().toLowerCase();
-			List<MessageList> showSearchList = new ArrayList<>();
-
-			for (MessageList m : messageList) {
-				boolean foundKeyword = false;
-
-				// 店舗側：ユーザーID・ユーザー名・ペットID・ペット名で検索
-				if ("facility".equals(role)) {
-
-					if (m.getUserId() != null && m.getUserId().toLowerCase().contains(searchKeyword)) {
-						foundKeyword = true;
-					}
-
-					if (m.getUserName() != null && m.getUserName().toLowerCase().contains(searchKeyword)) {
-						foundKeyword = true;
-					}
-
-					if (String.valueOf(m.getPetID()).contains(searchKeyword)) {
-						foundKeyword = true;
-					}
-
-					if (m.getPetName() != null && m.getPetName().toLowerCase().contains(searchKeyword)) {
-						foundKeyword = true;
-					}
-				}
-
-				// ユーザー側：施設ID・施設名・ペットID・ペット名で検索
-				else if ("user".equals(role)) {
-
-					if (m.getFacilityId() != null && m.getFacilityId().toLowerCase().contains(searchKeyword)) {
-						foundKeyword = true;
-					}
-
-					if (m.getFacilityName() != null && m.getFacilityName().toLowerCase().contains(searchKeyword)) {
-						foundKeyword = true;
-					}
-
-					if (String.valueOf(m.getPetID()).contains(searchKeyword)) {
-						foundKeyword = true;
-					}
-
-					if (m.getPetName() != null && m.getPetName().toLowerCase().contains(searchKeyword)) {
-						foundKeyword = true;
-					}
-				}
-
-				if (foundKeyword) {
-					showSearchList.add(m);
-				}
-			}
-
-			messageList = showSearchList;
-		}
-
-		//並び順（date time）
-		if ("timeAsc".equals(sort)) {
-			// 古い順
-			messageList.sort((m1, m2) -> m1.getLatestTime().compareTo(m2.getLatestTime()));
-		} else {
-			// 新しい順
-			messageList.sort((m1, m2) -> m2.getLatestTime().compareTo(m1.getLatestTime()));
-		}
-
-		request.setAttribute("facilityId", facilityId);
-		request.setAttribute("readStatus", readStatus);
-		request.setAttribute("keyword", keyword);
-		request.setAttribute("sort", sort);
-		request.setAttribute("role", role);
-		request.setAttribute("messageCount", messageList.size());
-		request.setAttribute("messageList", messageList);
-
-		RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/jsp/messageList.jsp");
+		RequestDispatcher dispatcher = request.getRequestDispatcher(MESSAGE_LIST_JSP_PATH);
 		dispatcher.forward(request, response);
 	}
 
+	private boolean isLoggedIn(HttpSession session) {
+		return session != null;
+	}
+
+	private String resolveRole(User loginUser, String facilityId) {
+		if (facilityId != null) {
+			return ROLE_FACILITY;
+		}
+		if (loginUser != null) {
+			return ROLE_USER;
+		}
+		return null;
+	}
+
+	private List<MessageList> loadMessageList(
+			MessageDAO messageDAO,
+			User loginUser,
+			String facilityId,
+			String role) {
+
+		if (ROLE_FACILITY.equals(role)) {
+			return messageDAO.findMessageListByFacilityId(facilityId);
+		}
+		return messageDAO.findMessageListByUserId(loginUser.getUserId());
+	}
+
+	private List<MessageList> filterByReadStatus(List<MessageList> messageList, String readStatus) {
+		String normalizedReadStatus = normalizeReadStatus(readStatus);
+		if (READ_STATUS_ALL.equals(normalizedReadStatus)) {
+			return messageList;
+		}
+
+		List<MessageList> filteredList = new ArrayList<>();
+		for (MessageList message : messageList) {
+			boolean isUnread = message.getUnreadCount() > 0;
+			boolean shouldKeep = READ_STATUS_UNREAD.equals(normalizedReadStatus) ? isUnread : !isUnread;
+			if (shouldKeep) {
+				filteredList.add(message);
+			}
+		}
+		return filteredList;
+	}
+
+	private List<MessageList> filterByKeyword(List<MessageList> messageList, String keyword, String role) {
+		if (keyword == null || keyword.trim().isEmpty()) {
+			return messageList;
+		}
+
+		String normalizedKeyword = keyword.trim().toLowerCase();
+		List<MessageList> filteredList = new ArrayList<>();
+		for (MessageList message : messageList) {
+			if (matchesKeyword(message, normalizedKeyword, role)) {
+				filteredList.add(message);
+			}
+		}
+		return filteredList;
+	}
+
+	private boolean matchesKeyword(MessageList message, String keyword, String role) {
+		if (ROLE_FACILITY.equals(role)) {
+			return containsIgnoreCase(message.getUserId(), keyword)
+					|| containsIgnoreCase(message.getUserName(), keyword)
+					|| String.valueOf(message.getPetID()).contains(keyword)
+					|| containsIgnoreCase(message.getPetName(), keyword);
+		}
+		if (ROLE_USER.equals(role)) {
+			return containsIgnoreCase(message.getFacilityId(), keyword)
+					|| containsIgnoreCase(message.getFacilityName(), keyword)
+					|| String.valueOf(message.getPetID()).contains(keyword)
+					|| containsIgnoreCase(message.getPetName(), keyword);
+		}
+		return false;
+	}
+
+	private boolean containsIgnoreCase(String value, String keyword) {
+		return value != null && value.toLowerCase().contains(keyword);
+	}
+
+	private void sortMessages(List<MessageList> messageList, String sort) {
+		if (SORT_TIME_ASC.equals(normalizeSort(sort))) {
+			messageList.sort((m1, m2) -> m1.getLatestTime().compareTo(m2.getLatestTime()));
+		} else {
+			messageList.sort((m1, m2) -> m2.getLatestTime().compareTo(m1.getLatestTime()));
+		}
+	}
+
+	private String normalizeReadStatus(String readStatus) {
+		if (readStatus == null || readStatus.isEmpty()) {
+			return READ_STATUS_ALL;
+		}
+		return readStatus;
+	}
+
+	private String normalizeSort(String sort) {
+		if (sort == null || sort.isEmpty()) {
+			return DEFAULT_SORT;
+		}
+		return sort;
+	}
+
+	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 	}

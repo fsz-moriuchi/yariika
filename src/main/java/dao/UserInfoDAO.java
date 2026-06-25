@@ -16,19 +16,20 @@ public class UserInfoDAO {
 	private static final String SQL_FIND_BY_USER_ID = "SELECT * FROM UserInfo WHERE USER_ID=?";
 	private static final String SQL_UPDATE_USER_INFO = "UPDATE UserInfo SET USER_NAME=?, USER_GENDER=?, USER_BIRTHDAY=?, USER_TEL=?, USER_MAIL=?, USER_ADDRESS=? WHERE USER_INFO_ID=?";
 
-	// 個人情報の入力・セッションからのuserIdの取得
-	public boolean insert(UserInfo userInfo) {
+	static {
 		try {
-			loadJdbcDriver();
+			Class.forName(JDBC_DRIVER);
 		} catch (ClassNotFoundException e) {
-			throw new IllegalStateException("JDBCドライバを読み込めませんでした");
+			throw new ExceptionInInitializerError("JDBCドライバを読み込めませんでした");
 		}
+	}
 
-		try (Connection conn = DButil.getConnection();
-				PreparedStatement stmt = conn.prepareStatement(SQL_INSERT_USER_INFO)) {
+	public boolean insert(UserInfo userInfo) {
+		try (Connection connection = DButil.getConnection();
+				PreparedStatement statement = connection.prepareStatement(SQL_INSERT_USER_INFO)) {
 
-			bindInsertUserInfo(stmt, userInfo);
-			return stmt.executeUpdate() == 1;
+			bindInsertUserInfo(statement, userInfo);
+			return statement.executeUpdate() == 1;
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -36,24 +37,17 @@ public class UserInfoDAO {
 		}
 	}
 
-	// 個人情報一覧取得
 	public UserInfo findByUserId(String userId) {
 		UserInfo userInfo = null;
 
-		try {
-			loadJdbcDriver();
-		} catch (ClassNotFoundException e) {
-			throw new IllegalStateException("JDBCドライバを読み込めませんでした");
-		}
+		try (Connection connection = DButil.getConnection();
+				PreparedStatement statement = connection.prepareStatement(SQL_FIND_BY_USER_ID)) {
 
-		try (Connection conn = DButil.getConnection();
-				PreparedStatement stmt = conn.prepareStatement(SQL_FIND_BY_USER_ID)) {
+			statement.setString(1, userId);
 
-			stmt.setString(1, userId);
-
-			try (ResultSet rs = stmt.executeQuery()) {
-				if (rs.next()) {
-					userInfo = toUserInfo(rs);
+			try (ResultSet resultSet = statement.executeQuery()) {
+				if (resultSet.next()) {
+					userInfo = toUserInfo(resultSet);
 				}
 			}
 
@@ -65,19 +59,12 @@ public class UserInfoDAO {
 		return userInfo;
 	}
 
-	// 個人情報更新(修正)
 	public boolean updateInfo(UserInfo userInfo) {
-		try {
-			loadJdbcDriver();
-		} catch (ClassNotFoundException e) {
-			throw new IllegalStateException("JDBCドライバを読み込めませんでした");
-		}
+		try (Connection connection = DButil.getConnection();
+				PreparedStatement statement = connection.prepareStatement(SQL_UPDATE_USER_INFO)) {
 
-		try (Connection conn = DButil.getConnection();
-				PreparedStatement stmt = conn.prepareStatement(SQL_UPDATE_USER_INFO)) {
-
-			bindUpdateUserInfo(stmt, userInfo);
-			return stmt.executeUpdate() == 1;
+			bindUpdateUserInfo(statement, userInfo);
+			return statement.executeUpdate() == 1;
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -85,39 +72,35 @@ public class UserInfoDAO {
 		}
 	}
 
-	private void loadJdbcDriver() throws ClassNotFoundException {
-		Class.forName(JDBC_DRIVER);
+	private void bindInsertUserInfo(PreparedStatement statement, UserInfo userInfo) throws Exception {
+		statement.setString(1, userInfo.getUserId());
+		statement.setString(2, userInfo.getUserName());
+		statement.setString(3, userInfo.getUserGender());
+		statement.setDate(4, userInfo.getUserBirthday());
+		statement.setString(5, userInfo.getUserTel());
+		statement.setString(6, userInfo.getUserMail());
+		statement.setString(7, userInfo.getUserAddress());
 	}
 
-	private void bindInsertUserInfo(PreparedStatement stmt, UserInfo userInfo) throws Exception {
-		stmt.setString(1, userInfo.getUserId());
-		stmt.setString(2, userInfo.getUserName());
-		stmt.setString(3, userInfo.getUserGender());
-		stmt.setDate(4, userInfo.getUserBirthday());
-		stmt.setString(5, userInfo.getUserTel());
-		stmt.setString(6, userInfo.getUserMail());
-		stmt.setString(7, userInfo.getUserAddress());
+	private void bindUpdateUserInfo(PreparedStatement statement, UserInfo userInfo) throws Exception {
+		statement.setString(1, userInfo.getUserName());
+		statement.setString(2, userInfo.getUserGender());
+		statement.setDate(3, userInfo.getUserBirthday());
+		statement.setString(4, userInfo.getUserTel());
+		statement.setString(5, userInfo.getUserMail());
+		statement.setString(6, userInfo.getUserAddress());
+		statement.setInt(7, userInfo.getUserInfoId());
 	}
 
-	private void bindUpdateUserInfo(PreparedStatement stmt, UserInfo userInfo) throws Exception {
-		stmt.setString(1, userInfo.getUserName());
-		stmt.setString(2, userInfo.getUserGender());
-		stmt.setDate(3, userInfo.getUserBirthday());
-		stmt.setString(4, userInfo.getUserTel());
-		stmt.setString(5, userInfo.getUserMail());
-		stmt.setString(6, userInfo.getUserAddress());
-		stmt.setInt(7, userInfo.getUserInfoId());
-	}
-
-	private UserInfo toUserInfo(ResultSet rs) throws Exception {
-		int userInfoId = rs.getInt("USER_INFO_ID");
-		String dbUserId = rs.getString("USER_ID");
-		String userName = rs.getString("USER_NAME");
-		String userGender = rs.getString("USER_GENDER");
-		Date userBirthday = rs.getDate("USER_BIRTHDAY");
-		String userTel = rs.getString("USER_TEL");
-		String userMail = rs.getString("USER_MAIL");
-		String userAddress = rs.getString("USER_ADDRESS");
+	private UserInfo toUserInfo(ResultSet resultSet) throws Exception {
+		int userInfoId = resultSet.getInt("USER_INFO_ID");
+		String dbUserId = resultSet.getString("USER_ID");
+		String userName = resultSet.getString("USER_NAME");
+		String userGender = resultSet.getString("USER_GENDER");
+		Date userBirthday = resultSet.getDate("USER_BIRTHDAY");
+		String userTel = resultSet.getString("USER_TEL");
+		String userMail = resultSet.getString("USER_MAIL");
+		String userAddress = resultSet.getString("USER_ADDRESS");
 
 		return new UserInfo(userInfoId, dbUserId, userName, userGender, userBirthday, userTel, userMail, userAddress);
 	}

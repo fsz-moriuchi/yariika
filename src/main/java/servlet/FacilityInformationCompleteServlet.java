@@ -14,21 +14,34 @@ import jakarta.servlet.http.HttpSession;
 public class FacilityInformationCompleteServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
-	protected void doGet(HttpServletRequest request,
-			HttpServletResponse response)
+	private static final String LOGIN_REDIRECT_URL = "WelcomeServlet";
+	private static final String SESSION_FACILITY_ID_KEY = "facilityId";
+	private static final String COMPLETE_JSP_PATH = "/WEB-INF/jsp/facilityInformationComplete.jsp";
+
+	@Override
+	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 
-		HttpSession session = request.getSession(false);
-
-		// 未ログインならログイン画面へ
-		if (session == null || session.getAttribute("facilityId") == null) {
-			response.sendRedirect("WelcomeServlet");
+		if (shouldRedirectToLogin(request)) {
+			redirectToLogin(response);
 			return;
 		}
 
-		RequestDispatcher dispatcher = request.getRequestDispatcher(
-				"WEB-INF/jsp/facilityInformationComplete.jsp");
+		forwardToCompletePage(request, response);
+	}
 
+	private boolean shouldRedirectToLogin(HttpServletRequest request) {
+		HttpSession session = request.getSession(false);
+		return session == null || session.getAttribute(SESSION_FACILITY_ID_KEY) == null;
+	}
+
+	private void redirectToLogin(HttpServletResponse response) throws IOException {
+		response.sendRedirect(LOGIN_REDIRECT_URL);
+	}
+
+	private void forwardToCompletePage(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+		RequestDispatcher dispatcher = request.getRequestDispatcher(COMPLETE_JSP_PATH);
 		dispatcher.forward(request, response);
 	}
 }

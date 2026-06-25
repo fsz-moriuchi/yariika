@@ -1,6 +1,7 @@
 package servlet;
 
 import java.io.IOException;
+import java.sql.Connection;
 import java.time.LocalTime;
 import java.util.List;
 
@@ -15,6 +16,7 @@ import jakarta.servlet.http.HttpSession;
 import dao.FacilityClosedDayDAO;
 import dao.FacilityInformationDAO;
 import model.FacilityInformation;
+import util.DButil;
 
 @WebServlet("/FacilityInformationEditServlet")
 public class FacilityInformationEditServlet extends HttpServlet {
@@ -25,7 +27,6 @@ public class FacilityInformationEditServlet extends HttpServlet {
 
 		HttpSession session = request.getSession(false);
 
-		// 未ログインならログイン画面へ
 		if (session == null || session.getAttribute("facilityId") == null) {
 			response.sendRedirect("WelcomeServlet");
 			return;
@@ -33,11 +34,9 @@ public class FacilityInformationEditServlet extends HttpServlet {
 
 		String facilityId = (String) session.getAttribute("facilityId");
 
-		// 施設情報取得
 		FacilityInformationDAO dao = new FacilityInformationDAO();
 		FacilityInformation facilityInfo = dao.findByFacilityId(facilityId);
 
-		// 定休日取得
 		FacilityClosedDayDAO closedDayDAO = new FacilityClosedDayDAO();
 		List<String> facilityClosedDayList = closedDayDAO.findByFacilityID(facilityId);
 
@@ -53,13 +52,16 @@ public class FacilityInformationEditServlet extends HttpServlet {
 
 		request.setCharacterEncoding("UTF-8");
 
-		HttpSession session = request.getSession();
+		HttpSession session = request.getSession(false);
+		if (session == null || session.getAttribute("facilityId") == null) {
+			response.sendRedirect("WelcomeServlet");
+			return;
+		}
+
 		String facilityId = (String) session.getAttribute("facilityId");
 
 		LocalTime openTime = LocalTime.parse(request.getParameter("openTime"));
-
 		LocalTime closeTime = LocalTime.parse(request.getParameter("closeTime"));
-
 		String[] closedDays = request.getParameterValues("closedDay");
 
 		FacilityInformation facilityInfo = new FacilityInformation(
@@ -71,51 +73,26 @@ public class FacilityInformationEditServlet extends HttpServlet {
 				openTime,
 				closeTime);
 
-		// 施設情報を更新
-		FacilityInformationDAO facilityDAO = new FacilityInformationDAO();
+		try (Connection connection = DButil.getConnection()) {
+			connection.setAutoCommit(false);
 
-		boolean facilityUpdateResult = facilityDAO.update(facilityInfo);
+			FacilityInformationDAO facilityDAO = new FacilityInformationDAO();
+			FacilityClosedDayDAO closedDayDAO = new FacilityClosedDayDAO();
 
-		// 既存の定休日を削除
-		FacilityClosedDayDAO closedDayDAO = new FacilityClosedDayDAO();
+			boolean facilityUpdateResult = facilityDAO.update(connection, facilityInfo);
+			boolean closedDayResult = closedDayDAO.replaceByFacilityID(connection, facilityId, closedDays);
 
-		boolean closedDayDeleteResult = closedDayDAO.deleteByFacilityID(facilityId);
-
-		// 定休日の登録結果
-		boolean closedDayInsertResult = true;
-
-		/*
-		 * 削除に成功し、定休日が1つ以上選択されている場合のみ登録する。
-		 * 何も選択されていない場合は、削除だけ行って
-		 * 「定休日なし」として扱う。
-		 */
-		if (closedDayDeleteResult && closedDays != null) {
-
-			for (String closedDay : closedDays) {
-
-				boolean insertResult = closedDayDAO.insertByFacilityID(
-						facilityId,
-						closedDay);
-
-				if (!insertResult) {
-					closedDayInsertResult = false;
-					break;
-				}
+			if (facilityUpdateResult && closedDayResult) {
+				connection.commit();
+				response.sendRedirect("FacilityInformationConfirmServlet");
+			} else {
+				connection.rollback();
+				response.sendRedirect("FacilityInformationConfirmServlet");
 			}
-		}
 
-		// すべて成功したか判定
-		if (facilityUpdateResult
-				&& closedDayDeleteResult
-				&& closedDayInsertResult) {
-
-			response.sendRedirect(
-					"FacilityInfomationConfirmServlet");
-
-		} else {
-
-			response.sendRedirect(
-					"FacilityInformationConfirmServlet");
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new ServletException(e);
 		}
 	}
 }

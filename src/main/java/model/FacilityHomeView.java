@@ -1,6 +1,5 @@
 package model;
 
-//施設情報用
 public class FacilityHomeView {
 
 	private String facilityID;
@@ -11,14 +10,8 @@ public class FacilityHomeView {
 	private String openTime;
 	private String closeTime;
 
-	public FacilityHomeView(String facilityID,
-			String facilityName,
-			String address,
-			String tel,
-			String mail,
-			String openTime,
-			String closeTime) {
-
+	public FacilityHomeView(String facilityID, String facilityName, String address, String tel, String mail,
+			String openTime, String closeTime) {
 		this.facilityID = facilityID;
 		this.facilityName = facilityName;
 		this.address = address;
@@ -55,5 +48,4 @@ public class FacilityHomeView {
 	public String getCloseTimeDisplay() {
 		return closeTime.substring(0, 5);
 	}
-
 }

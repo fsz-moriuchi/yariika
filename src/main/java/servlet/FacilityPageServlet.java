@@ -17,24 +17,53 @@ import model.FacilityInformation;
 public class FacilityPageServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
+	private static final String LOGIN_REDIRECT_URL = "WelcomeServlet";
+	private static final String FACILITY_PAGE_JSP_PATH = "/WEB-INF/jsp/facilitypage.jsp";
+	private static final String SESSION_FACILITY_ID_KEY = "facilityId";
+	private static final String REQUEST_REGISTERED_KEY = "registered";
+
+	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 
 		HttpSession session = request.getSession(false);
-
-		// 未ログインならログイン画面へ
-		if (session == null || session.getAttribute("facilityId") == null) {
-			response.sendRedirect("WelcomeServlet");
+		if (isNotLoggedIn(session)) {
+			redirectToLogin(response);
 			return;
 		}
 
-		String facilityId = (String) session.getAttribute("facilityId");
+		String facilityId = getFacilityIdFromSession(session);
+		boolean registered = isFacilityRegistered(facilityId);
 
+		setRegisteredAttribute(request, registered);
+		forwardToFacilityPage(request, response);
+	}
+
+	private boolean isNotLoggedIn(HttpSession session) {
+		return session == null || session.getAttribute(SESSION_FACILITY_ID_KEY) == null;
+	}
+
+	private void redirectToLogin(HttpServletResponse response) throws IOException {
+		response.sendRedirect(LOGIN_REDIRECT_URL);
+	}
+
+	private String getFacilityIdFromSession(HttpSession session) {
+		return (String) session.getAttribute(SESSION_FACILITY_ID_KEY);
+	}
+
+	private boolean isFacilityRegistered(String facilityId) {
 		FacilityInformationDAO dao = new FacilityInformationDAO();
 		FacilityInformation facilityInfo = dao.findByFacilityId(facilityId);
-		boolean registered = (facilityInfo != null);
-		request.setAttribute("registered", registered);
-		RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/jsp/facilitypage.jsp");
+		return facilityInfo != null;
+	}
+
+	private void setRegisteredAttribute(HttpServletRequest request, boolean registered) {
+		request.setAttribute(REQUEST_REGISTERED_KEY, registered);
+	}
+
+	private void forwardToFacilityPage(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+		RequestDispatcher dispatcher = request.getRequestDispatcher(FACILITY_PAGE_JSP_PATH);
 		dispatcher.forward(request, response);
 	}
 }

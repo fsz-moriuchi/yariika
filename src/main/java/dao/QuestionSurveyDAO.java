@@ -12,23 +12,25 @@ import util.DButil;
 public class QuestionSurveyDAO {
 
 	private static final String JDBC_DRIVER = "com.microsoft.sqlserver.jdbc.SQLServerDriver";
-	private static final String SQL_FIND_ALL_QUESTIONS = "SELECT * FROM QuestionSurvey";
+	private static final String SQL_FIND_ALL_QUESTIONS = "SELECT QuestionID, userQuestion, petQuestion FROM QuestionSurvey";
+
+	static {
+		try {
+			Class.forName(JDBC_DRIVER);
+		} catch (ClassNotFoundException e) {
+			throw new ExceptionInInitializerError("JDBCドライバを読み込めませんでした");
+		}
+	}
 
 	public List<Question> findAllQuestion() {
-		List<Question> questionList = new ArrayList<>();
+		List<Question> questions = new ArrayList<>();
 
-		try {
-			loadJdbcDriver();
-		} catch (ClassNotFoundException e) {
-			throw new IllegalStateException("JDBCドライバを読み込めませんでした");
-		}
+		try (Connection connection = DButil.getConnection();
+				PreparedStatement statement = connection.prepareStatement(SQL_FIND_ALL_QUESTIONS);
+				ResultSet resultSet = statement.executeQuery()) {
 
-		try (Connection conn = DButil.getConnection();
-				PreparedStatement stmt = conn.prepareStatement(SQL_FIND_ALL_QUESTIONS);
-				ResultSet rs = stmt.executeQuery()) {
-
-			while (rs.next()) {
-				questionList.add(toQuestion(rs));
+			while (resultSet.next()) {
+				questions.add(mapQuestion(resultSet));
 			}
 
 		} catch (Exception e) {
@@ -36,17 +38,13 @@ public class QuestionSurveyDAO {
 			return null;
 		}
 
-		return questionList;
+		return questions;
 	}
 
-	private void loadJdbcDriver() throws ClassNotFoundException {
-		Class.forName(JDBC_DRIVER);
-	}
-
-	private Question toQuestion(ResultSet rs) throws Exception {
-		int questionId = rs.getInt("QuestionID");
-		String userQuestion = rs.getString("userQuestion");
-		String petQuestion = rs.getString("petQuestion");
-		return new Question(questionId, userQuestion, petQuestion);
+	private Question mapQuestion(ResultSet resultSet) throws Exception {
+		return new Question(
+				resultSet.getInt("QuestionID"),
+				resultSet.getString("userQuestion"),
+				resultSet.getString("petQuestion"));
 	}
 }

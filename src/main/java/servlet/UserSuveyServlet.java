@@ -22,84 +22,170 @@ import model.UserSurvey;
 public class UserSuveyServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
-	//UserSurveyServlet
+	private static final String LOGIN_REDIRECT_URL = "WelcomeServlet";
+	private static final String USER_SURVEY_JSP_PATH = "WEB-INF/jsp/userSurvey.jsp";
+	private static final String USER_SURVEY_SUCCESS_JSP_PATH = "WEB-INF/jsp/userSurveySuccess.jsp";
+	private static final String USER_UPDATE_SUCCESS_JSP_PATH = "WEB-INF/jsp/userUpdateSuccess.jsp";
+	private static final String SESSION_USER_ID_KEY = "userId";
+	private static final String REQUEST_USER_SURVEY_LIST_KEY = "userSurveyList";
+	private static final String REQUEST_QUESTION_LIST_KEY = "questionList";
+	private static final String REQUEST_ALL_CHOICE_LIST_KEY = "allChoiceList";
+	private static final String REQUEST_ACTION_KEY = "action";
+	private static final String ACTION_REGISTER = "登録";
+	private static final String ACTION_UPDATE = "更新";
+	private static final String ERROR_REGISTER_FAILED_MESSAGE = "登録失敗";
+	private static final String ERROR_UPDATE_FAILED_MESSAGE = "更新失敗";
+	private static final String ERROR_INVALID_ACCESS_MESSAGE = "不正なアクセスです";
+	private static final int QUESTION_COUNT = 14;
+
+	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
+
 		request.setCharacterEncoding("UTF-8");
 
 		HttpSession session = request.getSession(false);
-
-		// 未ログインならログイン画面へ
-		if (session == null || session.getAttribute("userId") == null) {
-			response.sendRedirect("WelcomeServlet");
+		if (!isLoggedIn(session)) {
+			response.sendRedirect(LOGIN_REDIRECT_URL);
 			return;
 		}
 
-		String userId = (String) session.getAttribute("userId");
+		String userId = (String) session.getAttribute(SESSION_USER_ID_KEY);
+		List<UserSurvey> userSurveyList = loadUserSurveyList(userId);
+		List<Question> questionList = loadQuestionList();
+		List<Choice> allChoiceList = loadAllChoiceList();
 
-		UsersDAO uDao = new UsersDAO();
-		QuestionSurveyDAO Qdao = new QuestionSurveyDAO();
-		SurveyChoiceDAO Cdao = new SurveyChoiceDAO();
-		List<UserSurvey> userSurveyList = uDao.showUserSurvey(userId);
-		List<Question> questionList = Qdao.findAllQuestion();
-		List<Choice> allChoiceList = Cdao.findAllChoices();
+		request.setAttribute(REQUEST_USER_SURVEY_LIST_KEY, userSurveyList);
+		request.setAttribute(REQUEST_QUESTION_LIST_KEY, questionList);
+		request.setAttribute(REQUEST_ALL_CHOICE_LIST_KEY, allChoiceList);
 
-		request.setAttribute("userSurveyList", userSurveyList);
-		request.setAttribute("questionList", questionList);
-		request.setAttribute("allChoiceList", allChoiceList);
+		forwardToUserSurveyPage(request, response);
+	}
 
-		RequestDispatcher dispatcher = request.getRequestDispatcher("WEB-INF/jsp/userSurvey.jsp");
+	@Override
+	protected void doPost(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+
+		HttpSession session = request.getSession(false);
+		if (!isLoggedIn(session)) {
+			response.sendRedirect(LOGIN_REDIRECT_URL);
+			return;
+		}
+
+		String action = request.getParameter(REQUEST_ACTION_KEY);
+		String userId = (String) session.getAttribute(SESSION_USER_ID_KEY);
+
+		if (isEmpty(action)) {
+			showError(response, ERROR_INVALID_ACCESS_MESSAGE);
+			return;
+		}
+
+		UsersDAO usersDAO = new UsersDAO();
+
+		if (ACTION_REGISTER.equals(action)) {
+			boolean result = saveNewUserSurvey(request, usersDAO, userId);
+			if (result) {
+				System.out.println("action = " + action);
+				System.out.println("userId = " + userId);
+				forwardToUserSurveySuccessPage(request, response);
+			} else {
+				showError(response, ERROR_REGISTER_FAILED_MESSAGE);
+			}
+		} else if (ACTION_UPDATE.equals(action)) {
+			boolean result = updateExistingUserSurvey(request, usersDAO, userId);
+			if (result) {
+				forwardToUserUpdateSuccessPage(request, response);
+			} else {
+				showError(response, ERROR_UPDATE_FAILED_MESSAGE);
+			}
+		} else {
+			showError(response, ERROR_INVALID_ACCESS_MESSAGE);
+		}
+	}
+
+	private boolean isLoggedIn(HttpSession session) {
+		return session != null && session.getAttribute(SESSION_USER_ID_KEY) != null;
+	}
+
+	private boolean isEmpty(String value) {
+		return value == null || value.isEmpty();
+	}
+
+	private List<UserSurvey> loadUserSurveyList(String userId) {
+		UsersDAO usersDAO = new UsersDAO();
+		return usersDAO.showUserSurvey(userId);
+	}
+
+	private List<Question> loadQuestionList() {
+		QuestionSurveyDAO questionSurveyDAO = new QuestionSurveyDAO();
+		return questionSurveyDAO.findAllQuestion();
+	}
+
+	private List<Choice> loadAllChoiceList() {
+		SurveyChoiceDAO surveyChoiceDAO = new SurveyChoiceDAO();
+		return surveyChoiceDAO.findAllChoices();
+	}
+
+	private boolean saveNewUserSurvey(HttpServletRequest request, UsersDAO usersDAO, String userId) {
+		return saveUserSurveyAnswers(request, usersDAO, userId, true);
+	}
+
+	private boolean updateExistingUserSurvey(HttpServletRequest request, UsersDAO usersDAO, String userId) {
+		return saveUserSurveyAnswers(request, usersDAO, userId, false);
+	}
+
+	private boolean saveUserSurveyAnswers(HttpServletRequest request, UsersDAO usersDAO, String userId,
+			boolean isRegister) {
+		for (int questionId = 1; questionId <= QUESTION_COUNT; questionId++) {
+			String choiceParam = request.getParameter("q" + questionId);
+			Integer surveyChoiceId = parseSurveyChoiceId(choiceParam);
+			if (surveyChoiceId == null) {
+				return false;
+			}
+
+			UserSurvey userSurvey = new UserSurvey(userId, questionId, surveyChoiceId);
+			boolean success = isRegister
+					? usersDAO.createUserSurvey(userSurvey)
+					: usersDAO.updateUserSurvey(userId, questionId, surveyChoiceId);
+
+			if (!success) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	private Integer parseSurveyChoiceId(String value) {
+		if (isEmpty(value)) {
+			return null;
+		}
+		try {
+			return Integer.parseInt(value);
+		} catch (NumberFormatException e) {
+			return null;
+		}
+	}
+
+	private void forwardToUserSurveyPage(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+		RequestDispatcher dispatcher = request.getRequestDispatcher(USER_SURVEY_JSP_PATH);
 		dispatcher.forward(request, response);
 	}
 
-	protected void doPost(HttpServletRequest request, HttpServletResponse response)
+	private void forwardToUserSurveySuccessPage(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		HttpSession session = request.getSession();
-		String action = request.getParameter("action");
-		String userId = (String) session.getAttribute("userId");
-		UsersDAO dao = new UsersDAO();
-		//新規アンケート登録
-		if ("登録".equals(action)) {
-			boolean userSurveyResult = true;
-			for (int qID = 1; qID <= 14; qID++) {
-				int surveyChoiceID = Integer.parseInt(request.getParameter("q" + qID));
-				UserSurvey userSurvey = new UserSurvey(userId, qID, surveyChoiceID);
-				if (!dao.createUserSurvey(userSurvey)) {
-					userSurveyResult = false;
-					break;
-				}
-			}
-			if (userSurveyResult) {
-				System.out.println("action = " + action);
-				System.out.println("userId = " + userId);
-				RequestDispatcher dispatcher = request.getRequestDispatcher("WEB-INF/jsp/userSurveySuccess.jsp");
-				dispatcher.forward(request, response);
-			} else {
-				response.setContentType("text/html; charset=UTF-8");
-				response.getWriter().println("登録失敗");
-			}
-		}
-		//アンケート内容修正
-		else if ("更新".equals(action)) {
-			boolean userSurveyResult = true;
-			for (int qID = 1; qID <= 14; qID++) {
-				int surveyChoiceID = Integer.parseInt(request.getParameter("q" + qID));
-				if (!dao.updateUserSurvey(userId, qID, surveyChoiceID)) {
-					userSurveyResult = false;
-					break;
-				}
-				;
-			}
-			if (userSurveyResult) {
-				RequestDispatcher dispatcher = request.getRequestDispatcher("WEB-INF/jsp/userUpdateSuccess.jsp");
-				dispatcher.forward(request, response);
-			} else {
-				response.setContentType("text/html; charset=UTF-8");
-				response.getWriter().println("更新失敗");
-			}
-
-		}
-
+		RequestDispatcher dispatcher = request.getRequestDispatcher(USER_SURVEY_SUCCESS_JSP_PATH);
+		dispatcher.forward(request, response);
 	}
 
+	private void forwardToUserUpdateSuccessPage(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+		RequestDispatcher dispatcher = request.getRequestDispatcher(USER_UPDATE_SUCCESS_JSP_PATH);
+		dispatcher.forward(request, response);
+	}
+
+	private void showError(HttpServletResponse response, String message) throws IOException {
+		response.setContentType("text/html; charset=UTF-8");
+		response.getWriter().println(message);
+	}
 }

@@ -19,23 +19,25 @@ public class QuizResultDAO {
 			+ "WHERE a.USER_ID = ? AND a.QUIZ_SESSION_ID = ? "
 			+ "ORDER BY q.QUIZ_ID DESC";
 
-	public List<QuizResult> findByUserId(String userId, String quizSessionId) {
-		List<QuizResult> resultList = new ArrayList<>();
-
+	static {
 		try {
-			loadJdbcDriver();
+			Class.forName(JDBC_DRIVER);
 		} catch (ClassNotFoundException e) {
-			throw new IllegalStateException("JDBCドライバを読み込めませんでした");
+			throw new ExceptionInInitializerError("JDBCドライバを読み込めませんでした");
 		}
+	}
 
-		try (Connection conn = DButil.getConnection();
-				PreparedStatement stmt = conn.prepareStatement(SQL_FIND_BY_USER_ID)) {
+	public List<QuizResult> findByUserId(String userId, String quizSessionId) {
+		List<QuizResult> quizResults = new ArrayList<>();
 
-			bindFindByUserId(stmt, userId, quizSessionId);
+		try (Connection connection = DButil.getConnection();
+				PreparedStatement statement = connection.prepareStatement(SQL_FIND_BY_USER_ID)) {
 
-			try (ResultSet rs = stmt.executeQuery()) {
-				while (rs.next()) {
-					resultList.add(toQuizResult(rs));
+			bindSearchCondition(statement, userId, quizSessionId);
+
+			try (ResultSet resultSet = statement.executeQuery()) {
+				while (resultSet.next()) {
+					quizResults.add(mapQuizResult(resultSet));
 				}
 			}
 
@@ -44,27 +46,24 @@ public class QuizResultDAO {
 			return null;
 		}
 
-		return resultList;
+		return quizResults;
 	}
 
-	private void loadJdbcDriver() throws ClassNotFoundException {
-		Class.forName(JDBC_DRIVER);
+	private void bindSearchCondition(PreparedStatement statement, String userId, String quizSessionId)
+			throws Exception {
+		statement.setString(1, userId);
+		statement.setString(2, quizSessionId);
 	}
 
-	private void bindFindByUserId(PreparedStatement stmt, String userId, String quizSessionId) throws Exception {
-		stmt.setString(1, userId);
-		stmt.setString(2, quizSessionId);
-	}
-
-	private QuizResult toQuizResult(ResultSet rs) throws Exception {
-		int quizId = rs.getInt("QUIZ_ID");
-		String question = rs.getString("QUESTION");
-		String choice1 = rs.getString("CHOICE1");
-		String choice2 = rs.getString("CHOICE2");
-		String choice3 = rs.getString("CHOICE3");
-		String choice4 = rs.getString("CHOICE4");
-		int answer = rs.getInt("ANSWER");
-		int userAnswer = rs.getInt("USER_ANSWER");
+	private QuizResult mapQuizResult(ResultSet resultSet) throws Exception {
+		int quizId = resultSet.getInt("QUIZ_ID");
+		String question = resultSet.getString("QUESTION");
+		String choice1 = resultSet.getString("CHOICE1");
+		String choice2 = resultSet.getString("CHOICE2");
+		String choice3 = resultSet.getString("CHOICE3");
+		String choice4 = resultSet.getString("CHOICE4");
+		int answer = resultSet.getInt("ANSWER");
+		int userAnswer = resultSet.getInt("USER_ANSWER");
 
 		return new QuizResult(quizId, question, choice1, choice2, choice3, choice4, answer, userAnswer);
 	}

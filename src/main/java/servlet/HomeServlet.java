@@ -20,11 +20,28 @@ import dao.PetListDAO;
 import model.FavoritePet;
 import model.PetDetail;
 import model.PetInformationView;
-import model.PetSortable;
 
 @WebServlet("/HomeServlet")
 public class HomeServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
+
+	private static final String LOGIN_REDIRECT_URL = "WelcomeServlet";
+	private static final String HOME_JSP_PATH = "WEB-INF/jsp/home.jsp";
+	private static final String SESSION_USER_ID_KEY = "userId";
+
+	private static final String REQUEST_PET_LIST_KEY = "petList";
+	private static final String REQUEST_FAVORITE_PET_LIST_KEY = "favoritePetList";
+	private static final String REQUEST_SORT_KEY = "sort";
+	private static final String REQUEST_CLICK_SEARCH_KEY = "clickSearch";
+	private static final String REQUEST_SEARCH_PET_LIST_KEY = "searchPetList";
+	private static final String REQUEST_SEARCH_RESULT_COUNT_KEY = "searchResultCount";
+	private static final String REQUEST_SELECTED_CATEGORY_ID_KEY = "selectedCategoryId";
+	private static final String REQUEST_SELECTED_GENDER_KEY = "selectedGender";
+	private static final String REQUEST_SELECTED_COLOR_LIST_KEY = "selectedColorList";
+	private static final String REQUEST_SELECTED_PET_SIZE_KEY = "selectedPet_size";
+	private static final String REQUEST_SELECTED_AGE_RANGE_KEY = "selectedAgeRange";
+	private static final String REQUEST_SELECTED_PRICE_RANGE_KEY = "selectedPriceRange";
+	private static final String REQUEST_USER_UNREAD_COUNT_KEY = "userUnreadCount";
 
 	private static final String SORT_MATCH_RATE_DESC = "matchRateDesc";
 	private static final String SORT_MATCH_RATE_ASC = "matchRateAsc";
@@ -32,6 +49,7 @@ public class HomeServlet extends HttpServlet {
 	private static final String SORT_PRICE_ASC = "priceAsc";
 	private static final String SORT_AGE_DESC = "ageDesc";
 	private static final String SORT_AGE_ASC = "ageAsc";
+	private static final String CLICK_SEARCH_TRUE = "true";
 
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -40,33 +58,37 @@ public class HomeServlet extends HttpServlet {
 		request.setCharacterEncoding("UTF-8");
 
 		HttpSession session = request.getSession(false);
-		if (session == null || session.getAttribute("userId") == null) {
-			response.sendRedirect("WelcomeServlet");
+		if (!isLoggedIn(session)) {
+			response.sendRedirect(LOGIN_REDIRECT_URL);
 			return;
 		}
 
-		String userId = (String) session.getAttribute("userId");
-		String sort = request.getParameter("sort");
+		String userId = (String) session.getAttribute(SESSION_USER_ID_KEY);
+		String sort = request.getParameter(REQUEST_SORT_KEY);
 
 		PetListDAO petListDAO = new PetListDAO();
 		Map<Integer, Integer> matchRateMap = petListDAO.getAllMatchRate(userId);
 
 		List<PetInformationView> petList = petListDAO.showList();
-		request.setAttribute("petList", petList);
-
 		List<FavoritePet> favoritePetList = petListDAO.showFavoritePet();
-		applyMatchRate(favoritePetList, matchRateMap);
-		sortPets(favoritePetList, sort);
-		request.setAttribute("favoritePetList", favoritePetList);
 
-		request.setAttribute("sort", sort);
+		sortPetInformationViewList(petList, sort);
+		applyMatchRateToFavoritePets(favoritePetList, matchRateMap);
+		sortFavoritePets(favoritePetList, sort);
+
+		request.setAttribute(REQUEST_PET_LIST_KEY, petList);
+		request.setAttribute(REQUEST_FAVORITE_PET_LIST_KEY, favoritePetList);
+		request.setAttribute(REQUEST_SORT_KEY, sort);
 
 		handleSearch(request, petListDAO, sort, matchRateMap);
-
 		setUnreadMessageCount(request, userId);
 
-		RequestDispatcher dispatcher = request.getRequestDispatcher("WEB-INF/jsp/home.jsp");
+		RequestDispatcher dispatcher = request.getRequestDispatcher(HOME_JSP_PATH);
 		dispatcher.forward(request, response);
+	}
+
+	private boolean isLoggedIn(HttpSession session) {
+		return session != null && session.getAttribute(SESSION_USER_ID_KEY) != null;
 	}
 
 	private void handleSearch(
@@ -75,75 +97,132 @@ public class HomeServlet extends HttpServlet {
 			String sort,
 			Map<Integer, Integer> matchRateMap) {
 
-		String search = request.getParameter("clickSearch");
-		if (!"true".equals(search)) {
+		if (!CLICK_SEARCH_TRUE.equals(request.getParameter(REQUEST_CLICK_SEARCH_KEY))) {
 			return;
 		}
 
-		SearchCondition condition = createSearchCondition(request);
+		SearchCondition searchCondition = createSearchCondition(request);
 
 		List<PetDetail> searchPetList = petListDAO.searchAllPet(
-				condition.categoryId,
-				condition.gender,
-				condition.colorArray,
-				condition.petSize,
-				condition.ageRange,
-				condition.priceRange);
+				searchCondition.categoryId,
+				searchCondition.gender,
+				searchCondition.colorArray,
+				searchCondition.petSize,
+				searchCondition.ageRange,
+				searchCondition.priceRange);
 
-		applyMatchRate(searchPetList, matchRateMap);
-		sortPets(searchPetList, sort);
+		applyMatchRateToSearchPets(searchPetList, matchRateMap);
+		sortSearchPets(searchPetList, sort);
 
-		request.setAttribute("sort", sort);
-		request.setAttribute("clickSearch", true);
-		request.setAttribute("searchPetList", searchPetList);
-		request.setAttribute("searchResultCount", searchPetList.size());
+		request.setAttribute(REQUEST_SORT_KEY, sort);
+		request.setAttribute(REQUEST_CLICK_SEARCH_KEY, true);
+		request.setAttribute(REQUEST_SEARCH_PET_LIST_KEY, searchPetList);
+		request.setAttribute(REQUEST_SEARCH_RESULT_COUNT_KEY, searchPetList.size());
 
-		setSearchAttributes(request, condition);
+		setSearchAttributes(request, searchCondition);
 	}
 
 	private SearchCondition createSearchCondition(HttpServletRequest request) {
-		SearchCondition condition = new SearchCondition();
-		condition.categoryId = request.getParameter("categoryId");
-		condition.gender = request.getParameter("gender");
-		condition.colorArray = request.getParameterValues("color");
-		condition.petSize = request.getParameter("pet_size");
-		condition.ageRange = request.getParameter("ageRange");
-		condition.priceRange = request.getParameter("priceRange");
-		return condition;
+		SearchCondition searchCondition = new SearchCondition();
+		searchCondition.categoryId = request.getParameter("categoryId");
+		searchCondition.gender = request.getParameter("gender");
+		searchCondition.colorArray = request.getParameterValues("color");
+		searchCondition.petSize = request.getParameter("pet_size");
+		searchCondition.ageRange = request.getParameter("ageRange");
+		searchCondition.priceRange = request.getParameter("priceRange");
+		return searchCondition;
 	}
 
-	private void setSearchAttributes(HttpServletRequest request, SearchCondition condition) {
+	private void setSearchAttributes(HttpServletRequest request, SearchCondition searchCondition) {
 		List<String> selectedColorList = new ArrayList<>();
-		if (condition.colorArray != null) {
-			selectedColorList = Arrays.asList(condition.colorArray);
+		if (searchCondition.colorArray != null) {
+			selectedColorList = Arrays.asList(searchCondition.colorArray);
 		}
 
-		request.setAttribute("selectedCategoryId", condition.categoryId);
-		request.setAttribute("selectedGender", condition.gender);
-		request.setAttribute("selectedColorList", selectedColorList);
-		request.setAttribute("selectedPet_size", condition.petSize);
-		request.setAttribute("selectedAgeRange", condition.ageRange);
-		request.setAttribute("selectedPriceRange", condition.priceRange);
+		request.setAttribute(REQUEST_SELECTED_CATEGORY_ID_KEY, searchCondition.categoryId);
+		request.setAttribute(REQUEST_SELECTED_GENDER_KEY, searchCondition.gender);
+		request.setAttribute(REQUEST_SELECTED_COLOR_LIST_KEY, selectedColorList);
+		request.setAttribute(REQUEST_SELECTED_PET_SIZE_KEY, searchCondition.petSize);
+		request.setAttribute(REQUEST_SELECTED_AGE_RANGE_KEY, searchCondition.ageRange);
+		request.setAttribute(REQUEST_SELECTED_PRICE_RANGE_KEY, searchCondition.priceRange);
 	}
 
-	private <T extends PetSortable> void applyMatchRate(
-			List<T> petList,
-			Map<Integer, Integer> matchRateMap) {
-
-		for (T pet : petList) {
-			int matchRate = matchRateMap.getOrDefault(pet.getPetID(), 0);
-			pet.setMatchRate(matchRate);
+	private void applyMatchRateToFavoritePets(List<FavoritePet> favoritePetList, Map<Integer, Integer> matchRateMap) {
+		for (FavoritePet pet : favoritePetList) {
+			pet.setMatchRate(matchRateMap.getOrDefault(pet.getPetID(), 0));
 		}
 	}
 
-	private <T extends PetSortable> void sortPets(List<T> petList, String sort) {
-		Comparator<T> comparator = createComparator(sort);
+	private void applyMatchRateToSearchPets(List<PetDetail> searchPetList, Map<Integer, Integer> matchRateMap) {
+		for (PetDetail pet : searchPetList) {
+			pet.setMatchRate(matchRateMap.getOrDefault(pet.getPetID(), 0));
+		}
+	}
+
+	private void sortPetInformationViewList(List<PetInformationView> petList, String sort) {
+		Comparator<PetInformationView> comparator = createPetInformationViewComparator(sort);
 		if (comparator != null) {
 			petList.sort(comparator);
 		}
 	}
 
-	private <T extends PetSortable> Comparator<T> createComparator(String sort) {
+	private void sortFavoritePets(List<FavoritePet> favoritePetList, String sort) {
+		Comparator<FavoritePet> comparator = createFavoritePetComparator(sort);
+		if (comparator != null) {
+			favoritePetList.sort(comparator);
+		}
+	}
+
+	private void sortSearchPets(List<PetDetail> searchPetList, String sort) {
+		Comparator<PetDetail> comparator = createPetDetailComparator(sort);
+		if (comparator != null) {
+			searchPetList.sort(comparator);
+		}
+	}
+
+	private Comparator<PetInformationView> createPetInformationViewComparator(String sort) {
+		if (sort == null) {
+			return null;
+		}
+
+		switch (sort) {
+		case SORT_PRICE_DESC:
+			return (p1, p2) -> Integer.compare(p2.getPrice(), p1.getPrice());
+		case SORT_PRICE_ASC:
+			return (p1, p2) -> Integer.compare(p1.getPrice(), p2.getPrice());
+		case SORT_AGE_DESC:
+			return (p1, p2) -> Integer.compare(p2.getAge(), p1.getAge());
+		case SORT_AGE_ASC:
+			return (p1, p2) -> Integer.compare(p1.getAge(), p2.getAge());
+		default:
+			return null;
+		}
+	}
+
+	private Comparator<FavoritePet> createFavoritePetComparator(String sort) {
+		if (sort == null) {
+			return null;
+		}
+
+		switch (sort) {
+		case SORT_MATCH_RATE_DESC:
+			return (p1, p2) -> Integer.compare(p2.getMatchRate(), p1.getMatchRate());
+		case SORT_MATCH_RATE_ASC:
+			return (p1, p2) -> Integer.compare(p1.getMatchRate(), p2.getMatchRate());
+		case SORT_PRICE_DESC:
+			return (p1, p2) -> Integer.compare(p2.getPrice(), p1.getPrice());
+		case SORT_PRICE_ASC:
+			return (p1, p2) -> Integer.compare(p1.getPrice(), p2.getPrice());
+		case SORT_AGE_DESC:
+			return (p1, p2) -> Integer.compare(p2.getAge(), p1.getAge());
+		case SORT_AGE_ASC:
+			return (p1, p2) -> Integer.compare(p1.getAge(), p2.getAge());
+		default:
+			return null;
+		}
+	}
+
+	private Comparator<PetDetail> createPetDetailComparator(String sort) {
 		if (sort == null) {
 			return null;
 		}
@@ -169,7 +248,7 @@ public class HomeServlet extends HttpServlet {
 	private void setUnreadMessageCount(HttpServletRequest request, String userId) {
 		MessageDAO messageDAO = new MessageDAO();
 		int userUnreadCount = messageDAO.countUnreadByUserId(userId);
-		request.setAttribute("userUnreadCount", userUnreadCount);
+		request.setAttribute(REQUEST_USER_UNREAD_COUNT_KEY, userUnreadCount);
 	}
 
 	private static class SearchCondition {

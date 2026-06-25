@@ -34,7 +34,7 @@ pageEncoding="UTF-8"%>
 
 	<div class="facility-menu-grid">
 
-		<a class="facility-menu-card" href="FacilityInfomationConfirmServlet">
+		<a class="facility-menu-card" href="FacilityInformationConfirmServlet">
 			<span class="facility-menu-icon">🏠</span>
 			<span class="facility-menu-title">施設情報の確認・変更へ</span>
 			<span class="facility-menu-text">店舗情報を確認・編集できます</span>

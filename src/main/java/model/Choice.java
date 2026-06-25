@@ -1,24 +1,25 @@
 package model;
 
 public class Choice {
-	private int SurveyChoiceID;
-	private int QuestionID;
-	private String Choice;
-	
-	public Choice() {};
-	public Choice(int SurveyChoiceID,int QuestionID,String Choice) {
-		this.SurveyChoiceID = SurveyChoiceID;
-		this.QuestionID = QuestionID;
-		this.Choice = Choice;
+	private int surveyChoiceId;
+	private int questionId;
+	private String choice;
+
+	public Choice(int surveyChoiceId, int questionId, String choice) {
+		this.surveyChoiceId = surveyChoiceId;
+		this.questionId = questionId;
+		this.choice = choice;
 	}
-	
-	public int getSurveyChoiceID() {
-		return SurveyChoiceID;
+
+	public int getSurveyChoiceId() {
+		return surveyChoiceId;
 	}
-	public int getQuestionID() {
-		return QuestionID;
+
+	public int getQuestionId() {
+		return questionId;
 	}
+
 	public String getChoice() {
-		return Choice;
+		return choice;
 	}
 }

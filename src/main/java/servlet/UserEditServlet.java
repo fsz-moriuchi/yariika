@@ -19,92 +19,156 @@ import model.UserInfo;
 public class UserEditServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
-	//表示
+	private static final String LOGIN_REDIRECT_URL = "WelcomeServlet";
+	private static final String USER_EDIT_JSP_PATH = "WEB-INF/jsp/userEdit.jsp";
+	private static final String USER_INFO_REDIRECT_URL = "UserInfoServlet";
+	private static final String SESSION_USER_ID_KEY = "userId";
+	private static final String SESSION_USER_KEY = "user";
+	private static final String REQUEST_USER_INFO_KEY = "userInfo";
+	private static final String REQUEST_ERROR_MESSAGE_KEY = "errorMsg";
+	private static final String REQUEST_USER_INFO_ID_KEY = "userInfoId";
+	private static final String REQUEST_USER_NAME_KEY = "userName";
+	private static final String REQUEST_USER_GENDER_KEY = "userGender";
+	private static final String REQUEST_USER_BIRTHDAY_KEY = "userBirthday";
+	private static final String REQUEST_USER_TEL_KEY = "userTel";
+	private static final String REQUEST_USER_MAIL_KEY = "userMail";
+	private static final String REQUEST_USER_ADDRESS_KEY = "userAddress";
+	private static final String ERROR_NO_USER_INFO_MESSAGE = "個人情報が未登録のため更新できません";
+	private static final String ERROR_INVALID_ACCESS_MESSAGE = "不正なアクセスです";
+	private static final String ERROR_UPDATE_FAILED_MESSAGE = "更新に失敗しました";
+
+	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 
 		HttpSession session = request.getSession(false);
-
-		// 未ログインならログイン画面へ
-		if (session == null || session.getAttribute("userId") == null) {
-			response.sendRedirect("WelcomeServlet");
+		if (!isLoggedIn(session)) {
+			response.sendRedirect(LOGIN_REDIRECT_URL);
 			return;
 		}
 
-		User user = (User) session.getAttribute("user");
+		User user = getSessionUser(session);
+		if (user == null || isEmpty(user.getUserId())) {
+			response.sendRedirect(LOGIN_REDIRECT_URL);
+			return;
+		}
 
-		String userId = user.getUserId();
-
-		//UserDAOでDBからユーザー情報を取得
-		UserInfoDAO dao = new UserInfoDAO();
-		UserInfo userInfo = dao.findByUserId(userId);
-
-		//リクエストにセット
-		request.setAttribute("userInfo", userInfo);
-
-		RequestDispatcher dispatcher = request.getRequestDispatcher("WEB-INF/jsp/userEdit.jsp");
-		dispatcher.forward(request, response);
+		UserInfo userInfo = loadUserInfo(user.getUserId());
+		request.setAttribute(REQUEST_USER_INFO_KEY, userInfo);
+		forwardToUserEditPage(request, response);
 	}
 
-	//データの更新
+	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		//セッション
-		HttpSession session = request.getSession();
-		User user = (User) session.getAttribute("user");
+
+		HttpSession session = request.getSession(false);
+		if (!isLoggedIn(session)) {
+			response.sendRedirect(LOGIN_REDIRECT_URL);
+			return;
+		}
+
+		User user = getSessionUser(session);
+		if (user == null || isEmpty(user.getUserId())) {
+			response.sendRedirect(LOGIN_REDIRECT_URL);
+			return;
+		}
 
 		String userId = user.getUserId();
+		UserInfoDAO userInfoDAO = new UserInfoDAO();
 
-		UserInfoDAO dao = new UserInfoDAO();
-		UserInfo existingInfo = dao.findByUserId(userId);
-
+		UserInfo existingInfo = loadUserInfo(userInfoDAO, userId);
 		if (existingInfo == null) {
-			request.setAttribute("errorMsg", "個人情報が未登録のため更新できません");
-			RequestDispatcher dispatcher = request.getRequestDispatcher("WEB-INF/jsp/userEdit.jsp");
-			dispatcher.forward(request, response);
+			showError(request, response, ERROR_NO_USER_INFO_MESSAGE);
 			return;
 		}
 
-		// hiddenチェック
-		String userInfoIdStr = request.getParameter("userInfoId");
-		if (userInfoIdStr == null || userInfoIdStr.isEmpty()) {
-			request.setAttribute("errorMsg", "不正なアクセスです");
-			RequestDispatcher dispatcher = request.getRequestDispatcher("WEB-INF/jsp/userEdit.jsp");
-			dispatcher.forward(request, response);
+		String userInfoIdString = request.getParameter(REQUEST_USER_INFO_ID_KEY);
+		if (isEmpty(userInfoIdString)) {
+			showError(request, response, ERROR_INVALID_ACCESS_MESSAGE);
 			return;
 		}
 
-		int userInfoId = Integer.parseInt(userInfoIdStr);
-
-		String userName = request.getParameter("userName");
-		String userGender = request.getParameter("userGender");
-
-		//日付はjavaとDBでフォームが違う事に注意
-		String birthdayStr = request.getParameter("userBirthday");
-		Date userBirthday = null;
-		if (birthdayStr != null && !birthdayStr.isEmpty()) {
-			userBirthday = Date.valueOf(birthdayStr);
-		} else {
-			// DBから元の値を取得
-			//UserInfoDAO dao = new UserInfoDAO();
-			UserInfo oldInfo = dao.findByUserId(userId);
-			userBirthday = oldInfo.getUserBirthday();
+		Integer userInfoId = parseUserInfoId(userInfoIdString);
+		if (userInfoId == null) {
+			showError(request, response, ERROR_INVALID_ACCESS_MESSAGE);
+			return;
 		}
-		String userTel = request.getParameter("userTel");
-		String userMail = request.getParameter("userMail");
-		String userAddress = request.getParameter("userAddress");
-		UserInfo userInfo = new UserInfo(userInfoId, userId, userName, userGender, userBirthday, userTel, userMail,
-				userAddress);
 
-		//UserDAOでDBをアップデート
-		boolean result = dao.updateInfo(userInfo);
+		UserInfo updatedUserInfo = buildUserInfo(request, userInfoDAO, userId, userInfoId);
+		boolean result = userInfoDAO.updateInfo(updatedUserInfo);
 
 		if (result) {
-			response.sendRedirect("UserInfoServlet"); // 更新後表示
+			response.sendRedirect(USER_INFO_REDIRECT_URL);
 		} else {
-			request.setAttribute("errorMsg", "更新に失敗しました");
-			RequestDispatcher dispatcher = request.getRequestDispatcher("WEB-INF/jsp/userEdit.jsp");
-			dispatcher.forward(request, response);
+			showError(request, response, ERROR_UPDATE_FAILED_MESSAGE);
 		}
+	}
+
+	private boolean isLoggedIn(HttpSession session) {
+		return session != null && session.getAttribute(SESSION_USER_ID_KEY) != null;
+	}
+
+	private boolean isEmpty(String value) {
+		return value == null || value.isEmpty();
+	}
+
+	private User getSessionUser(HttpSession session) {
+		return session == null ? null : (User) session.getAttribute(SESSION_USER_KEY);
+	}
+
+	private UserInfo loadUserInfo(String userId) {
+		UserInfoDAO userInfoDAO = new UserInfoDAO();
+		return userInfoDAO.findByUserId(userId);
+	}
+
+	private UserInfo loadUserInfo(UserInfoDAO userInfoDAO, String userId) {
+		return userInfoDAO.findByUserId(userId);
+	}
+
+	private Integer parseUserInfoId(String userInfoIdString) {
+		try {
+			return Integer.parseInt(userInfoIdString);
+		} catch (NumberFormatException e) {
+			return null;
+		}
+	}
+
+	private UserInfo buildUserInfo(HttpServletRequest request, UserInfoDAO userInfoDAO, String userId,
+			Integer userInfoId) {
+		String userName = request.getParameter(REQUEST_USER_NAME_KEY);
+		String userGender = request.getParameter(REQUEST_USER_GENDER_KEY);
+		Date userBirthday = resolveUserBirthday(request, userInfoDAO, userId);
+		String userTel = request.getParameter(REQUEST_USER_TEL_KEY);
+		String userMail = request.getParameter(REQUEST_USER_MAIL_KEY);
+		String userAddress = request.getParameter(REQUEST_USER_ADDRESS_KEY);
+
+		return new UserInfo(userInfoId, userId, userName, userGender, userBirthday, userTel, userMail, userAddress);
+	}
+
+	private Date resolveUserBirthday(HttpServletRequest request, UserInfoDAO userInfoDAO, String userId) {
+		String birthdayString = request.getParameter(REQUEST_USER_BIRTHDAY_KEY);
+		if (birthdayString != null && !birthdayString.isEmpty()) {
+			try {
+				return Date.valueOf(birthdayString);
+			} catch (IllegalArgumentException e) {
+				UserInfo oldInfo = userInfoDAO.findByUserId(userId);
+				return oldInfo.getUserBirthday();
+			}
+		}
+		UserInfo oldInfo = userInfoDAO.findByUserId(userId);
+		return oldInfo.getUserBirthday();
+	}
+
+	private void showError(HttpServletRequest request, HttpServletResponse response, String message)
+			throws ServletException, IOException {
+		request.setAttribute(REQUEST_ERROR_MESSAGE_KEY, message);
+		forwardToUserEditPage(request, response);
+	}
+
+	private void forwardToUserEditPage(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+		RequestDispatcher dispatcher = request.getRequestDispatcher(USER_EDIT_JSP_PATH);
+		dispatcher.forward(request, response);
 	}
 }

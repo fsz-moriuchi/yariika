@@ -12,13 +12,9 @@ import util.DButil;
 public class FavoriteDAO {
 
 	private static final String JDBC_DRIVER = "com.microsoft.sqlserver.jdbc.SQLServerDriver";
-
 	private static final String SQL_INSERT_FAVORITE = "INSERT INTO Favorite(USER_ID, petID) VALUES(?, ?)";
-
 	private static final String SQL_IS_FAVORITE = "SELECT * FROM Favorite WHERE USER_ID=? AND petID=?";
-
 	private static final String SQL_DELETE_FAVORITE = "DELETE FROM Favorite WHERE USER_ID=? AND petID=?";
-
 	private static final String SQL_SHOW_FAVORITES = """
 			SELECT
 			    PI.petID,
@@ -33,22 +29,22 @@ public class FavoriteDAO {
 			WHERE F.USER_ID = ?
 			ORDER BY PI.petID
 			""";
-
 	private static final String SQL_COUNT_FAVORITES = "SELECT COUNT(*) AS cnt FROM Favorite WHERE petID=?";
 
-	// お気に入り登録
-	public boolean insertFavorite(String userId, int petID) {
+	static {
 		try {
-			loadJdbcDriver();
+			Class.forName(JDBC_DRIVER);
 		} catch (ClassNotFoundException e) {
-			throw new IllegalStateException("JDBCドライバを読み込めませんでした");
+			throw new ExceptionInInitializerError("JDBCドライバを読み込めませんでした");
 		}
+	}
 
-		try (Connection conn = DButil.getConnection();
-				PreparedStatement stmt = conn.prepareStatement(SQL_INSERT_FAVORITE)) {
+	public boolean insertFavorite(String userId, int petId) {
+		try (Connection connection = DButil.getConnection();
+				PreparedStatement statement = connection.prepareStatement(SQL_INSERT_FAVORITE)) {
 
-			bindUserIdAndPetId(stmt, userId, petID);
-			return stmt.executeUpdate() == 1;
+			bindUserIdAndPetId(statement, userId, petId);
+			return statement.executeUpdate() == 1;
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -56,21 +52,14 @@ public class FavoriteDAO {
 		}
 	}
 
-	// お気に入り済みか判定
-	public boolean isFavorite(String userId, int petID) {
-		try {
-			loadJdbcDriver();
-		} catch (ClassNotFoundException e) {
-			throw new IllegalStateException("JDBCドライバを読み込めませんでした");
-		}
+	public boolean isFavorite(String userId, int petId) {
+		try (Connection connection = DButil.getConnection();
+				PreparedStatement statement = connection.prepareStatement(SQL_IS_FAVORITE)) {
 
-		try (Connection conn = DButil.getConnection();
-				PreparedStatement stmt = conn.prepareStatement(SQL_IS_FAVORITE)) {
+			bindUserIdAndPetId(statement, userId, petId);
 
-			bindUserIdAndPetId(stmt, userId, petID);
-
-			try (ResultSet rs = stmt.executeQuery()) {
-				return rs.next();
+			try (ResultSet resultSet = statement.executeQuery()) {
+				return resultSet.next();
 			}
 
 		} catch (Exception e) {
@@ -79,19 +68,12 @@ public class FavoriteDAO {
 		}
 	}
 
-	// お気に入り解除
-	public boolean deleteFavorite(String userId, int petID) {
-		try {
-			loadJdbcDriver();
-		} catch (ClassNotFoundException e) {
-			throw new IllegalStateException("JDBCドライバを読み込めませんでした");
-		}
+	public boolean deleteFavorite(String userId, int petId) {
+		try (Connection connection = DButil.getConnection();
+				PreparedStatement statement = connection.prepareStatement(SQL_DELETE_FAVORITE)) {
 
-		try (Connection conn = DButil.getConnection();
-				PreparedStatement stmt = conn.prepareStatement(SQL_DELETE_FAVORITE)) {
-
-			bindUserIdAndPetId(stmt, userId, petID);
-			return stmt.executeUpdate() == 1;
+			bindUserIdAndPetId(statement, userId, petId);
+			return statement.executeUpdate() == 1;
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -99,24 +81,17 @@ public class FavoriteDAO {
 		}
 	}
 
-	// お気に入り一覧表示
 	public List<FavoriteView> showFavoriteList(String userId) {
 		List<FavoriteView> favoriteList = new ArrayList<>();
 
-		try {
-			loadJdbcDriver();
-		} catch (ClassNotFoundException e) {
-			throw new IllegalStateException("JDBCドライバを読み込めませんでした");
-		}
+		try (Connection connection = DButil.getConnection();
+				PreparedStatement statement = connection.prepareStatement(SQL_SHOW_FAVORITES)) {
 
-		try (Connection conn = DButil.getConnection();
-				PreparedStatement stmt = conn.prepareStatement(SQL_SHOW_FAVORITES)) {
+			statement.setString(1, userId);
 
-			stmt.setString(1, userId);
-
-			try (ResultSet rs = stmt.executeQuery()) {
-				while (rs.next()) {
-					favoriteList.add(toFavoriteView(rs));
+			try (ResultSet resultSet = statement.executeQuery()) {
+				while (resultSet.next()) {
+					favoriteList.add(toFavoriteView(resultSet));
 				}
 			}
 
@@ -127,23 +102,14 @@ public class FavoriteDAO {
 		return favoriteList;
 	}
 
-	// お気に入りカウント
-	public int countFavorite(int petID) {
-		try {
-			loadJdbcDriver();
-		} catch (ClassNotFoundException e) {
-			throw new IllegalStateException("JDBCドライバを読み込めませんでした");
-		}
+	public int countFavorite(int petId) {
+		try (Connection connection = DButil.getConnection();
+				PreparedStatement statement = connection.prepareStatement(SQL_COUNT_FAVORITES)) {
 
-		try (Connection conn = DButil.getConnection();
-				PreparedStatement stmt = conn.prepareStatement(SQL_COUNT_FAVORITES)) {
+			statement.setInt(1, petId);
 
-			stmt.setInt(1, petID);
-
-			try (ResultSet rs = stmt.executeQuery()) {
-				if (rs.next()) {
-					return rs.getInt("cnt");
-				}
+			try (ResultSet resultSet = statement.executeQuery()) {
+				return readCount(resultSet);
 			}
 
 		} catch (Exception e) {
@@ -153,22 +119,25 @@ public class FavoriteDAO {
 		return 0;
 	}
 
-	private void loadJdbcDriver() throws ClassNotFoundException {
-		Class.forName(JDBC_DRIVER);
+	private void bindUserIdAndPetId(PreparedStatement statement, String userId, int petId) throws Exception {
+		statement.setString(1, userId);
+		statement.setInt(2, petId);
 	}
 
-	private void bindUserIdAndPetId(PreparedStatement stmt, String userId, int petID) throws Exception {
-		stmt.setString(1, userId);
-		stmt.setInt(2, petID);
-	}
-
-	private FavoriteView toFavoriteView(ResultSet rs) throws Exception {
+	private FavoriteView toFavoriteView(ResultSet resultSet) throws Exception {
 		return new FavoriteView(
-				rs.getInt("petID"),
-				rs.getString("name"),
-				rs.getString("gender"),
-				rs.getInt("age"),
-				rs.getInt("price"),
-				rs.getString("imagePath"));
+				resultSet.getInt("petID"),
+				resultSet.getString("name"),
+				resultSet.getString("gender"),
+				resultSet.getInt("age"),
+				resultSet.getInt("price"),
+				resultSet.getString("imagePath"));
+	}
+
+	private int readCount(ResultSet resultSet) throws Exception {
+		if (resultSet.next()) {
+			return resultSet.getInt("cnt");
+		}
+		return 0;
 	}
 }

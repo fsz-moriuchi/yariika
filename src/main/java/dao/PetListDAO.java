@@ -96,22 +96,24 @@ public class PetListDAO {
 			ORDER BY P.petID DESC
 			""";
 
-	public int createPet(Pet pet) {
+	static {
 		try {
-			loadJdbcDriver();
+			Class.forName(JDBC_DRIVER);
 		} catch (ClassNotFoundException e) {
-			throw new IllegalStateException("JDBCドライバを読み込めませんでした");
+			throw new ExceptionInInitializerError("JDBCドライバを読み込めませんでした");
 		}
+	}
 
-		try (Connection conn = DButil.getConnection();
-				PreparedStatement stmt = conn.prepareStatement(SQL_CREATE_PET)) {
+	public int createPet(Pet pet) {
+		try (Connection connection = DButil.getConnection();
+				PreparedStatement statement = connection.prepareStatement(SQL_CREATE_PET)) {
 
-			stmt.setString(1, pet.getFacilityID());
-			stmt.setInt(2, pet.getCategoryID());
+			statement.setString(1, pet.getFacilityID());
+			statement.setInt(2, pet.getCategoryID());
 
-			try (ResultSet rs = stmt.executeQuery()) {
-				if (rs.next()) {
-					return rs.getInt(1);
+			try (ResultSet resultSet = statement.executeQuery()) {
+				if (resultSet.next()) {
+					return resultSet.getInt(1);
 				}
 			}
 
@@ -122,17 +124,11 @@ public class PetListDAO {
 	}
 
 	public boolean createPetInformation(PetInformation petInformation) {
-		try {
-			loadJdbcDriver();
-		} catch (ClassNotFoundException e) {
-			throw new IllegalStateException("JDBCドライバを読み込めませんでした");
-		}
+		try (Connection connection = DButil.getConnection();
+				PreparedStatement statement = connection.prepareStatement(SQL_CREATE_PET_INFORMATION)) {
 
-		try (Connection conn = DButil.getConnection();
-				PreparedStatement stmt = conn.prepareStatement(SQL_CREATE_PET_INFORMATION)) {
-
-			bindPetInformation(stmt, petInformation);
-			return stmt.executeUpdate() == 1;
+			bindPetInformation(statement, petInformation);
+			return statement.executeUpdate() == 1;
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -141,17 +137,11 @@ public class PetListDAO {
 	}
 
 	public boolean createPetSurvey(PetSurvey petSurvey) {
-		try {
-			loadJdbcDriver();
-		} catch (ClassNotFoundException e) {
-			throw new IllegalStateException("JDBCドライバを読み込めませんでした");
-		}
+		try (Connection connection = DButil.getConnection();
+				PreparedStatement statement = connection.prepareStatement(SQL_CREATE_PET_SURVEY)) {
 
-		try (Connection conn = DButil.getConnection();
-				PreparedStatement stmt = conn.prepareStatement(SQL_CREATE_PET_SURVEY)) {
-
-			bindPetSurvey(stmt, petSurvey);
-			return stmt.executeUpdate() == 1;
+			bindPetSurvey(statement, petSurvey);
+			return statement.executeUpdate() == 1;
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -160,20 +150,14 @@ public class PetListDAO {
 	}
 
 	public boolean updatePet(Pet pet) {
-		try {
-			loadJdbcDriver();
-		} catch (ClassNotFoundException e) {
-			throw new IllegalStateException("JDBCドライバを読み込めませんでした");
-		}
+		try (Connection connection = DButil.getConnection();
+				PreparedStatement statement = connection.prepareStatement(SQL_UPDATE_PET)) {
 
-		try (Connection conn = DButil.getConnection();
-				PreparedStatement stmt = conn.prepareStatement(SQL_UPDATE_PET)) {
+			statement.setString(1, pet.getFacilityID());
+			statement.setInt(2, pet.getCategoryID());
+			statement.setInt(3, pet.getPetID());
 
-			stmt.setString(1, pet.getFacilityID());
-			stmt.setInt(2, pet.getCategoryID());
-			stmt.setInt(3, pet.getPetID());
-
-			return stmt.executeUpdate() == 1;
+			return statement.executeUpdate() == 1;
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -182,17 +166,11 @@ public class PetListDAO {
 	}
 
 	public boolean updatePetInformation(PetInformation petInformation) {
-		try {
-			loadJdbcDriver();
-		} catch (ClassNotFoundException e) {
-			throw new IllegalStateException("JDBCドライバを読み込めませんでした");
-		}
+		try (Connection connection = DButil.getConnection();
+				PreparedStatement statement = connection.prepareStatement(SQL_UPDATE_PET_INFORMATION)) {
 
-		try (Connection conn = DButil.getConnection();
-				PreparedStatement stmt = conn.prepareStatement(SQL_UPDATE_PET_INFORMATION)) {
-
-			bindPetInformationUpdate(stmt, petInformation);
-			return stmt.executeUpdate() == 1;
+			bindPetInformationUpdate(statement, petInformation);
+			return statement.executeUpdate() == 1;
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -200,18 +178,12 @@ public class PetListDAO {
 		}
 	}
 
-	public boolean updatePetSurvey(int petID, int questionID, int surveyChoiceID) {
-		try {
-			loadJdbcDriver();
-		} catch (ClassNotFoundException e) {
-			throw new IllegalStateException("JDBCドライバを読み込めませんでした");
-		}
-
-		try (Connection conn = DButil.getConnection()) {
-			if (updateExistingPetSurvey(conn, petID, questionID, surveyChoiceID)) {
+	public boolean updatePetSurvey(int petId, int questionId, int surveyChoiceId) {
+		try (Connection connection = DButil.getConnection()) {
+			if (updateExistingPetSurvey(connection, petId, questionId, surveyChoiceId)) {
 				return true;
 			}
-			return insertPetSurvey(conn, petID, questionID, surveyChoiceID);
+			return insertPetSurvey(connection, petId, questionId, surveyChoiceId);
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -219,16 +191,10 @@ public class PetListDAO {
 		}
 	}
 
-	public boolean deletePet(int petID) {
-		try {
-			loadJdbcDriver();
-		} catch (ClassNotFoundException e) {
-			throw new IllegalStateException("JDBCドライバを読み込めませんでした");
-		}
-
-		try (Connection conn = DButil.getConnection()) {
-			clearFavoritePet(conn, petID);
-			return deletePetById(conn, petID);
+	public boolean deletePet(int petId) {
+		try (Connection connection = DButil.getConnection()) {
+			clearFavoritePet(connection, petId);
+			return deletePetById(connection, petId);
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -239,18 +205,12 @@ public class PetListDAO {
 	public List<PetInformationView> showList() {
 		List<PetInformationView> petList = new ArrayList<>();
 
-		try {
-			loadJdbcDriver();
-		} catch (ClassNotFoundException e) {
-			throw new IllegalStateException("JDBCドライバは読み込めませんでした");
-		}
+		try (Connection connection = DButil.getConnection();
+				PreparedStatement statement = connection.prepareStatement(SQL_SHOW_PETS);
+				ResultSet resultSet = statement.executeQuery()) {
 
-		try (Connection conn = DButil.getConnection();
-				PreparedStatement stmt = conn.prepareStatement(SQL_SHOW_PETS);
-				ResultSet rs = stmt.executeQuery()) {
-
-			while (rs.next()) {
-				petList.add(toPetInformationView(rs));
+			while (resultSet.next()) {
+				petList.add(toPetInformationView(resultSet));
 			}
 
 		} catch (Exception e) {
@@ -261,23 +221,17 @@ public class PetListDAO {
 		return petList;
 	}
 
-	public PetDetail showPetDetail(int petID) {
+	public PetDetail showPetDetail(int petId) {
 		PetDetail petDetail = null;
 
-		try {
-			loadJdbcDriver();
-		} catch (ClassNotFoundException e) {
-			throw new IllegalStateException("JDBCドライバは読み込めませんでした");
-		}
+		try (Connection connection = DButil.getConnection();
+				PreparedStatement statement = connection.prepareStatement(SQL_SHOW_PET_DETAIL)) {
 
-		try (Connection conn = DButil.getConnection();
-				PreparedStatement stmt = conn.prepareStatement(SQL_SHOW_PET_DETAIL)) {
+			statement.setInt(1, petId);
 
-			stmt.setInt(1, petID);
-
-			try (ResultSet rs = stmt.executeQuery()) {
-				while (rs.next()) {
-					petDetail = toPetDetail(rs, petID);
+			try (ResultSet resultSet = statement.executeQuery()) {
+				while (resultSet.next()) {
+					petDetail = toPetDetail(resultSet, petId);
 				}
 			}
 
@@ -289,23 +243,17 @@ public class PetListDAO {
 		return petDetail;
 	}
 
-	public List<PetSurvey> showPetSurvey(int petID) {
+	public List<PetSurvey> showPetSurvey(int petId) {
 		List<PetSurvey> petSurveyList = new ArrayList<>();
 
-		try {
-			loadJdbcDriver();
-		} catch (ClassNotFoundException e) {
-			throw new IllegalStateException("JDBCドライバは読み込めませんでした");
-		}
+		try (Connection connection = DButil.getConnection();
+				PreparedStatement statement = connection.prepareStatement(SQL_SHOW_PET_SURVEY)) {
 
-		try (Connection conn = DButil.getConnection();
-				PreparedStatement stmt = conn.prepareStatement(SQL_SHOW_PET_SURVEY)) {
+			statement.setInt(1, petId);
 
-			stmt.setInt(1, petID);
-
-			try (ResultSet rs = stmt.executeQuery()) {
-				while (rs.next()) {
-					petSurveyList.add(toPetSurvey(rs, petID));
+			try (ResultSet resultSet = statement.executeQuery()) {
+				while (resultSet.next()) {
+					petSurveyList.add(toPetSurvey(resultSet, petId));
 				}
 			}
 
@@ -319,20 +267,14 @@ public class PetListDAO {
 	public List<PetInformationView> showListByFacility(String facilityId) {
 		List<PetInformationView> facilityList = new ArrayList<>();
 
-		try {
-			loadJdbcDriver();
-		} catch (ClassNotFoundException e) {
-			throw new IllegalStateException("JDBCドライバは読み込めませんでした");
-		}
+		try (Connection connection = DButil.getConnection();
+				PreparedStatement statement = connection.prepareStatement(SQL_SHOW_PETS_BY_FACILITY)) {
 
-		try (Connection conn = DButil.getConnection();
-				PreparedStatement stmt = conn.prepareStatement(SQL_SHOW_PETS_BY_FACILITY)) {
+			statement.setString(1, facilityId);
 
-			stmt.setString(1, facilityId);
-
-			try (ResultSet rs = stmt.executeQuery()) {
-				while (rs.next()) {
-					facilityList.add(toPetInformationViewWithImage(rs));
+			try (ResultSet resultSet = statement.executeQuery()) {
+				while (resultSet.next()) {
+					facilityList.add(toPetInformationViewWithImage(resultSet));
 				}
 			}
 
@@ -345,46 +287,34 @@ public class PetListDAO {
 	}
 
 	public List<FavoritePet> showFavoritePet() {
-		List<FavoritePet> list = new ArrayList<>();
+		List<FavoritePet> favoritePets = new ArrayList<>();
 
-		try {
-			loadJdbcDriver();
-		} catch (ClassNotFoundException e) {
-			throw new IllegalStateException("JDBCドライバは読み込めませんでした");
-		}
+		try (Connection connection = DButil.getConnection();
+				PreparedStatement statement = connection.prepareStatement(SQL_SHOW_FAVORITE_PETS);
+				ResultSet resultSet = statement.executeQuery()) {
 
-		try (Connection conn = DButil.getConnection();
-				PreparedStatement stmt = conn.prepareStatement(SQL_SHOW_FAVORITE_PETS);
-				ResultSet rs = stmt.executeQuery()) {
-
-			while (rs.next()) {
-				list.add(toFavoritePet(rs));
+			while (resultSet.next()) {
+				favoritePets.add(toFavoritePet(resultSet));
 			}
 
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 
-		return list;
+		return favoritePets;
 	}
 
 	public Map<Integer, Integer> getAllMatchRate(String userId) {
 		Map<Integer, Integer> allMatchRateMap = new HashMap<>();
 
-		try {
-			loadJdbcDriver();
-		} catch (ClassNotFoundException e) {
-			throw new IllegalStateException("JDBCドライバは読み込めませんでした");
-		}
+		try (Connection connection = DButil.getConnection();
+				PreparedStatement statement = connection.prepareStatement(SQL_GET_ALL_MATCH_RATE)) {
 
-		try (Connection conn = DButil.getConnection();
-				PreparedStatement stmt = conn.prepareStatement(SQL_GET_ALL_MATCH_RATE)) {
+			statement.setString(1, userId);
 
-			stmt.setString(1, userId);
-
-			try (ResultSet rs = stmt.executeQuery()) {
-				while (rs.next()) {
-					allMatchRateMap.put(rs.getInt("petID"), rs.getInt("matchRate"));
+			try (ResultSet resultSet = statement.executeQuery()) {
+				while (resultSet.next()) {
+					allMatchRateMap.put(resultSet.getInt("petID"), resultSet.getInt("matchRate"));
 				}
 			}
 
@@ -399,17 +329,11 @@ public class PetListDAO {
 			String categoryId,
 			String gender,
 			String[] colorArray,
-			String pet_size,
+			String petSize,
 			String ageRange,
 			String priceRange) {
 
 		List<PetDetail> searchPetList = new ArrayList<>();
-
-		try {
-			loadJdbcDriver();
-		} catch (ClassNotFoundException e) {
-			throw new IllegalStateException("JDBCドライバは読み込めませんでした");
-		}
 
 		StringBuilder sql = new StringBuilder();
 		sql.append("SELECT ")
@@ -440,20 +364,20 @@ public class PetListDAO {
 
 		appendCategoryCondition(sql, selectedList, categoryId);
 		appendGenderCondition(sql, selectedList, gender);
-		appendPetSizeCondition(sql, selectedList, pet_size);
+		appendPetSizeCondition(sql, selectedList, petSize);
 		appendAgeCondition(sql, ageRange);
 		appendPriceCondition(sql, priceRange);
 
 		sql.append("ORDER BY P.petID");
 
-		try (Connection conn = DButil.getConnection();
-				PreparedStatement stmt = conn.prepareStatement(sql.toString())) {
+		try (Connection connection = DButil.getConnection();
+				PreparedStatement statement = connection.prepareStatement(sql.toString())) {
 
-			bindSearchParameters(stmt, selectedList);
+			bindSearchParameters(statement, selectedList);
 
-			try (ResultSet rs = stmt.executeQuery()) {
-				while (rs.next()) {
-					PetDetail pet = toPetDetail(rs, rs.getInt("petID"));
+			try (ResultSet resultSet = statement.executeQuery()) {
+				while (resultSet.next()) {
+					PetDetail pet = toPetDetail(resultSet, resultSet.getInt("petID"));
 					if (!matchesColors(pet.getColor(), colorArray)) {
 						continue;
 					}
@@ -468,23 +392,17 @@ public class PetListDAO {
 		return searchPetList;
 	}
 
-	public int countByfacilityID(String facilityID) {
-		try {
-			loadJdbcDriver();
-		} catch (ClassNotFoundException e) {
-			throw new IllegalStateException("JDBCドライバは読み込めませんでした");
-		}
-
+	public int countByfacilityID(String facilityId) {
 		int petCount = 0;
 
-		try (Connection conn = DButil.getConnection();
-				PreparedStatement stmt = conn.prepareStatement(SQL_COUNT_PETS_BY_FACILITY)) {
+		try (Connection connection = DButil.getConnection();
+				PreparedStatement statement = connection.prepareStatement(SQL_COUNT_PETS_BY_FACILITY)) {
 
-			stmt.setString(1, facilityID);
+			statement.setString(1, facilityId);
 
-			try (ResultSet rs = stmt.executeQuery()) {
-				while (rs.next()) {
-					petCount = rs.getInt("CNT");
+			try (ResultSet resultSet = statement.executeQuery()) {
+				while (resultSet.next()) {
+					petCount = resultSet.getInt("CNT");
 				}
 			}
 
@@ -495,23 +413,17 @@ public class PetListDAO {
 		return petCount;
 	}
 
-	public FavoritePet findLatestPetByFacilityID(String facilityID) {
+	public FavoritePet findLatestPetByFacilityID(String facilityId) {
 		FavoritePet latestPet = null;
 
-		try {
-			loadJdbcDriver();
-		} catch (ClassNotFoundException e) {
-			throw new IllegalStateException("JDBCドライバは読み込めませんでした");
-		}
+		try (Connection connection = DButil.getConnection();
+				PreparedStatement statement = connection.prepareStatement(SQL_FIND_LATEST_PET)) {
 
-		try (Connection conn = DButil.getConnection();
-				PreparedStatement stmt = conn.prepareStatement(SQL_FIND_LATEST_PET)) {
+			statement.setString(1, facilityId);
 
-			stmt.setString(1, facilityID);
-
-			try (ResultSet rs = stmt.executeQuery()) {
-				if (rs.next()) {
-					latestPet = toFavoritePet(rs);
+			try (ResultSet resultSet = statement.executeQuery()) {
+				if (resultSet.next()) {
+					latestPet = toFavoritePet(resultSet);
 				}
 			}
 
@@ -522,135 +434,131 @@ public class PetListDAO {
 		return latestPet;
 	}
 
-	private boolean updateExistingPetSurvey(Connection conn, int petID, int questionID, int surveyChoiceID)
+	private boolean updateExistingPetSurvey(Connection connection, int petId, int questionId, int surveyChoiceId)
 			throws Exception {
-		try (PreparedStatement stmt = conn.prepareStatement(SQL_UPDATE_PET_SURVEY)) {
-			stmt.setInt(1, surveyChoiceID);
-			stmt.setInt(2, petID);
-			stmt.setInt(3, questionID);
-			return stmt.executeUpdate() == 1;
+		try (PreparedStatement statement = connection.prepareStatement(SQL_UPDATE_PET_SURVEY)) {
+			statement.setInt(1, surveyChoiceId);
+			statement.setInt(2, petId);
+			statement.setInt(3, questionId);
+			return statement.executeUpdate() == 1;
 		}
 	}
 
-	private boolean insertPetSurvey(Connection conn, int petID, int questionID, int surveyChoiceID)
+	private boolean insertPetSurvey(Connection connection, int petId, int questionId, int surveyChoiceId)
 			throws Exception {
-		try (PreparedStatement stmt = conn.prepareStatement(SQL_INSERT_PET_SURVEY)) {
-			stmt.setInt(1, petID);
-			stmt.setInt(2, questionID);
-			stmt.setInt(3, surveyChoiceID);
-			return stmt.executeUpdate() == 1;
+		try (PreparedStatement statement = connection.prepareStatement(SQL_INSERT_PET_SURVEY)) {
+			statement.setInt(1, petId);
+			statement.setInt(2, questionId);
+			statement.setInt(3, surveyChoiceId);
+			return statement.executeUpdate() == 1;
 		}
 	}
 
-	private void loadJdbcDriver() throws ClassNotFoundException {
-		Class.forName(JDBC_DRIVER);
+	private void bindPetInformation(PreparedStatement statement, PetInformation petInformation) throws Exception {
+		statement.setInt(1, petInformation.getPetID());
+		statement.setString(2, petInformation.getName());
+		statement.setString(3, petInformation.getGender());
+		statement.setInt(4, petInformation.getAge());
+		statement.setString(5, petInformation.getColor());
+		statement.setString(6, petInformation.getPet_size());
+		statement.setString(7, petInformation.getVaccine());
+		statement.setInt(8, petInformation.getPrice());
+		statement.setString(9, petInformation.getCommentText());
+		statement.setString(10, petInformation.getImagePath());
 	}
 
-	private void bindPetInformation(PreparedStatement stmt, PetInformation petInformation) throws Exception {
-		stmt.setInt(1, petInformation.getPetID());
-		stmt.setString(2, petInformation.getName());
-		stmt.setString(3, petInformation.getGender());
-		stmt.setInt(4, petInformation.getAge());
-		stmt.setString(5, petInformation.getColor());
-		stmt.setString(6, petInformation.getPet_size());
-		stmt.setString(7, petInformation.getVaccine());
-		stmt.setInt(8, petInformation.getPrice());
-		stmt.setString(9, petInformation.getCommentText());
-		stmt.setString(10, petInformation.getImagePath());
+	private void bindPetInformationUpdate(PreparedStatement statement, PetInformation petInformation) throws Exception {
+		statement.setString(1, petInformation.getName());
+		statement.setString(2, petInformation.getGender());
+		statement.setInt(3, petInformation.getAge());
+		statement.setString(4, petInformation.getColor());
+		statement.setString(5, petInformation.getPet_size());
+		statement.setString(6, petInformation.getVaccine());
+		statement.setInt(7, petInformation.getPrice());
+		statement.setString(8, petInformation.getCommentText());
+		statement.setString(9, petInformation.getImagePath());
+		statement.setInt(10, petInformation.getPetID());
 	}
 
-	private void bindPetInformationUpdate(PreparedStatement stmt, PetInformation petInformation) throws Exception {
-		stmt.setString(1, petInformation.getName());
-		stmt.setString(2, petInformation.getGender());
-		stmt.setInt(3, petInformation.getAge());
-		stmt.setString(4, petInformation.getColor());
-		stmt.setString(5, petInformation.getPet_size());
-		stmt.setString(6, petInformation.getVaccine());
-		stmt.setInt(7, petInformation.getPrice());
-		stmt.setString(8, petInformation.getCommentText());
-		stmt.setString(9, petInformation.getImagePath());
-		stmt.setInt(10, petInformation.getPetID());
+	private void bindPetSurvey(PreparedStatement statement, PetSurvey petSurvey) throws Exception {
+		statement.setInt(1, petSurvey.getPetID());
+		statement.setInt(2, petSurvey.getQuestionID());
+		statement.setInt(3, petSurvey.getSurveyChoiceID());
 	}
 
-	private void bindPetSurvey(PreparedStatement stmt, PetSurvey petSurvey) throws Exception {
-		stmt.setInt(1, petSurvey.getPetID());
-		stmt.setInt(2, petSurvey.getQuestionID());
-		stmt.setInt(3, petSurvey.getSurveyChoiceID());
-	}
-
-	private void clearFavoritePet(Connection conn, int petID) throws Exception {
-		try (PreparedStatement stmt = conn.prepareStatement(SQL_CLEAR_FAVORITE_PET)) {
-			stmt.setInt(1, petID);
-			stmt.executeUpdate();
+	private void clearFavoritePet(Connection connection, int petId) throws Exception {
+		try (PreparedStatement statement = connection.prepareStatement(SQL_CLEAR_FAVORITE_PET)) {
+			statement.setInt(1, petId);
+			statement.executeUpdate();
 		}
 	}
 
-	private boolean deletePetById(Connection conn, int petID) throws Exception {
-		try (PreparedStatement stmt = conn.prepareStatement(SQL_DELETE_PET)) {
-			stmt.setInt(1, petID);
-			return stmt.executeUpdate() == 1;
+	private boolean deletePetById(Connection connection, int petId) throws Exception {
+		try (PreparedStatement statement = connection.prepareStatement(SQL_DELETE_PET)) {
+			statement.setInt(1, petId);
+			return statement.executeUpdate() == 1;
 		}
 	}
 
-	private PetInformationView toPetInformationView(ResultSet rs) throws Exception {
+	private PetInformationView toPetInformationView(ResultSet resultSet) throws Exception {
 		return new PetInformationView(
-				rs.getInt("petID"),
-				rs.getString("FACILITY_ID"),
-				rs.getInt("CATEGORY_ID"),
-				rs.getString("gender"),
-				rs.getInt("age"),
-				rs.getInt("price"));
+				resultSet.getInt("petID"),
+				resultSet.getString("FACILITY_ID"),
+				resultSet.getInt("CATEGORY_ID"),
+				resultSet.getString("gender"),
+				resultSet.getInt("age"),
+				resultSet.getInt("price"));
 	}
 
-	private PetInformationView toPetInformationViewWithImage(ResultSet rs) throws Exception {
+	private PetInformationView toPetInformationViewWithImage(ResultSet resultSet) throws Exception {
 		return new PetInformationView(
-				rs.getInt("petID"),
-				rs.getString("FACILITY_ID"),
-				rs.getInt("CATEGORY_ID"),
-				rs.getString("gender"),
-				rs.getInt("age"),
-				rs.getInt("price"),
-				rs.getString("imagePath"));
+				resultSet.getInt("petID"),
+				resultSet.getString("FACILITY_ID"),
+				resultSet.getInt("CATEGORY_ID"),
+				resultSet.getString("gender"),
+				resultSet.getInt("age"),
+				resultSet.getInt("price"),
+				resultSet.getString("imagePath"));
 	}
 
-	private PetDetail toPetDetail(ResultSet rs, int petID) throws Exception {
+	private PetDetail toPetDetail(ResultSet resultSet, int petId) throws Exception {
 		return new PetDetail(
-				petID,
-				rs.getInt("CATEGORY_ID"),
-				rs.getString("FACILITY_ID"),
-				rs.getString("CATEGORY_NAME"),
-				rs.getInt("petInformationID"),
-				rs.getString("name"),
-				rs.getString("gender"),
-				rs.getInt("age"),
-				rs.getString("color"),
-				rs.getString("pet_size"),
-				rs.getString("vaccine"),
-				rs.getInt("price"),
-				rs.getString("commentText"),
-				rs.getString("imagePath"),
-				rs.getString("facilityName"),
-				rs.getString("address"),
-				rs.getString("tel"));
+				petId,
+				resultSet.getInt("CATEGORY_ID"),
+				resultSet.getString("FACILITY_ID"),
+				resultSet.getString("CATEGORY_NAME"),
+				resultSet.getInt("petInformationID"),
+				resultSet.getString("name"),
+				resultSet.getString("gender"),
+				resultSet.getInt("age"),
+				resultSet.getString("color"),
+				resultSet.getString("pet_size"),
+				resultSet.getString("vaccine"),
+				resultSet.getInt("price"),
+				resultSet.getString("commentText"),
+				resultSet.getString("imagePath"),
+				resultSet.getString("facilityName"),
+				resultSet.getString("address"),
+				resultSet.getString("tel"));
 	}
 
-	private PetSurvey toPetSurvey(ResultSet rs, int petID) throws Exception {
+	private PetSurvey toPetSurvey(ResultSet resultSet, int petId) throws Exception {
 		return new PetSurvey(
-				petID,
-				rs.getInt("questionID"),
-				rs.getInt("surveyChoiceID"));
+				petId,
+				resultSet.getInt("questionID"),
+				resultSet.getInt("surveyChoiceID"));
 	}
 
-	private FavoritePet toFavoritePet(ResultSet rs) throws Exception {
+	private FavoritePet toFavoritePet(ResultSet resultSet) throws Exception {
 		return new FavoritePet(
-				rs.getInt("petID"),
-				rs.getString("FACILITY_ID"),
-				rs.getString("facilityName"),
-				rs.getString("name"),
-				rs.getString("gender"),
-				rs.getInt("age"),
-				rs.getInt("price"),
-				rs.getString("imagePath"));
+				resultSet.getInt("petID"),
+				resultSet.getString("FACILITY_ID"),
+				resultSet.getString("facilityName"),
+				resultSet.getString("name"),
+				resultSet.getString("gender"),
+				resultSet.getInt("age"),
+				resultSet.getInt("price"),
+				resultSet.getString("imagePath"));
 	}
 
 	private void appendCategoryCondition(StringBuilder sql, List<Object> selectedList, String categoryId) {
@@ -704,13 +612,13 @@ public class PetListDAO {
 		}
 	}
 
-	private void bindSearchParameters(PreparedStatement stmt, List<Object> selectedList) throws Exception {
+	private void bindSearchParameters(PreparedStatement statement, List<Object> selectedList) throws Exception {
 		for (int i = 0; i < selectedList.size(); i++) {
 			Object value = selectedList.get(i);
 			if (value instanceof Integer) {
-				stmt.setInt(i + 1, (Integer) value);
+				statement.setInt(i + 1, (Integer) value);
 			} else {
-				stmt.setString(i + 1, (String) value);
+				statement.setString(i + 1, (String) value);
 			}
 		}
 	}

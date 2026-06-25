@@ -14,24 +14,41 @@ import jakarta.servlet.http.HttpSession;
 public class SurveyEditServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
+	private static final String LOGIN_REDIRECT_URL = "WelcomeServlet";
+	private static final String SURVEY_EDIT_JSP_PATH = "WEB-INF/jsp/surveyEdit.jsp";
+	private static final String SESSION_USER_ID_KEY = "userId";
+
+	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		HttpSession session = request.getSession(false);
+		process(request, response);
+	}
 
-		// 未ログインならログイン画面へ
-		if (session == null || session.getAttribute("userId") == null) {
-			response.sendRedirect("WelcomeServlet");
+	@Override
+	protected void doPost(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+		process(request, response);
+	}
+
+	private void process(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+
+		HttpSession session = request.getSession(false);
+		if (!isLoggedIn(session)) {
+			response.sendRedirect(LOGIN_REDIRECT_URL);
 			return;
 		}
 
-		RequestDispatcher dispatcher = request.getRequestDispatcher("WEB-INF/jsp/surveyEdit.jsp");
-		dispatcher.forward(request, response);
+		forwardToSurveyEditPage(request, response);
 	}
 
-	protected void doPost(HttpServletRequest request, HttpServletResponse response)
+	private boolean isLoggedIn(HttpSession session) {
+		return session != null && session.getAttribute(SESSION_USER_ID_KEY) != null;
+	}
+
+	private void forwardToSurveyEditPage(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		RequestDispatcher dispatcher = request.getRequestDispatcher("WEB-INF/jsp/surveyEdit.jsp");
+		RequestDispatcher dispatcher = request.getRequestDispatcher(SURVEY_EDIT_JSP_PATH);
 		dispatcher.forward(request, response);
 	}
-
 }

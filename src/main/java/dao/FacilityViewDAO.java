@@ -12,19 +12,20 @@ public class FacilityViewDAO {
 	private static final String SQL_INSERT_VIEW = "INSERT INTO FacilityView(FACILITY_ID) VALUES(?)";
 	private static final String SQL_COUNT_VIEW = "SELECT COUNT(*) AS viewCount FROM FacilityView WHERE FACILITY_ID = ?";
 
-	// 閲覧数追加
-	public boolean insertView(String facilityId) {
+	static {
 		try {
-			loadJdbcDriver();
+			Class.forName(JDBC_DRIVER);
 		} catch (ClassNotFoundException e) {
-			throw new IllegalStateException("JDBCドライバを読み込めませんでした");
+			throw new ExceptionInInitializerError("JDBCドライバを読み込めませんでした");
 		}
+	}
 
-		try (Connection conn = DButil.getConnection();
-				PreparedStatement stmt = conn.prepareStatement(SQL_INSERT_VIEW)) {
+	public boolean insertView(String facilityId) {
+		try (Connection connection = DButil.getConnection();
+				PreparedStatement statement = connection.prepareStatement(SQL_INSERT_VIEW)) {
 
-			bindFacilityId(stmt, facilityId);
-			return stmt.executeUpdate() == 1;
+			bindFacilityId(statement, facilityId);
+			return statement.executeUpdate() == 1;
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -32,21 +33,14 @@ public class FacilityViewDAO {
 		}
 	}
 
-	// 総閲覧数取得
 	public int getViewCount(String facilityId) {
-		try {
-			loadJdbcDriver();
-		} catch (ClassNotFoundException e) {
-			throw new IllegalStateException("JDBCドライバを読み込めませんでした");
-		}
+		try (Connection connection = DButil.getConnection();
+				PreparedStatement statement = connection.prepareStatement(SQL_COUNT_VIEW)) {
 
-		try (Connection conn = DButil.getConnection();
-				PreparedStatement stmt = conn.prepareStatement(SQL_COUNT_VIEW)) {
+			bindFacilityId(statement, facilityId);
 
-			bindFacilityId(stmt, facilityId);
-
-			try (ResultSet rs = stmt.executeQuery()) {
-				return readViewCount(rs);
+			try (ResultSet resultSet = statement.executeQuery()) {
+				return extractViewCount(resultSet);
 			}
 
 		} catch (Exception e) {
@@ -55,17 +49,13 @@ public class FacilityViewDAO {
 		}
 	}
 
-	private void loadJdbcDriver() throws ClassNotFoundException {
-		Class.forName(JDBC_DRIVER);
+	private void bindFacilityId(PreparedStatement statement, String facilityId) throws Exception {
+		statement.setString(1, facilityId);
 	}
 
-	private void bindFacilityId(PreparedStatement stmt, String facilityId) throws Exception {
-		stmt.setString(1, facilityId);
-	}
-
-	private int readViewCount(ResultSet rs) throws Exception {
-		if (rs.next()) {
-			return rs.getInt("viewCount");
+	private int extractViewCount(ResultSet resultSet) throws Exception {
+		if (resultSet.next()) {
+			return resultSet.getInt("viewCount");
 		}
 		return 0;
 	}

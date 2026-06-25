@@ -63,7 +63,7 @@ List<PetSurvey> petSurveyList = (List<PetSurvey>) request.getAttribute("petSurve
 						}
 
 						for (Choice c : allChoiceList) {
-							if (c.getSurveyChoiceID() == ps.getSurveyChoiceID()) {
+							if (c.getSurveyChoiceId() == ps.getSurveyChoiceID()) {
 						cText = c.getChoice();
 						break;
 							}
@@ -83,7 +83,6 @@ List<PetSurvey> petSurveyList = (List<PetSurvey>) request.getAttribute("petSurve
 
 			</div>
 
-			<!-- アンケート修正 -->
 			<form action="PetRegisterServlet" method="post"
 				class="pet-register-edit-form">
 
@@ -95,7 +94,6 @@ List<PetSurvey> petSurveyList = (List<PetSurvey>) request.getAttribute("petSurve
 
 			</form>
 
-			<!-- 戻る -->
 			<form action="StoreServlet" method="get"
 				class="pet-survey-confirm-back-form">
 

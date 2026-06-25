@@ -63,64 +63,34 @@ public class MessageDAO {
 			+ "AND SENDER_TYPE = 'USER' "
 			+ "AND IS_READ = 0";
 
-	// メッセージ送信
+	static {
+		try {
+			Class.forName(JDBC_DRIVER);
+		} catch (ClassNotFoundException e) {
+			throw new ExceptionInInitializerError("JDBCドライバを読み込めませんでした");
+		}
+	}
+
 	public void insertMessage(Message message) {
-		try {
-			loadJdbcDriver();
-		} catch (ClassNotFoundException e) {
-			throw new IllegalStateException("JDBCドライバを読み込めませんでした");
-		}
-
-		try (Connection conn = DButil.getConnection();
-				PreparedStatement stmt = conn.prepareStatement(SQL_INSERT_MESSAGE)) {
-
-			bindInsertMessage(stmt, message);
-			stmt.executeUpdate();
-
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		executeUpdate(SQL_INSERT_MESSAGE, stmt -> bindInsertMessage(stmt, message));
 	}
 
-	// メッセージの通知機能_既読処理
-	public void markAsRead(String userId, String facilityId, int petID, String viewerType) {
-		try {
-			loadJdbcDriver();
-		} catch (ClassNotFoundException e) {
-			throw new IllegalStateException("JDBCドライバを読み込めませんでした");
-		}
-
+	public void markAsRead(String userId, String facilityId, int petId, String viewerType) {
 		String sql = isUserViewer(viewerType) ? SQL_MARK_READ_BY_USER : SQL_MARK_READ_BY_FACILITY;
-
-		try (Connection conn = DButil.getConnection();
-				PreparedStatement stmt = conn.prepareStatement(sql)) {
-
-			bindMessageKey(stmt, userId, facilityId, petID);
-			stmt.executeUpdate();
-
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		executeUpdate(sql, stmt -> bindMessageKey(stmt, userId, facilityId, petId));
 	}
 
-	// メッセージ取得
-	public List<Message> getMessage(String userId, String facilityId, int petID) {
+	public List<Message> getMessage(String userId, String facilityId, int petId) {
 		List<Message> messageList = new ArrayList<>();
 
-		try {
-			loadJdbcDriver();
-		} catch (ClassNotFoundException e) {
-			throw new IllegalStateException("JDBCドライバを読み込めませんでした");
-		}
+		try (Connection connection = DButil.getConnection();
+				PreparedStatement statement = connection.prepareStatement(SQL_GET_MESSAGES)) {
 
-		try (Connection conn = DButil.getConnection();
-				PreparedStatement stmt = conn.prepareStatement(SQL_GET_MESSAGES)) {
+			bindMessageKey(statement, userId, facilityId, petId);
 
-			bindMessageKey(stmt, userId, facilityId, petID);
-
-			try (ResultSet rs = stmt.executeQuery()) {
-				while (rs.next()) {
-					messageList.add(toMessage(rs));
+			try (ResultSet resultSet = statement.executeQuery()) {
+				while (resultSet.next()) {
+					messageList.add(toMessage(resultSet));
 				}
 			}
 
@@ -131,24 +101,17 @@ public class MessageDAO {
 		return messageList;
 	}
 
-	// 店舗側メッセージ一覧表示
 	public List<MessageList> findMessageListByFacilityId(String facilityId) {
 		List<MessageList> messageList = new ArrayList<>();
 
-		try {
-			loadJdbcDriver();
-		} catch (ClassNotFoundException e) {
-			throw new IllegalStateException("JDBCドライバを読み込めませんでした");
-		}
+		try (Connection connection = DButil.getConnection();
+				PreparedStatement statement = connection.prepareStatement(SQL_FACILITY_MESSAGE_LIST)) {
 
-		try (Connection conn = DButil.getConnection();
-				PreparedStatement stmt = conn.prepareStatement(SQL_FACILITY_MESSAGE_LIST)) {
+			statement.setString(1, facilityId);
 
-			stmt.setString(1, facilityId);
-
-			try (ResultSet rs = stmt.executeQuery()) {
-				while (rs.next()) {
-					messageList.add(toFacilityMessageList(rs));
+			try (ResultSet resultSet = statement.executeQuery()) {
+				while (resultSet.next()) {
+					messageList.add(toFacilityMessageList(resultSet));
 				}
 			}
 
@@ -159,24 +122,17 @@ public class MessageDAO {
 		return messageList;
 	}
 
-	// ユーザー側メッセージ一覧表示
 	public List<MessageList> findMessageListByUserId(String userId) {
 		List<MessageList> messageList = new ArrayList<>();
 
-		try {
-			loadJdbcDriver();
-		} catch (ClassNotFoundException e) {
-			throw new IllegalStateException("JDBCドライバを読み込めませんでした");
-		}
+		try (Connection connection = DButil.getConnection();
+				PreparedStatement statement = connection.prepareStatement(SQL_USER_MESSAGE_LIST)) {
 
-		try (Connection conn = DButil.getConnection();
-				PreparedStatement stmt = conn.prepareStatement(SQL_USER_MESSAGE_LIST)) {
+			statement.setString(1, userId);
 
-			stmt.setString(1, userId);
-
-			try (ResultSet rs = stmt.executeQuery()) {
-				while (rs.next()) {
-					messageList.add(toUserMessageList(rs));
+			try (ResultSet resultSet = statement.executeQuery()) {
+				while (resultSet.next()) {
+					messageList.add(toUserMessageList(resultSet));
 				}
 			}
 
@@ -187,48 +143,35 @@ public class MessageDAO {
 		return messageList;
 	}
 
-	// 未読数の表示（ユーザー）
 	public int countUnreadByUserId(String userId) {
-		try {
-			loadJdbcDriver();
-		} catch (ClassNotFoundException e) {
-			throw new IllegalStateException("JDBCドライバを読み込めませんでした");
-		}
-
-		try (Connection conn = DButil.getConnection();
-				PreparedStatement stmt = conn.prepareStatement(SQL_COUNT_UNREAD_BY_USER)) {
-
-			stmt.setString(1, userId);
-
-			try (ResultSet rs = stmt.executeQuery()) {
-				if (rs.next()) {
-					return rs.getInt("unread_count");
-				}
-			}
-
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-
-		return 0;
+		return countUnread(SQL_COUNT_UNREAD_BY_USER, userId);
 	}
 
-	// 未読数の表示（施設）
 	public int countUnreadByFacilityId(String facilityId) {
-		try {
-			loadJdbcDriver();
-		} catch (ClassNotFoundException e) {
-			throw new IllegalStateException("JDBCドライバを読み込めませんでした");
+		return countUnread(SQL_COUNT_UNREAD_BY_FACILITY, facilityId);
+	}
+
+	private void executeUpdate(String sql, SqlBinder binder) {
+		try (Connection connection = DButil.getConnection();
+				PreparedStatement statement = connection.prepareStatement(sql)) {
+
+			binder.bind(statement);
+			statement.executeUpdate();
+
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
+	}
 
-		try (Connection conn = DButil.getConnection();
-				PreparedStatement stmt = conn.prepareStatement(SQL_COUNT_UNREAD_BY_FACILITY)) {
+	private int countUnread(String sql, String id) {
+		try (Connection connection = DButil.getConnection();
+				PreparedStatement statement = connection.prepareStatement(sql)) {
 
-			stmt.setString(1, facilityId);
+			statement.setString(1, id);
 
-			try (ResultSet rs = stmt.executeQuery()) {
-				if (rs.next()) {
-					return rs.getInt("unread_count");
+			try (ResultSet resultSet = statement.executeQuery()) {
+				if (resultSet.next()) {
+					return resultSet.getInt("unread_count");
 				}
 			}
 
@@ -237,63 +180,64 @@ public class MessageDAO {
 		}
 
 		return 0;
-	}
-
-	private void loadJdbcDriver() throws ClassNotFoundException {
-		Class.forName(JDBC_DRIVER);
 	}
 
 	private boolean isUserViewer(String viewerType) {
 		return "USER".equals(viewerType);
 	}
 
-	private void bindInsertMessage(PreparedStatement stmt, Message message) throws Exception {
-		stmt.setString(1, message.getUserId());
-		stmt.setString(2, message.getFacilityId());
-		stmt.setInt(3, message.getPetID());
-		stmt.setString(4, message.getMessageText());
-		stmt.setString(5, message.getSenderType());
+	private void bindInsertMessage(PreparedStatement statement, Message message) throws Exception {
+		statement.setString(1, message.getUserId());
+		statement.setString(2, message.getFacilityId());
+		statement.setInt(3, message.getPetID());
+		statement.setString(4, message.getMessageText());
+		statement.setString(5, message.getSenderType());
 	}
 
-	private void bindMessageKey(PreparedStatement stmt, String userId, String facilityId, int petID)
+	private void bindMessageKey(PreparedStatement statement, String userId, String facilityId, int petId)
 			throws Exception {
-		stmt.setString(1, userId);
-		stmt.setString(2, facilityId);
-		stmt.setInt(3, petID);
+		statement.setString(1, userId);
+		statement.setString(2, facilityId);
+		statement.setInt(3, petId);
 	}
 
-	private Message toMessage(ResultSet rs) throws Exception {
-		String uid = rs.getString("USER_ID");
-		String fid = rs.getString("FACILITY_ID");
-		int pid = rs.getInt("petID");
-		String messageText = rs.getString("MESSAGE_TEXT");
-		String senderType = rs.getString("SENDER_TYPE");
-		Timestamp createdAt = rs.getTimestamp("CREATED_AT");
-		String userName = rs.getString("USER_NAME");
-		String facilityName = rs.getString("facilityName");
+	private Message toMessage(ResultSet resultSet) throws Exception {
+		String userId = resultSet.getString("USER_ID");
+		String facilityId = resultSet.getString("FACILITY_ID");
+		int petId = resultSet.getInt("petID");
+		String messageText = resultSet.getString("MESSAGE_TEXT");
+		String senderType = resultSet.getString("SENDER_TYPE");
+		Timestamp createdAt = resultSet.getTimestamp("CREATED_AT");
+		String userName = resultSet.getString("USER_NAME");
+		String facilityName = resultSet.getString("facilityName");
 
-		return new Message(uid, fid, pid, messageText, senderType, createdAt, userName, facilityName);
+		return new Message(userId, facilityId, petId, messageText, senderType, createdAt, userName, facilityName);
 	}
 
-	private MessageList toFacilityMessageList(ResultSet rs) throws Exception {
-		String userId = rs.getString("USER_ID");
-		String userName = rs.getString("USER_NAME");
-		int petID = rs.getInt("petID");
-		String petName = rs.getString("name");
-		Timestamp latestTime = rs.getTimestamp("latest_time");
-		int unreadCount = rs.getInt("unread_count");
+	private MessageList toFacilityMessageList(ResultSet resultSet) throws Exception {
+		String userId = resultSet.getString("USER_ID");
+		String userName = resultSet.getString("USER_NAME");
+		int petId = resultSet.getInt("petID");
+		String petName = resultSet.getString("name");
+		Timestamp latestTime = resultSet.getTimestamp("latest_time");
+		int unreadCount = resultSet.getInt("unread_count");
 
-		return new MessageList(userId, userName, petID, petName, latestTime, unreadCount);
+		return new MessageList(userId, userName, petId, petName, latestTime, unreadCount);
 	}
 
-	private MessageList toUserMessageList(ResultSet rs) throws Exception {
-		String facilityId = rs.getString("FACILITY_ID");
-		String facilityName = rs.getString("FacilityName");
-		int petID = rs.getInt("petID");
-		String petName = rs.getString("name");
-		Timestamp latestTime = rs.getTimestamp("latest_time");
-		int unreadCount = rs.getInt("unread_count");
+	private MessageList toUserMessageList(ResultSet resultSet) throws Exception {
+		String facilityId = resultSet.getString("FACILITY_ID");
+		String facilityName = resultSet.getString("FacilityName");
+		int petId = resultSet.getInt("petID");
+		String petName = resultSet.getString("name");
+		Timestamp latestTime = resultSet.getTimestamp("latest_time");
+		int unreadCount = resultSet.getInt("unread_count");
 
-		return new MessageList(facilityId, facilityName, petID, petName, latestTime, true, unreadCount);
+		return new MessageList(facilityId, facilityName, petId, petName, latestTime, true, unreadCount);
+	}
+
+	@FunctionalInterface
+	private interface SqlBinder {
+		void bind(PreparedStatement statement) throws Exception;
 	}
 }

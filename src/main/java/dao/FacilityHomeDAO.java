@@ -13,8 +13,6 @@ import util.DButil;
 
 public class FacilityHomeDAO {
 
-	private static final String JDBC_DRIVER = "com.microsoft.sqlserver.jdbc.SQLServerDriver";
-
 	private static final String SQL_FACILITY_INFO = """
 			SELECT
 			    FACILITY_ID,
@@ -84,22 +82,15 @@ public class FacilityHomeDAO {
 			WHERE FACILITY_ID = ?
 			""";
 
-	// 店舗情報取得
 	public FacilityHomeView showFacilityInfo(String facilityId) {
-		try {
-			loadJdbcDriver();
-		} catch (ClassNotFoundException e) {
-			throw new IllegalStateException("JDBCドライバを読み込めませんでした");
-		}
+		try (Connection connection = DButil.getConnection();
+			 PreparedStatement statement = connection.prepareStatement(SQL_FACILITY_INFO)) {
 
-		try (Connection conn = DButil.getConnection();
-				PreparedStatement stmt = conn.prepareStatement(SQL_FACILITY_INFO)) {
+			statement.setString(1, facilityId);
 
-			bindFacilityId(stmt, facilityId);
-
-			try (ResultSet rs = stmt.executeQuery()) {
-				if (rs.next()) {
-					return toFacilityHomeView(rs);
+			try (ResultSet resultSet = statement.executeQuery()) {
+				if (resultSet.next()) {
+					return toFacilityHomeView(resultSet);
 				}
 			}
 
@@ -109,51 +100,21 @@ public class FacilityHomeDAO {
 		return null;
 	}
 
-	// 所属ペット一覧
 	public List<FacilityPetView> showPetList(String facilityId) {
-		List<FacilityPetView> petList = new ArrayList<>();
-
-		try {
-			loadJdbcDriver();
-		} catch (ClassNotFoundException e) {
-			throw new IllegalStateException("JDBCドライバを読み込めませんでした");
-		}
-
-		try (Connection conn = DButil.getConnection();
-				PreparedStatement stmt = conn.prepareStatement(SQL_PET_LIST)) {
-
-			bindFacilityId(stmt, facilityId);
-
-			try (ResultSet rs = stmt.executeQuery()) {
-				while (rs.next()) {
-					petList.add(toFacilityPetView(rs));
-				}
-			}
-
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return petList;
+		return fetchFacilityPetViews(facilityId, SQL_PET_LIST);
 	}
 
-	// 人気ランキング
 	public List<PopularPetView> showPopularRanking(String facilityId) {
 		List<PopularPetView> rankingList = new ArrayList<>();
 
-		try {
-			loadJdbcDriver();
-		} catch (ClassNotFoundException e) {
-			throw new IllegalStateException("JDBCドライバを読み込めませんでした");
-		}
+		try (Connection connection = DButil.getConnection();
+			 PreparedStatement statement = connection.prepareStatement(SQL_POPULAR_RANKING)) {
 
-		try (Connection conn = DButil.getConnection();
-				PreparedStatement stmt = conn.prepareStatement(SQL_POPULAR_RANKING)) {
+			statement.setString(1, facilityId);
 
-			bindFacilityId(stmt, facilityId);
-
-			try (ResultSet rs = stmt.executeQuery()) {
-				while (rs.next()) {
-					rankingList.add(toPopularPetView(rs));
+			try (ResultSet resultSet = statement.executeQuery()) {
+				while (resultSet.next()) {
+					rankingList.add(toPopularPetView(resultSet));
 				}
 			}
 
@@ -163,22 +124,15 @@ public class FacilityHomeDAO {
 		return rankingList;
 	}
 
-	// 店舗おすすめペット
 	public FacilityPetView showFavoritePet(String facilityId) {
-		try {
-			loadJdbcDriver();
-		} catch (ClassNotFoundException e) {
-			throw new IllegalStateException("JDBCドライバを読み込めませんでした");
-		}
+		try (Connection connection = DButil.getConnection();
+			 PreparedStatement statement = connection.prepareStatement(SQL_FAVORITE_PET)) {
 
-		try (Connection conn = DButil.getConnection();
-				PreparedStatement stmt = conn.prepareStatement(SQL_FAVORITE_PET)) {
+			statement.setString(1, facilityId);
 
-			bindFacilityId(stmt, facilityId);
-
-			try (ResultSet rs = stmt.executeQuery()) {
-				if (rs.next()) {
-					return toFacilityPetView(rs);
+			try (ResultSet resultSet = statement.executeQuery()) {
+				if (resultSet.next()) {
+					return toFacilityPetView(resultSet);
 				}
 			}
 
@@ -188,24 +142,17 @@ public class FacilityHomeDAO {
 		return null;
 	}
 
-	// 定休日取得
 	public List<String> getClosedDays(String facilityId) {
 		List<String> closedDayList = new ArrayList<>();
 
-		try {
-			loadJdbcDriver();
-		} catch (ClassNotFoundException e) {
-			throw new IllegalStateException("JDBCドライバを読み込めませんでした");
-		}
+		try (Connection connection = DButil.getConnection();
+			 PreparedStatement statement = connection.prepareStatement(SQL_CLOSED_DAYS)) {
 
-		try (Connection conn = DButil.getConnection();
-				PreparedStatement stmt = conn.prepareStatement(SQL_CLOSED_DAYS)) {
+			statement.setString(1, facilityId);
 
-			bindFacilityId(stmt, facilityId);
-
-			try (ResultSet rs = stmt.executeQuery()) {
-				while (rs.next()) {
-					closedDayList.add(rs.getString("closedDay"));
+			try (ResultSet resultSet = statement.executeQuery()) {
+				while (resultSet.next()) {
+					closedDayList.add(resultSet.getString("closedDay"));
 				}
 			}
 
@@ -216,40 +163,62 @@ public class FacilityHomeDAO {
 		return closedDayList;
 	}
 
-	private void loadJdbcDriver() throws ClassNotFoundException {
-		Class.forName(JDBC_DRIVER);
+	private <T> List<T> executeQueryList(String facilityId, String sql, RowMapper<T> mapper) {
+		List<T> list = new ArrayList<>();
+
+		try (Connection connection = DButil.getConnection();
+			 PreparedStatement statement = connection.prepareStatement(sql)) {
+
+			statement.setString(1, facilityId);
+
+			try (ResultSet resultSet = statement.executeQuery()) {
+				while (resultSet.next()) {
+					list.add(mapper.map(resultSet));
+				}
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return list;
 	}
 
-	private void bindFacilityId(PreparedStatement stmt, String facilityId) throws Exception {
-		stmt.setString(1, facilityId);
+	private List<FacilityPetView> fetchFacilityPetViews(String facilityId, String sql) {
+		return executeQueryList(facilityId, sql, this::toFacilityPetView);
 	}
 
-	private FacilityHomeView toFacilityHomeView(ResultSet rs) throws Exception {
+	private FacilityHomeView toFacilityHomeView(ResultSet resultSet) throws Exception {
 		return new FacilityHomeView(
-				rs.getString("FACILITY_ID"),
-				rs.getString("facilityName"),
-				rs.getString("address"),
-				rs.getString("tel"),
-				rs.getString("mail"),
-				rs.getString("openTime"),
-				rs.getString("closeTime"));
+				resultSet.getString("FACILITY_ID"),
+				resultSet.getString("facilityName"),
+				resultSet.getString("address"),
+				resultSet.getString("tel"),
+				resultSet.getString("mail"),
+				resultSet.getString("openTime"),
+				resultSet.getString("closeTime"));
 	}
 
-	private FacilityPetView toFacilityPetView(ResultSet rs) throws Exception {
+	private FacilityPetView toFacilityPetView(ResultSet resultSet) throws Exception {
 		return new FacilityPetView(
-				rs.getInt("petID"),
-				rs.getString("name"),
-				rs.getString("gender"),
-				rs.getInt("age"),
-				rs.getInt("price"),
-				rs.getString("imagePath"));
+				resultSet.getInt("petID"),
+				resultSet.getString("name"),
+				resultSet.getString("gender"),
+				resultSet.getInt("age"),
+				resultSet.getInt("price"),
+				resultSet.getString("imagePath"));
 	}
 
-	private PopularPetView toPopularPetView(ResultSet rs) throws Exception {
+	private PopularPetView toPopularPetView(ResultSet resultSet) throws Exception {
 		return new PopularPetView(
-				rs.getInt("petID"),
-				rs.getString("name"),
-				rs.getString("imagePath"),
-				rs.getInt("favoriteCount"));
+				resultSet.getInt("petID"),
+				resultSet.getString("name"),
+				resultSet.getString("imagePath"),
+				resultSet.getInt("favoriteCount"));
+	}
+
+	@FunctionalInterface
+	private interface RowMapper<T> {
+		T map(ResultSet resultSet) throws Exception;
 	}
 }

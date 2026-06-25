@@ -17,61 +17,87 @@ import model.PasswordEditLogic;
 public class PasswordEditServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
+	private static final String LOGIN_REDIRECT_URL = "WelcomeServlet";
+	private static final String PASSWORD_EDIT_JSP_PATH = "WEB-INF/jsp/passwordEdit.jsp";
+	private static final String PASSWORD_EDIT_SUCCESS_JSP_PATH = "WEB-INF/jsp/passwordEditSuccess.jsp";
+	private static final String SESSION_USER_ID_KEY = "userId";
+	private static final String SESSION_FACILITY_ID_KEY = "facilityId";
+	private static final String REQUEST_ERROR_MSG_KEY = "errorMsg";
+	private static final String REQUEST_OLD_PASSWORD_KEY = "oldPassword";
+	private static final String REQUEST_NEW_PASSWORD_KEY = "newPassword";
+	private static final String REQUEST_NEW_PASSWORD_CONFIRM_KEY = "newPasswordConfirm";
+
+	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 
-		HttpSession session = request.getSession(false);
-
-		// 未ログインならログイン画面へ
-		if (session == null ||
-				(session.getAttribute("userId") == null && session.getAttribute("facilityId") == null)) {
-			response.sendRedirect("WelcomeServlet");
+		if (!isLoggedIn(request.getSession(false))) {
+			response.sendRedirect(LOGIN_REDIRECT_URL);
 			return;
 		}
 
-		String userId = (String) session.getAttribute("userId");
-		String facilityId = (String) session.getAttribute("facilityId");
-
-		if (userId == null && facilityId == null) {
-			response.sendRedirect("WelcomeServlet");
-			return;
-		}
-
-		RequestDispatcher dispatcher = request.getRequestDispatcher("WEB-INF/jsp/passwordEdit.jsp");
-		dispatcher.forward(request, response);
+		forwardToPasswordEditPage(request, response);
 	}
 
+	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
+
 		request.setCharacterEncoding("UTF-8");
 
 		HttpSession session = request.getSession();
-		String userId = (String) session.getAttribute("userId");
-		String facilityId = (String) session.getAttribute("facilityId");
+		String userId = (String) session.getAttribute(SESSION_USER_ID_KEY);
+		String facilityId = (String) session.getAttribute(SESSION_FACILITY_ID_KEY);
 
-		if (userId == null && facilityId == null) {
-			response.sendRedirect("WelcomeServlet");
+		if (!isLoggedIn(userId, facilityId)) {
+			response.sendRedirect(LOGIN_REDIRECT_URL);
 			return;
 		}
 
-		String oldPassword = request.getParameter("oldPassword");
-		String newPassword = request.getParameter("newPassword");
-		String newPasswordConfirm = request.getParameter("newPasswordConfirm");
-
-		PasswordEditLogic passwordEditLogic = new PasswordEditLogic();
-		PasswordEdit passwordEditResult = passwordEditLogic.execute(userId, facilityId, oldPassword, newPassword,
-				newPasswordConfirm);
+		PasswordEdit passwordEditResult = executePasswordEdit(request, userId, facilityId);
 		System.out.println(passwordEditResult);
 
 		if (passwordEditResult.isSuccess()) {
-			RequestDispatcher dispatcher = request.getRequestDispatcher("WEB-INF/jsp/passwordEditSuccess.jsp");
-			dispatcher.forward(request, response);
+			forwardToPasswordEditSuccessPage(request, response);
 			return;
-
-		} else {
-			request.setAttribute("errorMsg", passwordEditResult.getErrorMsg());
-			RequestDispatcher dispatcher = request.getRequestDispatcher("WEB-INF/jsp/passwordEdit.jsp");
-			dispatcher.forward(request, response);
 		}
+
+		request.setAttribute(REQUEST_ERROR_MSG_KEY, passwordEditResult.getErrorMsg());
+		forwardToPasswordEditPage(request, response);
+	}
+
+	private boolean isLoggedIn(HttpSession session) {
+		return session != null
+				&& (session.getAttribute(SESSION_USER_ID_KEY) != null
+						|| session.getAttribute(SESSION_FACILITY_ID_KEY) != null);
+	}
+
+	private boolean isLoggedIn(String userId, String facilityId) {
+		return userId != null || facilityId != null;
+	}
+
+	private PasswordEdit executePasswordEdit(
+			HttpServletRequest request,
+			String userId,
+			String facilityId) {
+
+		String oldPassword = request.getParameter(REQUEST_OLD_PASSWORD_KEY);
+		String newPassword = request.getParameter(REQUEST_NEW_PASSWORD_KEY);
+		String newPasswordConfirm = request.getParameter(REQUEST_NEW_PASSWORD_CONFIRM_KEY);
+
+		PasswordEditLogic passwordEditLogic = new PasswordEditLogic();
+		return passwordEditLogic.execute(userId, facilityId, oldPassword, newPassword, newPasswordConfirm);
+	}
+
+	private void forwardToPasswordEditPage(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+		RequestDispatcher dispatcher = request.getRequestDispatcher(PASSWORD_EDIT_JSP_PATH);
+		dispatcher.forward(request, response);
+	}
+
+	private void forwardToPasswordEditSuccessPage(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+		RequestDispatcher dispatcher = request.getRequestDispatcher(PASSWORD_EDIT_SUCCESS_JSP_PATH);
+		dispatcher.forward(request, response);
 	}
 }

@@ -1,5 +1,5 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
-pageEncoding="UTF-8"%>
+	pageEncoding="UTF-8"%>
 
 <%@ page import="java.util.List"%>
 <%@ page import="model.Question"%>
@@ -14,105 +14,84 @@ List<UserSurvey> userSurveyList = (List<UserSurvey>) request.getAttribute("userS
 %>
 
 <!DOCTYPE html>
-
 <html>
 <head>
 <meta charset="UTF-8">
 <title>userSurvey</title>
-<link rel="stylesheet" href="${pageContext.request.contextPath}/style.css">
+<link rel="stylesheet"
+	href="${pageContext.request.contextPath}/style.css">
 </head>
 
 <body>
+	<div class="page-container">
+		<div class="site-header">
+			<div class="site-logo-wrap">
+				<h1 class="site-logo">PET MATCH</h1>
+			</div>
+		</div>
 
-<div class="page-container">
+		<div class="survey-card">
+			<h1>ユーザーアンケート</h1>
 
+			<p class="welcome-message">あなたに合ったペットを探すために、アンケートに回答してください。</p>
 
-<div class="site-header">
+			<form class="survey-form" action="UserSuveyServlet" method="post">
+				<%
+				for (Question q : questionList) {
+				%>
+				<div class="survey-question">
+					<p class="survey-question-title">
+						<%=q.getQuestionID()%>.
+						<%=q.getUserQuestion()%>
+					</p>
 
-    <div class="site-logo-wrap">
-        <h1 class="site-logo">PET MATCH</h1>
-    </div>
+					<%
+					for (Choice c : allChoiceList) {
+						if (c.getQuestionId() == q.getQuestionID()) {
+							boolean checked = false;
+							if (userSurveyList != null) {
+						for (UserSurvey us : userSurveyList) {
+							if (us.getQuestionID() == q.getQuestionID()
+									&& us.getSurveyChoiceID() == c.getSurveyChoiceId()) {
+								checked = true;
+								break;
+							}
+						}
+							}
+					%>
+					<label> <input type="radio"
+						name="q<%=q.getQuestionID()%>"
+						value="<%=c.getSurveyChoiceId()%>"
+						<%=checked ? "checked" : ""%> required> <%=c.getChoice()%>
+					</label>
+					<%
+					}
+					}
+					%>
+				</div>
+				<%
+				}
+				%>
 
-</div>
+				<div class="form-button-area center-button-area">
+					<c:choose>
+						<c:when test="${empty userSurveyList}">
+							<input type="submit" name="action" value="登録">
+						</c:when>
+						<c:otherwise>
+							<input type="submit" name="action" value="更新">
+						</c:otherwise>
+					</c:choose>
+				</div>
+			</form>
 
-<div class="survey-card">
+			<div class="form-button-area center-button-area">
+				<form action="MyPageServlet" method="get">
+					<input class="back-button" type="submit" value="戻る">
+				</form>
+			</div>
 
-    <h1>ユーザーアンケート</h1>
-
-    <p class="welcome-message">
-        あなたに合ったペットを探すために、アンケートに回答してください。
-    </p>
-
-<form class="survey-form" action="UserSuveyServlet" method="post">
-	<%
-	for (Question q : questionList) {
-	%>
-
-    <div class="survey-question">
-
-	<p class="survey-question-title">
-        <%=q.getQuestionID()%>.
-	    <%=q.getUserQuestion()%>
-    </p>
-
-	<%
-	for (Choice c : allChoiceList) {
-	%>
-	<%
-	if (c.getQuestionID() == q.getQuestionID()) {
-	%>
-	<%
-	boolean checked = false;
-	if (userSurveyList != null) {
-		for (UserSurvey us : userSurveyList) {
-			if (us.getQuestionID() == q.getQuestionID() && us.getSurveyChoiceID() == c.getSurveyChoiceID()) {
-		checked = true;
-		break;
-			}
-		}
-	}
-	%>
-	<label> <input type="radio" name="q<%=q.getQuestionID()%>"
-		value="<%=c.getSurveyChoiceID()%>" <%=checked ? "checked" : ""%>
-		required> <%=c.getChoice()%>
-	</label>
-	<%
-	}
-	%>
-	<%
-	}
-	%>
-
-    </div>
-
-	<%
-	}
-	%>
-
-    <div class="form-button-area center-button-area">
-
-	<c:choose>
-		<c:when test="${empty userSurveyList}">
-			<input type="submit" name="action" value="登録">
-		</c:when>
-		<c:otherwise>
-			<input type="submit" name="action" value="更新">
-		</c:otherwise>
-	</c:choose>
-
-    </div>
-
-</form>
-
-<div class="form-button-area center-button-area">
-    <form action="MyPageServlet" method="get">
-	    <input class="back-button" type="submit" value="戻る">
-    </form>
-</div>
-
-</div>
-
-</div>
-
+		</div>
+	</div>
 </body>
 </html>
