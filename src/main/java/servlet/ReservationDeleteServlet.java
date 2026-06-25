@@ -8,6 +8,7 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 
 import dao.ReserveDAO;
 
@@ -15,37 +16,58 @@ import dao.ReserveDAO;
 public class ReservationDeleteServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
+	private static final String WELCOME_SERVLET = "WelcomeServlet";
+	private static final String RESERVATION_CONFIRM_SERVLET = "ReservationConfirmServlet";
+	private static final String DELETE_SUCCESS_JSP = "WEB-INF/jsp/reservationDeleteSuccess.jsp";
+
+	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 
 		request.setCharacterEncoding("UTF-8");
 
-		String reservationIDStr = request.getParameter("reservationID");
+		HttpSession session = request.getSession(false);
 
-		if (reservationIDStr == null || reservationIDStr.isEmpty()) {
-			response.sendRedirect("ReservationConfirmServlet");
+		if (session == null || session.getAttribute("facilityId") == null) {
+			response.sendRedirect(WELCOME_SERVLET);
 			return;
 		}
 
-		int reservationID = Integer.parseInt(reservationIDStr);
+		String facilityID = (String) session.getAttribute("facilityId");
 
-		ReserveDAO dao = new ReserveDAO();
-		boolean result = dao.deleteReservation(reservationID);
+		Integer reservationID = parseReservationID(request.getParameter("reservationID"));
 
-		request.setAttribute("reservationID", reservationID);
-
-		System.out.println("削除対象 reservationIDStr = " + reservationIDStr);
-		System.out.println("削除対象 reservationID = " + reservationID);
-		System.out.println("削除結果 result = " + result);
-
-		if (result) {
-			RequestDispatcher dispatcher = request.getRequestDispatcher("WEB-INF/jsp/reservationDeleteSuccess.jsp");
-			dispatcher.forward(request, response);
-		} else {
-			request.setAttribute("errorMsg", "予約情報の削除に失敗しました。");
-			RequestDispatcher dispatcher = request.getRequestDispatcher("WEB-INF/jsp/reservationEdit.jsp");
-			dispatcher.forward(request, response);
+		if (reservationID == null) {
+			response.sendRedirect(RESERVATION_CONFIRM_SERVLET);
+			return;
 		}
+
+		ReserveDAO reserveDAO = new ReserveDAO();
+		boolean deleteResult = reserveDAO.deleteReservationByFacility(reservationID, facilityID);
+
+		if (deleteResult) {
+			request.setAttribute("reservationID", reservationID);
+
+			RequestDispatcher dispatcher =
+					request.getRequestDispatcher(DELETE_SUCCESS_JSP);
+			dispatcher.forward(request, response);
+			return;
+		}
+
+		request.setAttribute("errorMsg", "予約情報の削除に失敗しました。");
+		response.sendRedirect(RESERVATION_CONFIRM_SERVLET);
 	}
 
+	private Integer parseReservationID(String reservationIDStr) {
+		if (reservationIDStr == null || reservationIDStr.isEmpty()) {
+			return null;
+		}
+
+		try {
+			return Integer.parseInt(reservationIDStr);
+		} catch (NumberFormatException e) {
+			return null;
+		}
+	}
 }
+

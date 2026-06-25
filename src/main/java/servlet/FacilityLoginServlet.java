@@ -20,6 +20,7 @@ public class FacilityLoginServlet extends HttpServlet {
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
+		
 		RequestDispatcher dispatcher = request.getRequestDispatcher("WEB-INF/jsp/facilityLogin.jsp");
 		dispatcher.forward(request, response);
 	}
@@ -30,6 +31,16 @@ public class FacilityLoginServlet extends HttpServlet {
 		request.setCharacterEncoding("UTF-8");
 		String facilityId = request.getParameter("facilityId");
 		String password = request.getParameter("password");
+		
+		if (facilityId == null || facilityId.isBlank()
+		        || password == null || password.isBlank()) {
+
+		    request.setAttribute("errorMsg", "施設IDとパスワードを入力してください");
+		    RequestDispatcher dispatcher =
+		            request.getRequestDispatcher("WEB-INF/jsp/facilityLogin.jsp");
+		    dispatcher.forward(request, response);
+		    return;
+		}
 
 		String hash = PasswordUtil.hashPassword(password);
 

@@ -445,5 +445,199 @@ public class ReserveDAO {
 
 		return reserveViewList;
 	}
+	// 予約がログイン中施設のものか確認しながら削除するメソッド
+	public boolean deleteReservationByFacility(int reservationID, String facilityID) {
+		try {
+			Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
+		} catch (ClassNotFoundException e) {
+			throw new IllegalStateException("JDBCドライバを読み込めませんでした");
+		}
+
+		try (Connection conn = DButil.getConnection()) {
+
+			String sql =
+					"DELETE R " +
+					"FROM Reserve R " +
+					"JOIN Pet P ON R.petID = P.petID " +
+					"WHERE R.reservationID = ? " +
+					"AND P.FACILITY_ID = ?";
+
+			PreparedStatement pStmt = conn.prepareStatement(sql);
+			pStmt.setInt(1, reservationID);
+			pStmt.setString(2, facilityID);
+
+			int result = pStmt.executeUpdate();
+			return result == 1;
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		}
+	}
+
+	// 予約がログイン中施設のものか確認しながら日時変更するメソッド
+	public boolean updateDateTimeByFacility(int reservationID, String facilityID, LocalDateTime reserveTime) {
+		try {
+			Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
+		} catch (ClassNotFoundException e) {
+			throw new IllegalStateException("JDBCドライバを読み込めませんでした");
+		}
+
+		try (Connection conn = DButil.getConnection()) {
+
+			String sql =
+					"UPDATE R " +
+					"SET R.reserveTime = ? " +
+					"FROM Reserve R " +
+					"JOIN Pet P ON R.petID = P.petID " +
+					"WHERE R.reservationID = ? " +
+					"AND P.FACILITY_ID = ?";
+
+			PreparedStatement pStmt = conn.prepareStatement(sql);
+			pStmt.setTimestamp(1, Timestamp.valueOf(reserveTime));
+			pStmt.setInt(2, reservationID);
+			pStmt.setString(3, facilityID);
+
+			int result = pStmt.executeUpdate();
+			return result == 1;
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		}
+	}
+
+	// 編集画面表示時に、予約日時をDBから取得するメソッド
+	public LocalDateTime findReserveTimeByFacility(int reservationID, String facilityID) {
+		try {
+			Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
+		} catch (ClassNotFoundException e) {
+			throw new IllegalStateException("JDBCドライバを読み込めませんでした");
+		}
+
+		try (Connection conn = DButil.getConnection()) {
+
+			String sql =
+					"SELECT R.reserveTime " +
+					"FROM Reserve R " +
+					"JOIN Pet P ON R.petID = P.petID " +
+					"WHERE R.reservationID = ? " +
+					"AND P.FACILITY_ID = ?";
+
+			PreparedStatement pStmt = conn.prepareStatement(sql);
+			pStmt.setInt(1, reservationID);
+			pStmt.setString(2, facilityID);
+
+			ResultSet rs = pStmt.executeQuery();
+
+			if (rs.next()) {
+				return rs.getTimestamp("reserveTime").toLocalDateTime();
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return null;
+	}
+	
+	
+	// JDBCドライバ読み込みの重複を減らすための共通メソッド
+	private void loadDriver() {
+		try {
+			
+	Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
+		} catch (ClassNotFoundException e) {
+			throw new IllegalStateException("JDBCドライバを読み込めませんでした");
+		}
+	}
+
+	// 予約がログイン中施設のものか確認しながら削除するメソッド
+	public boolean deleteReservationByFacility(int reservationID, String facilityID) {
+		loadDriver();
+
+		try (Connection conn = DButil.getConnection()) {
+
+			String sql =
+					"DELETE R " +
+					"FROM Reserve R " +
+					"JOIN Pet P ON R.petID = P.petID " +
+					"WHERE R.reservationID = ? " +
+					"AND P.FACILITY_ID = ?";
+
+			PreparedStatement pStmt = conn.prepareStatement(sql);
+			pStmt.setInt(1, reservationID);
+			pStmt.setString(2, facilityID);
+
+			int result = pStmt.executeUpdate();
+			return result == 1;
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		}
+	}
+
+	// 予約がログイン中施設のものか確認しながら日時変更するメソッド
+	public boolean updateDateTimeByFacility(
+			int reservationID,
+			String facilityID,
+			LocalDateTime reserveTime) {
+
+		loadDriver();
+
+		try (Connection conn = DButil.getConnection()) {
+
+			String sql =
+					"UPDATE R " +
+					"SET reserveTime = ? " +
+					"FROM Reserve R " +
+					"JOIN Pet P ON R.petID = P.petID " +
+					"WHERE R.reservationID = ? " +
+					"AND P.FACILITY_ID = ?";
+
+			PreparedStatement pStmt = conn.prepareStatement(sql);
+			pStmt.setTimestamp(1, Timestamp.valueOf(reserveTime));
+			pStmt.setInt(2, reservationID);
+			pStmt.setString(3, facilityID);
+
+			int result = pStmt.executeUpdate();
+			return result == 1;
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		}
+	}
+
+	// 編集画面表示時に、ログイン中施設の予約日時をDBから取得するメソッド
+	public LocalDateTime findReserveTimeByFacility(int reservationID, String facilityID) {
+		loadDriver();
+
+		try (Connection conn = DButil.getConnection()) {
+
+			String sql =
+					"SELECT R.reserveTime " +
+					"FROM Reserve R " +
+					"JOIN Pet P ON R.petID = P.petID " +
+					"WHERE R.reservationID = ? " +
+					"AND P.FACILITY_ID = ?";
+
+			PreparedStatement pStmt = conn.prepareStatement(sql);
+			pStmt.setInt(1, reservationID);
+			pStmt.setString(2, facilityID);
+
+			ResultSet rs = pStmt.executeQuery();
+
+			if (rs.next()) {
+				return rs.getTimestamp("reserveTime").toLocalDateTime();
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return null;
+	}
 
 }

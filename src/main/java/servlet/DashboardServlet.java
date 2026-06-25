@@ -19,54 +19,66 @@ import model.Reserve;
 
 @WebServlet("/DashboardServlet")
 public class DashboardServlet extends HttpServlet {
-private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
-protected void doGet(HttpServletRequest request, HttpServletResponse response)
-        throws ServletException, IOException {
+	private static final String WELCOME_SERVLET = "WelcomeServlet";
+	private static final String DASHBOARD_JSP = "WEB-INF/jsp/dashboard.jsp";
 
-    request.setCharacterEncoding("UTF-8");
+	protected void doGet(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
 
-    HttpSession session = request.getSession();
+		request.setCharacterEncoding("UTF-8");
 
-    if (session == null || session.getAttribute("facilityId") == null) {
-        response.sendRedirect("WelcomeServlet");
-        return;
-    }
+		String facilityId = getLoggedInFacilityId(request);
 
-    String facilityId = (String) session.getAttribute("facilityId");
+		if (facilityId == null) {
+			response.sendRedirect(WELCOME_SERVLET);
+			return;
+		}
 
-    // 本日の予約件数のカウント
-    ReserveDAO reserveDao = new ReserveDAO();
-    int countTodayReserve = reserveDao.countTodayReserve(facilityId);
-    request.setAttribute("countTodayReserve", countTodayReserve);
+		setDashboardAttributes(request, facilityId);
+		forwardToDashboard(request, response);
+	}
 
-    // 登録しているペット数のカウント
-    PetListDAO petListDao = new PetListDAO();
-    int petCount = petListDao.countByfacilityID(facilityId);
-    request.setAttribute("petCount", petCount);
+	// ログイン中の施設IDを取得する
+	private String getLoggedInFacilityId(HttpServletRequest request) {
+		HttpSession session = request.getSession(false);
 
-    // 直近の予約1件を表示
-    Reserve reserve = reserveDao.findnextReserve(facilityId);
-    request.setAttribute("reserve", reserve);
+		if (session == null || session.getAttribute("facilityId") == null) {
+			return null;
+		}
 
-    // 最後に追加したペットの表示
-    FavoritePet latestPet = petListDao.findLatestPetByFacilityID(facilityId);
-    request.setAttribute("latestPet", latestPet);
+		return (String) session.getAttribute("facilityId");
+	}
 
-    // 施設ページアクセス数の表示
-    FacilityViewDAO facilityViewDao = new FacilityViewDAO();
-    int viewCount = facilityViewDao.getViewCount(facilityId);
-    request.setAttribute("viewCount", viewCount);
+	// ダッシュボードに表示する情報を取得してrequestにセットする
+	private void setDashboardAttributes(HttpServletRequest request, String facilityId) {
 
-    // 施設側メッセージ未読数
-    MessageDAO messageDao = new MessageDAO();
-    int facilityUnreadCount = messageDao.countUnreadByFacilityId(facilityId);
-    request.setAttribute("facilityUnreadCount", facilityUnreadCount);
+		ReserveDAO reserveDao = new ReserveDAO();
+		PetListDAO petListDao = new PetListDAO();
+		FacilityViewDAO facilityViewDao = new FacilityViewDAO();
+		MessageDAO messageDao = new MessageDAO();
 
-    RequestDispatcher dispatcher =
-            request.getRequestDispatcher("WEB-INF/jsp/dashboard.jsp");
-    dispatcher.forward(request, response);
-}
+		int countTodayReserve = reserveDao.countTodayReserve(facilityId);
+		int petCount = petListDao.countByfacilityID(facilityId);
+		Reserve reserve = reserveDao.findnextReserve(facilityId);
+		FavoritePet latestPet = petListDao.findLatestPetByFacilityID(facilityId);
+		int viewCount = facilityViewDao.getViewCount(facilityId);
+		int facilityUnreadCount = messageDao.countUnreadByFacilityId(facilityId);
 
+		request.setAttribute("countTodayReserve", countTodayReserve);
+		request.setAttribute("petCount", petCount);
+		request.setAttribute("reserve", reserve);
+		request.setAttribute("latestPet", latestPet);
+		request.setAttribute("viewCount", viewCount);
+		request.setAttribute("facilityUnreadCount", facilityUnreadCount);
+	}
 
+	// ダッシュボード画面へ遷移する
+	private void forwardToDashboard(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+
+		RequestDispatcher dispatcher = request.getRequestDispatcher(DASHBOARD_JSP);
+		dispatcher.forward(request, response);
+	}
 }

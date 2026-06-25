@@ -2,7 +2,9 @@ package servlet;
 
 import java.io.IOException;
 import java.time.LocalTime;
+import java.time.format.DateTimeParseException;
 import java.util.List;
+import java.util.Set;
 
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletException;
@@ -20,32 +22,34 @@ import model.FacilityInformation;
 public class FacilityInformationEditServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
+	private static final String WELCOME_SERVLET = "WelcomeServlet";
+	private static final String EDIT_JSP = "WEB-INF/jsp/facilityInformationEdit.jsp";
+
+	// 既存のServlet名に合わせる
+	private static final String CONFIRM_SERVLET = "FacilityInfomationConfirmServlet";
+
+	private static final Set<String> VALID_CLOSED_DAYS = Set.of(
+			"MONDAY",
+			"TUESDAY",
+			"WEDNESDAY",
+			"THURSDAY",
+			"FRIDAY",
+			"SATURDAY",
+			"SUNDAY"
+	);
+
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 
-		HttpSession session = request.getSession(false);
+		String facilityId = getLoggedInFacilityId(request);
 
-		// 未ログインならログイン画面へ
-		if (session == null || session.getAttribute("facilityId") == null) {
-			response.sendRedirect("WelcomeServlet");
+		if (facilityId == null) {
+			response.sendRedirect(WELCOME_SERVLET);
 			return;
 		}
 
-		String facilityId = (String) session.getAttribute("facilityId");
-
-		// 施設情報取得
-		FacilityInfomationDAO dao = new FacilityInfomationDAO();
-		FacilityInformation facilityInfo = dao.findByFacilityId(facilityId);
-
-		// 定休日取得
-		FacilityClosedDayDAO closedDayDAO = new FacilityClosedDayDAO();
-		List<String> facilityClosedDayList = closedDayDAO.findByFacilityID(facilityId);
-
-		request.setAttribute("facilityInfo", facilityInfo);
-		request.setAttribute("facilityClosedDayList", facilityClosedDayList);
-
-		RequestDispatcher dispatcher = request.getRequestDispatcher("WEB-INF/jsp/facilityInformationEdit.jsp");
-		dispatcher.forward(request, response);
+		setEditPageAttributes(request, facilityId);
+		forwardToEditPage(request, response);
 	}
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
@@ -53,69 +57,161 @@ public class FacilityInformationEditServlet extends HttpServlet {
 
 		request.setCharacterEncoding("UTF-8");
 
-		HttpSession session = request.getSession();
-		String facilityId = (String) session.getAttribute("facilityId");
+		String facilityId = getLoggedInFacilityId(request);
 
-		LocalTime openTime = LocalTime.parse(request.getParameter("openTime"));
+		if (facilityId == null) {
+			response.sendRedirect(WELCOME_SERVLET);
+			return;
+		}
 
-		LocalTime closeTime = LocalTime.parse(request.getParameter("closeTime"));
-
+		String facilityName = request.getParameter("facilityName");
+		String tel = request.getParameter("tel");
+		String address = request.getParameter("address");
+		String mail = request.getParameter("mail");
+		String openTimeStr = request.getParameter("openTime");
+		String closeTimeStr = request.getParameter("closeTime");
 		String[] closedDays = request.getParameterValues("closedDay");
+
+		if (isBlank(facilityName) || isBlank(openTimeStr) || isBlank(closeTimeStr)) {
+			request.setAttribute("errorMsg", "必須項目を入力してください。");
+			setEditPageAttributes(request, facilityId);
+			forwardToEditPage(request, response);
+			return;
+		}
+
+		if (!isValidClosedDays(closedDays)) {
+			request.setAttribute("errorMsg", "定休日の値が不正です。");
+			setEditPageAttributes(request, facilityId);
+			forwardToEditPage(request, response);
+			return;
+		}
+
+		LocalTime openTime;
+		LocalTime closeTime;
+
+		try {
+			openTime = LocalTime.parse(openTimeStr);
+			closeTime = LocalTime.parse(closeTimeStr);
+		} catch (DateTimeParseException e) {
+			request.setAttribute("errorMsg", "営業時間の形式が正しくありません。");
+			setEditPageAttributes(request, facilityId);
+			forwardToEditPage(request, response);
+			return;
+		}
 
 		FacilityInformation facilityInfo = new FacilityInformation(
 				facilityId,
-				request.getParameter("facilityName"),
-				request.getParameter("tel"),
-				request.getParameter("address"),
-				request.getParameter("mail"),
+				facilityName,
+				tel,
+				address,
+				mail,
 				openTime,
-				closeTime);
+				closeTime
+		);
 
-		// 施設情報を更新
+		boolean updateResult = updateFacilityInformationAndClosedDays(
+				facilityInfo,
+				closedDays
+		);
+
+		if (updateResult) {
+			response.sendRedirect(CONFIRM_SERVLET);
+			return;
+		}
+
+		request.setAttribute("errorMsg", "施設情報の更新に失敗しました。");
+		setEditPageAttributes(request, facilityId);
+		forwardToEditPage(request, response);
+	}
+
+	// ログイン中の施設IDを取得する
+	private String getLoggedInFacilityId(HttpServletRequest request) {
+		HttpSession session = request.getSession(false);
+
+		if (session == null || session.getAttribute("facilityId") == null) {
+			return null;
+		}
+
+		return (String) session.getAttribute("facilityId");
+	}
+
+	// 編集画面に表示する施設情報と定休日をセットする
+	private void setEditPageAttributes(HttpServletRequest request, String facilityId) {
 		FacilityInfomationDAO facilityDAO = new FacilityInfomationDAO();
+		FacilityInformation facilityInfo = facilityDAO.findByFacilityId(facilityId);
 
+		FacilityClosedDayDAO closedDayDAO = new FacilityClosedDayDAO();
+		List<String> facilityClosedDayList = closedDayDAO.findByFacilityID(facilityId);
+
+		request.setAttribute("facilityInfo", facilityInfo);
+		request.setAttribute("facilityClosedDayList", facilityClosedDayList);
+	}
+
+	// 施設情報と定休日を更新する
+	private boolean updateFacilityInformationAndClosedDays(
+			FacilityInformation facilityInfo,
+			String[] closedDays) {
+
+		FacilityInfomationDAO facilityDAO = new FacilityInfomationDAO();
 		boolean facilityUpdateResult = facilityDAO.update(facilityInfo);
 
-		// 既存の定休日を削除
+		if (!facilityUpdateResult) {
+			return false;
+		}
+
+		return updateClosedDays(facilityInfo.getFacilityId(), closedDays);
+	}
+
+	// 定休日を一度削除してから、選択された曜日を再登録する
+	private boolean updateClosedDays(String facilityId, String[] closedDays) {
 		FacilityClosedDayDAO closedDayDAO = new FacilityClosedDayDAO();
 
-		boolean closedDayDeleteResult = closedDayDAO.deleteByFacilityID(facilityId);
+		boolean deleteResult = closedDayDAO.deleteByFacilityID(facilityId);
 
-		// 定休日の登録結果
-		boolean closedDayInsertResult = true;
+		if (!deleteResult) {
+			return false;
+		}
 
-		/*
-		 * 削除に成功し、定休日が1つ以上選択されている場合のみ登録する。
-		 * 何も選択されていない場合は、削除だけ行って
-		 * 「定休日なし」として扱う。
-		 */
-		if (closedDayDeleteResult && closedDays != null) {
+		// 何も選択されていない場合は、削除だけ行って「定休日なし」とする
+		if (closedDays == null) {
+			return true;
+		}
 
-			for (String closedDay : closedDays) {
+		for (String closedDay : closedDays) {
+			boolean insertResult = closedDayDAO.insertByFacilityID(facilityId, closedDay);
 
-				boolean insertResult = closedDayDAO.insertByFacilityID(
-						facilityId,
-						closedDay);
-
-				if (!insertResult) {
-					closedDayInsertResult = false;
-					break;
-				}
+			if (!insertResult) {
+				return false;
 			}
 		}
 
-		// すべて成功したか判定
-		if (facilityUpdateResult
-				&& closedDayDeleteResult
-				&& closedDayInsertResult) {
+		return true;
+	}
 
-			response.sendRedirect(
-					"FacilityInfomationConfirmServlet");
-
-		} else {
-
-			response.sendRedirect(
-					"FacilityInformationConfirmServlet");
+	// 定休日として許可された値だけか確認する
+	private boolean isValidClosedDays(String[] closedDays) {
+		if (closedDays == null) {
+			return true;
 		}
+
+		for (String closedDay : closedDays) {
+			if (!VALID_CLOSED_DAYS.contains(closedDay)) {
+				return false;
+			}
+		}
+
+		return true;
+	}
+
+	private boolean isBlank(String value) {
+		return value == null || value.isBlank();
+	}
+
+	private void forwardToEditPage(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+
+		RequestDispatcher dispatcher = request.getRequestDispatcher(EDIT_JSP);
+		dispatcher.forward(request, response);
 	}
 }
+

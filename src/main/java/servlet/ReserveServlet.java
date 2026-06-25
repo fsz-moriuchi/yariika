@@ -3,6 +3,7 @@ package servlet;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,103 +22,145 @@ import model.FacilityInformation;
 
 @WebServlet("/ReserveServlet")
 public class ReserveServlet extends HttpServlet {
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	protected void doGet(HttpServletRequest request, HttpServletResponse response)
-			throws ServletException, IOException {
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
 
-		request.setCharacterEncoding("UTF-8");
+        request.setCharacterEncoding("UTF-8");
 
-		HttpSession session = request.getSession(false);
+        HttpSession session = request.getSession(false);
 
-		// 未ログインならログイン画面へ
-		if (session == null || session.getAttribute("userId") == null) {
-			response.sendRedirect("WelcomeServlet");
-			return;
-		}
+        // 未ログインならログイン画面へ
+        if (session == null || session.getAttribute("userId") == null) {
+            response.sendRedirect("WelcomeServlet");
+            return;
+        }
 
-		LocalDate minDate = LocalDate.now().plusDays(3);
-		LocalDate maxDate = LocalDate.now().plusWeeks(1);
+        setReservationDateRange(request);
 
-		request.setAttribute("minDate", minDate);
-		request.setAttribute("maxDate", maxDate);
+        RequestDispatcher dispatcher = request.getRequestDispatcher("WEB-INF/jsp/reserve.jsp");
+        dispatcher.forward(request, response);
+    }
 
-		RequestDispatcher dispatcher = request.getRequestDispatcher("WEB-INF/jsp/reserve.jsp");
-		dispatcher.forward(request, response);
-	}
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
 
-	protected void doPost(HttpServletRequest request, HttpServletResponse response)
-			throws ServletException, IOException {
+        request.setCharacterEncoding("UTF-8");
 
-		request.setCharacterEncoding("UTF-8");
-		HttpSession session = request.getSession();
+        HttpSession session = request.getSession(false);
 
-		LocalDate minDate = LocalDate.now().plusDays(3);
-		LocalDate maxDate = LocalDate.now().plusWeeks(1);
+        // doPostでもログインチェックする
+        if (session == null || session.getAttribute("userId") == null) {
+            response.sendRedirect("WelcomeServlet");
+            return;
+        }
 
-		Integer petID = (Integer) session.getAttribute("reservePetID");
-		String facilityID = (String) session.getAttribute("reserveFacilityID");
+        LocalDate minDate = LocalDate.now().plusDays(3);
+        LocalDate maxDate = LocalDate.now().plusWeeks(1);
 
-		String reserveDateStr = request.getParameter("reserveDateStr");
+        request.setAttribute("minDate", minDate);
+        request.setAttribute("maxDate", maxDate);
 
-		if (petID == null || facilityID == null) {
-			request.setAttribute("errorMsg", "予約情報が見つかりませんでした。もう一度ペット詳細画面から予約してください。");
-			request.getRequestDispatcher("/WEB-INF/jsp/reserve.jsp").forward(request, response);
-			return;
-		}
+        Integer petID = (Integer) session.getAttribute("reservePetID");
+        String facilityID = (String) session.getAttribute("reserveFacilityID");
 
-		FacilityInformationDAO dao1 = new FacilityInformationDAO();
-		FacilityInformation facilityInformation = dao1.findByFacilityID(facilityID);
+        if (petID == null || facilityID == null) {
+            forwardWithError(request, response, "予約情報が見つかりませんでした。もう一度ペット詳細画面から予約してください。");
+            return;
+        }
 
-		LocalTime openTime = facilityInformation.getOpenTime();
-		LocalTime closeTime = facilityInformation.getCloseTime();
+        String reserveDateStr = request.getParameter("reserveDateStr");
 
-		LocalTime lastTime = closeTime.minusMinutes(30);
-		LocalTime time = openTime;
+        if (isBlank(reserveDateStr)) {
+            forwardWithError(request, response, "予約日を選択してください。");
+            return;
+        }
 
-		List<String> timeList = new ArrayList<>();
+        LocalDate reserveDate;
 
-		LocalDate reserveDate = LocalDate.parse(reserveDateStr);
+        try {
+            reserveDate = LocalDate.parse(reserveDateStr);
+        } catch (DateTimeParseException e) {
+            forwardWithError(request, response, "予約日の形式が正しくありません。");
+            return;
+        }
 
-		ReserveDAO dao2 = new ReserveDAO();
-		List<LocalTime> reservedTimeList = dao2.findByFacilityAndDate(facilityID, reserveDate);
+        if (reserveDate.isBefore(minDate) || reserveDate.isAfter(maxDate)) {
+            forwardWithError(request, response, "予約日は3日後から1週間後までの範囲で選択してください。");
+            return;
+        }
 
-		FacilityClosedDayDAO dao3 = new FacilityClosedDayDAO();
-		List<String> closedDayList = dao3.findByFacilityID(facilityID);
+        FacilityInformationDAO facilityInformationDAO = new FacilityInformationDAO();
+        FacilityInformation facilityInformation = facilityInformationDAO.findByFacilityID(facilityID);
 
-		if (reserveDate.isBefore(minDate) || reserveDate.isAfter(maxDate)) {
-			request.setAttribute("errorMsg", "予約日は3日後から1週間後までの範囲で選択してください。");
-			request.setAttribute("minDate", minDate);
-			request.setAttribute("maxDate", maxDate);
+        if (facilityInformation == null) {
+            forwardWithError(request, response, "施設情報が見つかりませんでした。");
+            return;
+        }
 
-			RequestDispatcher dispatcher = request.getRequestDispatcher("WEB-INF/jsp/reserve.jsp");
-			dispatcher.forward(request, response);
-			return;
-		}
+        LocalTime openTime = facilityInformation.getOpenTime();
+        LocalTime closeTime = facilityInformation.getCloseTime();
 
-		//休日の曜日の判定
-		if (!closedDayList.contains(reserveDate.getDayOfWeek().toString())) {
-			while (!time.isAfter(lastTime)) {
-				if (!reservedTimeList.contains(time)) {
-					timeList.add(time.toString());
-				}
-				time = time.plusMinutes(30);
-			}
-		} else {
-			request.setAttribute("errorMsg", "定休日を選択しています。");
-		}
+        if (openTime == null || closeTime == null) {
+            forwardWithError(request, response, "施設の営業時間が登録されていません。");
+            return;
+        }
 
-		request.setAttribute("petID", petID);
-		request.setAttribute("facilityID", facilityID);
-		request.setAttribute("reserveDate", reserveDate);
-		request.setAttribute("timeList", timeList);
-		request.setAttribute("minDate", minDate);
-		request.setAttribute("maxDate", maxDate);
+        ReserveDAO reserveDAO = new ReserveDAO();
+        List<LocalTime> reservedTimeList = reserveDAO.findByFacilityAndDate(facilityID, reserveDate);
 
-		session.setAttribute("reserveDate", reserveDateStr);
+        FacilityClosedDayDAO closedDayDAO = new FacilityClosedDayDAO();
+        List<String> closedDayList = closedDayDAO.findByFacilityID(facilityID);
 
-		RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/jsp/reserve.jsp");
-		dispatcher.forward(request, response);
+        List<String> timeList = new ArrayList<>();
 
-	}
+        // 定休日の曜日の判定
+        if (closedDayList.contains(reserveDate.getDayOfWeek().toString())) {
+            request.setAttribute("errorMsg", "定休日を選択しています。");
+        } else {
+            LocalTime lastTime = closeTime.minusMinutes(30);
+            LocalTime time = openTime;
+
+            while (!time.isAfter(lastTime)) {
+                if (!reservedTimeList.contains(time)) {
+                    timeList.add(time.toString());
+                }
+
+                time = time.plusMinutes(30);
+            }
+        }
+
+        request.setAttribute("petID", petID);
+        request.setAttribute("facilityID", facilityID);
+        request.setAttribute("reserveDate", reserveDate);
+        request.setAttribute("timeList", timeList);
+        request.setAttribute("minDate", minDate);
+        request.setAttribute("maxDate", maxDate);
+
+        session.setAttribute("reserveDate", reserveDateStr);
+
+        RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/jsp/reserve.jsp");
+        dispatcher.forward(request, response);
+    }
+
+    private void setReservationDateRange(HttpServletRequest request) {
+        LocalDate minDate = LocalDate.now().plusDays(3);
+        LocalDate maxDate = LocalDate.now().plusWeeks(1);
+
+        request.setAttribute("minDate", minDate);
+        request.setAttribute("maxDate", maxDate);
+    }
+
+    private boolean isBlank(String value) {
+        return value == null || value.trim().isEmpty();
+    }
+
+    private void forwardWithError(HttpServletRequest request, HttpServletResponse response, String errorMsg)
+            throws ServletException, IOException {
+
+        request.setAttribute("errorMsg", errorMsg);
+        RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/jsp/reserve.jsp");
+        dispatcher.forward(request, response);
+    }
 }

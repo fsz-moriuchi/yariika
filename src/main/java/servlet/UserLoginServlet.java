@@ -33,11 +33,22 @@ public class UserLoginServlet extends HttpServlet {
 		String userId = request.getParameter("userId");
 		String password = request.getParameter("password");
 
+		if (userId == null || userId.isBlank()
+		        || password == null || password.isBlank()) {
+
+		    request.setAttribute("errorMsg", "IDとパスワードを入力してください");
+		    request.getRequestDispatcher("WEB-INF/jsp/userLogin.jsp")
+		           .forward(request, response);
+		    return;
+		}
+		
 		String hash = PasswordUtil.hashPassword(password);
 
 		UserLogin login = new UserLogin(userId, hash);
 		UserLoginLogic bo = new UserLoginLogic();
 		boolean result = bo.execute(login);
+		
+		
 
 		if (result) {
 

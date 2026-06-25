@@ -16,37 +16,67 @@ import dao.FacilityInfomationDAO;
 import model.FacilityInformation;
 
 /**
- * Servlet implementation class FacilityInfomationConfirmServlet
+ * 施設情報確認画面を表示するServlet
  */
 @WebServlet("/FacilityInfomationConfirmServlet")
 public class FacilityInfomationConfirmServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
+	private static final String WELCOME_SERVLET = "WelcomeServlet";
+	private static final String FACILITY_INFORMATION_CONFIRM_JSP =
+			"/WEB-INF/jsp/facilityInfomationConfirm.jsp";
+
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 
-		HttpSession session = request.getSession(false);
+		String facilityId = getLoggedInFacilityId(request);
 
-		// 未ログインならログイン画面へ
-		if (session == null || session.getAttribute("facilityId") == null) {
-			response.sendRedirect("WelcomeServlet");
+		if (facilityId == null) {
+			response.sendRedirect(WELCOME_SERVLET);
 			return;
 		}
 
-		String facilityId = (String) session.getAttribute("facilityId");
-		//店舗情報の取得
-		FacilityInfomationDAO dao1 = new FacilityInfomationDAO();
-		FacilityInformation facilityInfo = dao1.findByFacilityId(facilityId);
+		setFacilityInformationAttributes(request, facilityId);
+		forwardToConfirmPage(request, response);
+	}
 
-		//店舗の定休日の取得
-		FacilityClosedDayDAO dao2 = new FacilityClosedDayDAO();
-		List<String> facilityClosedDayList = dao2.findByFacilityID(facilityId);
+	// ログイン中の施設IDを取得する
+	private String getLoggedInFacilityId(HttpServletRequest request) {
+		HttpSession session = request.getSession(false);
+
+		if (session == null || session.getAttribute("facilityId") == null) {
+			return null;
+		}
+
+		return (String) session.getAttribute("facilityId");
+	}
+
+	// 施設情報確認画面に表示する情報をrequestにセットする
+	private void setFacilityInformationAttributes(
+			HttpServletRequest request,
+			String facilityId) {
+
+		FacilityInfomationDAO facilityInfoDAO = new FacilityInfomationDAO();
+		FacilityInformation facilityInfo =
+				facilityInfoDAO.findByFacilityId(facilityId);
+
+		FacilityClosedDayDAO closedDayDAO = new FacilityClosedDayDAO();
+		List<String> facilityClosedDayList =
+				closedDayDAO.findByFacilityID(facilityId);
 
 		request.setAttribute("facilityInfo", facilityInfo);
 		request.setAttribute("facilityClosedDayList", facilityClosedDayList);
-
-		RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/jsp/facilityInfomationConfirm.jsp");
-		dispatcher.forward(request, response);
 	}
 
+	// 施設情報確認画面へ遷移する
+	private void forwardToConfirmPage(
+			HttpServletRequest request,
+			HttpServletResponse response)
+			throws ServletException, IOException {
+
+		RequestDispatcher dispatcher =
+				request.getRequestDispatcher(FACILITY_INFORMATION_CONFIRM_JSP);
+		dispatcher.forward(request, response);
+	}
 }
+

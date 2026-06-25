@@ -29,16 +29,15 @@ public class FacilityHomeServlet extends HttpServlet {
 
 		HttpSession session = request.getSession(false);
 
-		// 未ログインならログイン画面へ
-		if (session == null || session.getAttribute("userId") == null) {
+		if (session == null || session.getAttribute("facilityId") == null) {
 			response.sendRedirect("WelcomeServlet");
 			return;
 		}
-		String facilityId = request.getParameter("facilityId");
+
+		String facilityId = (String) session.getAttribute("facilityId");
 
 		FacilityHomeDAO dao = new FacilityHomeDAO();
 
-		// 閲覧数追加
 		FacilityViewDAO viewDAO = new FacilityViewDAO();
 		viewDAO.insertView(facilityId);
 		int viewCount = viewDAO.getViewCount(facilityId);
@@ -47,7 +46,6 @@ public class FacilityHomeServlet extends HttpServlet {
 		List<FacilityPetView> petList = dao.showPetList(facilityId);
 		List<PopularPetView> rankingList = dao.showPopularRanking(facilityId);
 		FacilityPetView favoritePet = dao.showFavoritePet(facilityId);
-
 		List<String> closedDayList = dao.getClosedDays(facilityId);
 
 		request.setAttribute("viewCount", viewCount);
@@ -56,6 +54,7 @@ public class FacilityHomeServlet extends HttpServlet {
 		request.setAttribute("rankingList", rankingList);
 		request.setAttribute("favoritePet", favoritePet);
 		request.setAttribute("closedDayList", closedDayList);
+
 		RequestDispatcher dispatcher = request.getRequestDispatcher("WEB-INF/jsp/facilityHome.jsp");
 		dispatcher.forward(request, response);
 	}

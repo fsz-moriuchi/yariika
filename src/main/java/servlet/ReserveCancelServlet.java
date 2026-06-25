@@ -2,7 +2,6 @@ package servlet;
 
 import java.io.IOException;
 
-import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -20,7 +19,7 @@ public class ReserveCancelServlet extends HttpServlet {
 		HttpSession session = request.getSession(false);
 
 		// 未ログインならログイン画面へ
-		if (session == null || session.getAttribute("facilityId") == null) {
+		if (session == null || session.getAttribute("userId") == null) {
 			response.sendRedirect("WelcomeServlet");
 			return;
 		}
@@ -29,8 +28,6 @@ public class ReserveCancelServlet extends HttpServlet {
 		session.removeAttribute("reservePetID");
 		session.removeAttribute("reserveFacilityID");
 
-		RequestDispatcher dispatcher = request.getRequestDispatcher("HomeServlet");
-		dispatcher.forward(request, response);
+		response.sendRedirect("HomeServlet");
 	}
-
 }
