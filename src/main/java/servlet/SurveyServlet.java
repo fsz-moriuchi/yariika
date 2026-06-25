@@ -1,7 +1,6 @@
 package servlet;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 import jakarta.servlet.RequestDispatcher;
@@ -28,7 +27,7 @@ public class SurveyServlet extends HttpServlet {
 	//PetSurveyServlet
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-
+		request.setCharacterEncoding("UTF-8");
 		HttpSession session = request.getSession(false);
 
 		// 未ログインならログイン画面へ
@@ -39,15 +38,8 @@ public class SurveyServlet extends HttpServlet {
 
 		QuestionSurveyDAO Qdao = new QuestionSurveyDAO();
 		SurveyChoiceDAO Cdao = new SurveyChoiceDAO();
-		List<Question> questionList = Qdao.findAllQuestion();
-		List<Question> petQuestionList = new ArrayList<>();
-
-		for (Question petQ : questionList) {
-			if (petQ.getQuestionID() <= 10) {
-				petQuestionList.add(petQ);
-			}
-		}
-
+		//ペット用質問（10問）をDAOから取る
+		List<Question> petQuestionList = Qdao.findPetQuestions();
 		List<Choice> allChoiceList = Cdao.findAllChoices();
 
 		request.setAttribute("petQuestionList", petQuestionList);
@@ -60,9 +52,23 @@ public class SurveyServlet extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		request.setCharacterEncoding("UTF-8");
-		HttpSession session = request.getSession();
-		String nowPetID = request.getParameter("petID");
+		HttpSession session = request.getSession(false);
 
+		// doPost送信時もログイン状態を確認
+			if (session == null || session.getAttribute("facilityId") == null) {
+				response.sendRedirect("WelcomeServlet");
+				return;
+			}
+		QuestionSurveyDAO Qdao = new QuestionSurveyDAO();
+		List<Question> petQuestionList = Qdao.findPetQuestions();
+		// ペット用アンケート問題が取得できない場合は処理を中断
+		if (petQuestionList == null || petQuestionList.isEmpty()) {
+		    response.setContentType("text/html; charset=UTF-8");
+		    response.getWriter().println("ペット用アンケート問題を取得できませんでした。");
+		    return;
+		}
+		
+		String nowPetID = request.getParameter("petID");
 		//新規入力
 		if (nowPetID == null || nowPetID.isEmpty()) {
 			Pet pet = (Pet) session.getAttribute("pet");
@@ -89,14 +95,21 @@ public class SurveyServlet extends HttpServlet {
 			boolean petInformationResult = dao.createPetInformation(petInformation);
 			boolean petSurveyResult = true;
 
-			for (int qID = 1; qID <= 10; qID++) {
-				int surveyChoiceID = Integer.parseInt(request.getParameter("q" + qID));
+			// 回答を登録
+			for (Question q : petQuestionList) {
+			    int qID = q.getQuestionID();
+				Integer surveyChoiceID = getRequiredIntParameter(request, "q" + qID);
+				if (surveyChoiceID == null) {
+					response.setContentType("text/html; charset=UTF-8");
+					response.getWriter().println("未回答の項目があります。もう一度入力してください。");
+					return;
+				}
+				
 				PetSurvey petSurvey = new PetSurvey(petID, qID, surveyChoiceID);
 				if (!dao.createPetSurvey(petSurvey)) {
 					petSurveyResult = false;
 					break;
 				}
-				;
 			}
 			session.removeAttribute("pet");
 			session.removeAttribute("petInformation");
@@ -112,16 +125,28 @@ public class SurveyServlet extends HttpServlet {
 		}
 		//内容修正
 		else {
-			int petID = Integer.parseInt(nowPetID);
+			Integer petID = getIntValue(nowPetID);
+			
+			if (petID == null) {
+				response.setContentType("text/html; charset=UTF-8");
+				response.getWriter().print("ペットIDが不正です。");
+				return;
+			}
 			PetListDAO dao = new PetListDAO();
 			boolean petSurveyResult = true;
-			for (int qID = 1; qID <= 10; qID++) {
-				int surveyChoiceID = Integer.parseInt(request.getParameter("q" + qID));
+			// 回答を更新
+			for (Question q : petQuestionList) {
+			    int qID = q.getQuestionID();
+			    Integer surveyChoiceID = getRequiredIntParameter(request, "q" + qID);
+			    if (surveyChoiceID == null) {
+					response.setContentType("text/html; charset=UTF-8");
+					response.getWriter().println("未回答の項目があります。もう一度入力してください。");
+					return;
+				}
 				if (!dao.updatePetSurvey(petID, qID, surveyChoiceID)) {
 					petSurveyResult = false;
 					break;
 				}
-				;
 			}
 			if (petSurveyResult) {
 				RequestDispatcher dispatcher = request.getRequestDispatcher("WEB-INF/jsp/petRegisterSuccess.jsp");
@@ -132,4 +157,21 @@ public class SurveyServlet extends HttpServlet {
 			}
 		}
 	}
+	// requestパラメータをIntegerに変換する共通処理
+	private Integer getRequiredIntParameter(HttpServletRequest request, String name) {
+	    String value = request.getParameter(name);
+	    return getIntValue(value);
+	}
+	private Integer getIntValue(String value) {
+	    if (value == null || value.isEmpty()) {
+	        return null;
+	    }
+
+	    try {
+	        return Integer.parseInt(value);
+	    } catch (NumberFormatException e) {
+	        return null;
+	    }
+	}
 }
+

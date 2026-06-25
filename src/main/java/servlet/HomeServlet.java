@@ -29,14 +29,13 @@ public class HomeServlet extends HttpServlet {
 
 		request.setCharacterEncoding("UTF-8");
 
-		HttpSession session = request.getSession();
-		String userId = (String) session.getAttribute("userId");
-		String sort = request.getParameter("sort");
-
+		HttpSession session = request.getSession(false);
 	    if (session == null || session.getAttribute("userId") == null) {
 	        response.sendRedirect("WelcomeServlet");
 	        return;
 	    }
+		String userId = (String) session.getAttribute("userId");
+		String sort = request.getParameter("sort");
 
 		PetListDAO dao1 = new PetListDAO();
 		List<PetInformationView> petList = dao1.showList();

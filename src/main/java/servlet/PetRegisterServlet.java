@@ -2,7 +2,6 @@ package servlet;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 import jakarta.servlet.RequestDispatcher;
@@ -52,16 +51,23 @@ public class PetRegisterServlet extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		request.setCharacterEncoding("UTF-8");
-		HttpSession session = request.getSession();
+		HttpSession session = request.getSession(false);
+		// POST送信時もログイン状態を確認
+		if (session == null || session.getAttribute("facilityId") == null) {
+			response.sendRedirect("WelcomeServlet");
+			return;
+		}
 
 		String action = request.getParameter("action");
-		String facilityId = request.getParameter("facilityId");
-		//新規ペット登録	
+		String facilityId = (String) session.getAttribute("facilityId");		//新規ペット登録	
+		
 		if ("アンケートへ".equals(action)) {
-			int categoryId = Integer.parseInt(request.getParameter("categoryId"));
+			Integer categoryId = getIntValue(request.getParameter("categoryId"));
+			Integer age = getIntValue(request.getParameter("age"));
+			Integer price = getIntValue(request.getParameter("price"));
+
 			String name = request.getParameter("name");
 			String gender = request.getParameter("gender");
-			int age = Integer.parseInt(request.getParameter("age"));
 
 			String[] colorArray = request.getParameterValues("color");
 			String colorText = "";
@@ -76,12 +82,19 @@ public class PetRegisterServlet extends HttpServlet {
 			}
 			String pet_size = request.getParameter("pet_size");
 			String vaccine = request.getParameter("vaccine");
-			int price = Integer.parseInt(request.getParameter("price"));
 			String commentText = request.getParameter("commentText");
 			Part filePart = request.getPart("imageFile");
 
 			String imagePath = null;
 
+			if (categoryId == null || categoryId < 1 || categoryId > 4
+					|| age == null || age < 0
+					|| price == null || price < 0) {
+				response.setContentType("text/html; charset=UTF-8");
+				response.getWriter().println("入力値が不正です。");
+				return;
+			}
+			
 			if (filePart != null && filePart.getSize() > 0) {
 				String fileName = filePart.getSubmittedFileName();
 				String uploadPath = getServletContext().getRealPath("/images");
@@ -115,12 +128,14 @@ public class PetRegisterServlet extends HttpServlet {
 
 		//既存ペット情報更新	
 		else if ("更新".equals(action)) {
-			int petID = Integer.parseInt(request.getParameter("petID"));
+			Integer petID = getIntValue(request.getParameter("petID"));
+			Integer categoryId = getIntValue(request.getParameter("categoryId"));
+			Integer age = getIntValue(request.getParameter("age"));
+			Integer price = getIntValue(request.getParameter("price"));
+			
 			String name = request.getParameter("name");
 			String gender = request.getParameter("gender");
-			int categoryId = Integer.parseInt(request.getParameter("categoryId"));
-			int age = Integer.parseInt(request.getParameter("age"));
-
+			
 			String[] colorArray = request.getParameterValues("color");
 			String colorText = "";
 			if (colorArray != null) {
@@ -133,11 +148,19 @@ public class PetRegisterServlet extends HttpServlet {
 			}
 			String pet_size = request.getParameter("pet_size");
 			String vaccine = request.getParameter("vaccine");
-			int price = Integer.parseInt(request.getParameter("price"));
 			String commentText = request.getParameter("commentText");
 
 			Part filePart = request.getPart("imageFile");
 			String imagePath;
+			
+			if (petID == null
+					|| categoryId == null || categoryId < 1 || categoryId > 4
+					|| age == null || age < 0
+					|| price == null || price < 0) {
+				response.setContentType("text/html; charset=UTF-8");
+				response.getWriter().println("入力値が不正です。");
+				return;
+			}
 
 			// 新しい画像が選択された場合
 			if (filePart != null && filePart.getSize() > 0) {
@@ -152,6 +175,11 @@ public class PetRegisterServlet extends HttpServlet {
 			} else {
 				PetListDAO dao = new PetListDAO();
 				PetDetail petDetail = dao.showPetDetail(petID);
+				if (petDetail == null) {
+					response.setContentType("text/html; charset=UTF-8");
+					response.getWriter().println("ペット情報が見つかりません。");
+					return;
+				}
 				imagePath = petDetail.getImagePath();
 			}
 
@@ -184,25 +212,22 @@ public class PetRegisterServlet extends HttpServlet {
 
 		else if ("アンケート修正".equals(action)) {
 
-			int petID = Integer.parseInt(request.getParameter("petID"));
+			Integer petID = getIntValue(request.getParameter("petID"));
 
+			if (petID == null) {
+				response.setContentType("text/html; charset=UTF-8");
+				response.getWriter().println("ペットIDが不正です。");
+				return;
+			}
 			PetListDAO dao = new PetListDAO();
 			QuestionSurveyDAO qDao = new QuestionSurveyDAO();
 			SurveyChoiceDAO cDao = new SurveyChoiceDAO();
 
 			// 現在の回答
 			List<PetSurvey> petSurveyList = dao.showPetSurvey(petID);
-
-			// 全質問
-			List<Question> questionList = qDao.findAllQuestion();
-
 			// ペット用質問のみ
-			List<Question> petQuestionList = new ArrayList<>();
-			for (Question q : questionList) {
-				if (q.getQuestionID() <= 10) {
-					petQuestionList.add(q);
-				}
-			}
+			List<Question> petQuestionList = qDao.findPetQuestions();
+
 
 			// 全選択肢
 			List<Choice> allChoiceList = cDao.findAllChoices();
@@ -218,8 +243,13 @@ public class PetRegisterServlet extends HttpServlet {
 
 		//既存ペット情報削除		
 		else if ("削除".equals(action)) {
-			int petID = Integer.parseInt(request.getParameter("petID"));
+			Integer petID = getIntValue(request.getParameter("petID"));
 
+			if (petID == null) {
+				response.setContentType("text/html; charset=UTF-8");
+				response.getWriter().println("ペットIDが不正です。");
+				return;
+			}
 			PetListDAO dao = new PetListDAO();
 			boolean result = dao.deletePet(petID);
 			request.setAttribute("petID", petID);
@@ -231,7 +261,22 @@ public class PetRegisterServlet extends HttpServlet {
 				response.getWriter().println("削除失敗");
 			}
 		}
+		else {
+			response.setContentType("text/html; charset=UTF-8");
+			response.getWriter().println("不正な操作です。");
+		}
 
 	}
+	// requestパラメータをIntegerに変換する共通処理
+	private Integer getIntValue(String value) {
+		if (value == null || value.isEmpty()) {
+			return null;
+		}
 
+		try {
+			return Integer.parseInt(value);
+		} catch (NumberFormatException e) {
+			return null;
+		}
+	}
 }

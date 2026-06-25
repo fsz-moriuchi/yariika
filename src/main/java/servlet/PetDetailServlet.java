@@ -32,7 +32,11 @@ public class PetDetailServlet extends HttpServlet {
 			return;
 		}
 
-		Integer petID = Integer.parseInt(request.getParameter("petID"));
+		Integer petID = getIntValue(request.getParameter("petID"));
+		if (petID == null) {
+			response.sendRedirect("HomeServlet");
+			return;
+		}
 		request.setAttribute("petID", petID);
 
 		// 遷移元取得
@@ -52,6 +56,10 @@ public class PetDetailServlet extends HttpServlet {
 
 		PetListDAO dao = new PetListDAO();
 		PetDetail petDetail = dao.showPetDetail(petID);
+		if (petDetail == null) {
+			response.sendRedirect("HomeServlet");
+			return;
+		}
 		request.setAttribute("petDetail", petDetail);
 
 		///////////////////コンフリ部分////////////////////
@@ -81,6 +89,17 @@ public class PetDetailServlet extends HttpServlet {
 
 		RequestDispatcher dispatcher = request.getRequestDispatcher("WEB-INF/jsp/petDetail.jsp");
 		dispatcher.forward(request, response);
+	}
+	private Integer getIntValue(String value) {
+		if (value == null || value.isEmpty()) {
+			return null;
+		}
+
+		try {
+			return Integer.parseInt(value);
+		} catch (NumberFormatException e) {
+			return null;
+		}
 	}
 
 }

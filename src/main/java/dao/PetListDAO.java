@@ -585,9 +585,10 @@ public class PetListDAO {
 			List<Object> selectedList = new ArrayList<>();
 
 			// カテゴリー
-			if (categoryId != null && !categoryId.isEmpty()) {
+			Integer categoryIdValue = getIntValue(categoryId);
+			if (categoryIdValue != null && categoryIdValue >= 1 && categoryIdValue <= 4) {
 				sql += "AND P.CATEGORY_ID = ? ";
-				selectedList.add(Integer.parseInt(categoryId));
+				selectedList.add(categoryIdValue);
 			}
 
 			// 性別
@@ -760,5 +761,16 @@ public class PetListDAO {
 
 		return latestPet;
 	}
+	// requestパラメータをIntegerに変換する共通処理
+	private Integer getIntValue(String value) {
+		if (value == null || value.isEmpty()) {
+			return null;
+		}
 
+		try {
+			return Integer.parseInt(value);
+		} catch (NumberFormatException e) {
+			return null;
+		}
+	}
 }
