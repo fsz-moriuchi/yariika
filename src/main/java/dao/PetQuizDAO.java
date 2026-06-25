@@ -42,8 +42,7 @@ public class PetQuizDAO {
 				quizList.add(quiz);	//listに一件ずつ追加
 			}
 		}catch(Exception e) {
-			e.printStackTrace();
-			return null;
+			throw new RuntimeException("DBエラーが発生しました", e);
 		}
 		//全件まとめて返す
 		return quizList;

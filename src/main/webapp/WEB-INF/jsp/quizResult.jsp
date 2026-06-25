@@ -27,6 +27,11 @@ pageEncoding="UTF-8"%>
 <div class="quiz-result-card">
 
 <h1>クイズ結果</h1>
+<c:if test="${not empty error}">
+    <div style="color:red; font-weight:bold; margin-bottom:15px;">
+        <c:out value="${error}" />
+    </div>
+</c:if>
 
 <%--クイズ結果一覧表示 --%>
 
@@ -36,9 +41,9 @@ pageEncoding="UTF-8"%>
 
 <div class="quiz-result-item">
 
-<p><span class="pet-dot">・</span><span class="pet-label">問題：</span>${qr.question}</p>
-<p><span class="pet-dot">・</span><span class="pet-label">あなたの回答：</span>${qr.userAnswer}(${qr.userAnswerText})</p>
-<p><span class="pet-dot">・</span><span class="pet-label">正解：</span>${qr.answer}(${qr.correctAnswerText})</p>
+<p><span class="pet-dot">・</span><span class="pet-label">問題：</span><c:out value="${qr.question}" /></p>
+<p><span class="pet-dot">・</span><span class="pet-label">あなたの回答：</span><c:out value="${qr.userAnswer}" />(<c:out value="${qr.userAnswerText}" />)</p>
+<p><span class="pet-dot">・</span><span class="pet-label">正解：</span><c:out value="${qr.answer}" />(<c:out value="${qr.correctAnswerText}" />)</p>
 <p><span class="pet-dot">・</span><span class="pet-label">結果：</span>
 <c:choose>
 <c:when test="${qr.correct}"><span class="quiz-correct">○</span></c:when>
@@ -57,8 +62,8 @@ pageEncoding="UTF-8"%>
 
 <div class="quiz-score-box">
 <h3>結果</h3>
-<p>正解数：${count} / ${totalCount}</p>
-<p>正答率：${percent} %</p>
+<p>正解数：<c:out value="${count}" /> / <c:out value="${totalCount}" /></p>
+<p>正答率：<c:out value="${percent}" /> %</p>
 </div>
 </c:if>
 

@@ -27,7 +27,7 @@ public class QuizResultDAO {
 	                "FROM QuizAnswer a " +
 	                "JOIN PetQuiz q ON a.QUIZ_ID = q.QUIZ_ID " +
 	                "WHERE a.USER_ID = ? AND a.QUIZ_SESSION_ID = ? " +
-	                "ORDER BY q.QUIZ_ID DESC";
+	                "ORDER BY q.QUIZ_ID ASC";
 	        
 	        PreparedStatement pStmt = conn.prepareStatement(sql);
 	        pStmt.setString(1, userId);
@@ -47,7 +47,7 @@ public class QuizResultDAO {
 	        	resultList.add(qr);
 	        }
 		}catch (Exception e) {
-			e.printStackTrace();
+			throw new RuntimeException("DBエラーが発生しました", e);
 		}
 		return resultList;
 	}

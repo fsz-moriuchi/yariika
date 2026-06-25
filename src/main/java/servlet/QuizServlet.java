@@ -24,9 +24,10 @@ public class QuizServlet extends HttpServlet {
 		HttpSession session = request.getSession(false);
 
 		// 未ログインならログイン画面へ
-		if (session == null || session.getAttribute("userId") == null) {
-			response.sendRedirect("WelcomeServlet");
-			return;
+		if (session == null || session.getAttribute("user") == null) {
+		    request.setAttribute("error", "ログインが必要です");
+		    request.getRequestDispatcher("login.jsp").forward(request, response);
+		    return;
 		}
 
 		//カテゴリーを取得

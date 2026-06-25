@@ -20,7 +20,7 @@ public class ReserveCancelServlet extends HttpServlet {
 		HttpSession session = request.getSession(false);
 
 		// 未ログインならログイン画面へ
-		if (session == null || session.getAttribute("facilityId") == null) {
+		if (session == null || session.getAttribute("userId") == null) {
 			response.sendRedirect("WelcomeServlet");
 			return;
 		}

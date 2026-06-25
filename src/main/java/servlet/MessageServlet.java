@@ -21,6 +21,44 @@ import model.User;
 public class MessageServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
+	//共通メソッド
+	private String getLoginId(HttpSession session) {
+		User login = (User) session.getAttribute("user");
+		String facilityId = (String) session.getAttribute("facilityId");
+
+		if (login != null)
+			return login.getUserId();
+		if (facilityId != null)
+			return facilityId;
+		return null;
+	}
+
+	private String getRole(HttpSession session) {
+		if (session.getAttribute("user") != null)
+			return "USER";
+		if (session.getAttribute("facilityId") != null)
+			return "FACILITY";
+		return null;
+	}
+
+	private boolean isAuthorized(String role, String loginId, String userId, String facilityId, int petID) {
+	    MessageDAO messageDao = new MessageDAO();
+
+	    // ① なりすましチェック
+	    if ("USER".equals(role)) {
+	        if (!loginId.equals(userId)) {
+	            return false;
+	        }
+	    } else if ("FACILITY".equals(role)) {
+	        if (!loginId.equals(facilityId)) {
+	            return false;
+	        }
+	    }
+
+	    // ② ペットと施設の整合性チェック（←これがさっきのexistsPet）
+	    return messageDao.existsPet(petID, facilityId);
+	}
+
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		//DBからメッセージ取得、message.jspへ
@@ -30,86 +68,60 @@ public class MessageServlet extends HttpServlet {
 
 		// セッションが存在しない
 		if (session == null) {
-			response.sendRedirect("WelcomeServlet");
-			return;
+		    request.setAttribute("errorMessage", "セッションが切れました");
+		    request.getRequestDispatcher("WEB-INF/jsp/messageList.jsp").forward(request, response);
+		    return;
+		}
+		String role = getRole(session);
+		String loginId = getLoginId(session);
+
+		if (role == null) {
+		    request.setAttribute("errorMessage", "ログインしてください");
+		    request.getRequestDispatcher("WEB-INF/jsp/messageList.jsp").forward(request, response);
+		    return;
 		}
 
-		// ログイン情報取得
-		User login = (User) session.getAttribute("user");
-		String facilityId = (String) session.getAttribute("facilityId");
-
-		// ユーザーでも施設でもない場合は未ログイン
-		if (login == null && facilityId == null) {
-			response.sendRedirect("WelcomeServlet");
-			return;
-		}
-		/*if (facilityId == null) {
-		    facilityId = request.getParameter("facilityId");
-		}*/
-
-		String userId;
-
-		// ユーザー
-		if (login != null) {
-			userId = login.getUserId();
-			facilityId = request.getParameter("facilityId");
-			if (facilityId == null || facilityId.isEmpty()) {
-				request.setAttribute("errorMessage", "施設情報が取得できません");
-				RequestDispatcher dispatcher = request.getRequestDispatcher("WEB-INF/jsp/messageList.jsp");
-				dispatcher.forward(request, response);
-				return;
-			}
-		}
-		// 店舗
-		else {
-			userId = request.getParameter("userId");
-			if (userId == null || userId.isEmpty()) {
-				request.setAttribute("errorMessage", "ユーザーIDが取得できません");
-				RequestDispatcher dispatcher = request.getRequestDispatcher("WEB-INF/jsp/messageList.jsp");
-				dispatcher.forward(request, response);
-				return;
-			}
+		// petID
+		int petID;
+		try {
+		    petID = Integer.parseInt(request.getParameter("petID"));
+		} catch (Exception e) {
+		    request.setAttribute("errorMessage", "不正なペットIDです");
+		    request.getRequestDispatcher("WEB-INF/jsp/messageList.jsp").forward(request, response);
+		    return;
 		}
 
-		//共通パラメータ
-		String petIDStr = request.getParameter("petID");
-		int petID = 0;
-		if (petIDStr != null && !petIDStr.isEmpty()) {
-			petID = Integer.parseInt(petIDStr);
-		} else {
-			request.setAttribute("errorMessage", "ペット情報が不正です");
-			RequestDispatcher dispatcher = request.getRequestDispatcher("WEB-INF/jsp/messageList.jsp");
-			dispatcher.forward(request, response);
-			return;
+		// ID組み立て
+		String userId = role.equals("USER")
+				? loginId
+				: request.getParameter("userId");
+
+		String facilityId = role.equals("FACILITY")
+				? loginId
+				: request.getParameter("facilityId");
+
+		// 🔴 認可チェック
+		if (!isAuthorized(role, loginId, userId, facilityId, petID)) {
+		    request.setAttribute("errorMessage", "このメッセージにアクセスできません");
+		    request.getRequestDispatcher("WEB-INF/jsp/messageList.jsp").forward(request, response);
+		    return;
 		}
 
-		//メッセージ取得
 		MessageDAO messageDao = new MessageDAO();
-
-		//未読処理
-		String viewerType;
-		if (login != null) {
-			viewerType = "USER";
-		} else {
-			viewerType = "FACILITY";
-		}
 
 		List<Message> messageList = messageDao.getMessage(userId, facilityId, petID);
 		request.setAttribute("messageList", messageList);
 
-		//ペット詳細取得
 		PetListDAO dao = new PetListDAO();
 		PetDetail petDetail = dao.showPetDetail(petID);
 		request.setAttribute("petDetail", petDetail);
 
-		//既読処理へ
+		String viewerType = role;
 		messageDao.markAsRead(userId, facilityId, petID, viewerType);
 
 		String from = request.getParameter("from");
-		// null対策
-		if (from == null) {
+		if (from == null)
 			from = "list";
-		}
 		request.setAttribute("from", from);
 
 		RequestDispatcher dispatcher = request.getRequestDispatcher("WEB-INF/jsp/message.jsp");
@@ -122,59 +134,59 @@ public class MessageServlet extends HttpServlet {
 		request.setCharacterEncoding("UTF-8");
 		HttpSession session = request.getSession();
 
-		System.out.println("session facilityId=" + session.getAttribute("facilityId"));
-		System.out.println("request facilityId=" + request.getParameter("facilityId"));
+		String role = getRole(session);
+		String loginId = getLoginId(session);
+		
+		if (session == null || role == null) {
+		    request.setAttribute("errorMessage", "ログインしてください");
+		    request.getRequestDispatcher("WEB-INF/jsp/message.jsp").forward(request, response);
+		    return;
+		}
+		
+		String messageText = request.getParameter("messageText");
 
-		User login = (User) session.getAttribute("user");
-		String facilityId = (String) session.getAttribute("facilityId");
-		//ログイン判定
-		if (login == null && facilityId == null) {
-			request.setAttribute("errorMessage", "ログインしてください");
-			RequestDispatcher dispatcher = request.getRequestDispatcher("WEB-INF/jsp/message.jsp");
-			dispatcher.forward(request, response);
+		if (messageText == null || messageText.trim().isEmpty()) {
+			request.setAttribute("errorMessage", "メッセージを入力してください");
+			request.getRequestDispatcher("WEB-INF/jsp/message.jsp").forward(request, response);
 			return;
 		}
-		if (facilityId == null) {
-			facilityId = request.getParameter("facilityId");
+
+		int petID;
+		try {
+		    petID = Integer.parseInt(request.getParameter("petID"));
+		} catch (Exception e) {
+		    request.setAttribute("errorMessage", "不正なペットIDです");
+		    request.getRequestDispatcher("WEB-INF/jsp/message.jsp").forward(request, response);
+		    return;
 		}
 
-		String messageText = request.getParameter("messageText");
-		String petIDStr = request.getParameter("petID");
-		int petID = Integer.parseInt(petIDStr);
+		// ID組み立て
+		String userId = role.equals("USER")
+				? loginId
+				: request.getParameter("userId");
 
-		String userId;
-		String senderType;
+		String facilityId = role.equals("FACILITY")
+				? loginId
+				: request.getParameter("facilityId");
 
-		//ユーザー
-		if (login != null) {
-			userId = login.getUserId();
-			senderType = "USER";
-		}
-		//店舗
-		else {
-			senderType = "FACILITY";
-			userId = request.getParameter("userId");
-			if (userId == null) {
-				request.setAttribute("errorMessage", "不正なアクセスです");
-				RequestDispatcher dispatcher = request.getRequestDispatcher("WEB-INF/jsp/message.jsp");
-				dispatcher.forward(request, response);
-				return;
-			}
+		// 認可チェック（ここ超重要）
+		if (!isAuthorized(role, loginId, userId, facilityId, petID)) {
+		    request.setAttribute("errorMessage", "不正な操作です");
+		    request.getRequestDispatcher("WEB-INF/jsp/message.jsp").forward(request, response);
+		    return;
 		}
 
-		//DB登録
-		Message message = new Message(userId, facilityId, petID, messageText, senderType);
+		Message message = new Message(userId, facilityId, petID, messageText, role);
 
 		MessageDAO dao = new MessageDAO();
 		dao.insertMessage(message);
 
-		System.out.println("petID: " + petIDStr);
-		System.out.println("facilityId: " + facilityId);
-		System.out.println("messageText: " + messageText);
-
 		String from = request.getParameter("from");
-		response.sendRedirect(
-				"MessageServlet?petID=" + petID + "&facilityId=" + facilityId + "&userId=" + userId + "&from=" + from);
-	}
 
+		response.sendRedirect(
+				"MessageServlet?petID=" + petID +
+						"&facilityId=" + facilityId +
+						"&userId=" + userId +
+						"&from=" + from);
+	}
 }

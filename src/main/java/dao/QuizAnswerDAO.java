@@ -26,7 +26,7 @@ public class QuizAnswerDAO {
 			pStmt.setString(4,  answer.getQuizSessionId());
 			pStmt.executeUpdate();
 		}catch (Exception e) {
-			e.printStackTrace();
+			throw new RuntimeException("DBエラーが発生しました", e);
 		}
 	}
 }

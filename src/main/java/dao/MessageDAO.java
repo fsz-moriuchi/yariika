@@ -275,4 +275,47 @@ public class MessageDAO {
 
 		return count;
 	}
+	
+	
+	public boolean existsConversation(String userId, String facilityId, int petID) {
+		try {
+			Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
+		} catch (ClassNotFoundException e) {
+			throw new IllegalStateException("JDBCドライバを読み込めませんでした");
+		}
+		//データベースに接続
+		try (Connection conn = DButil.getConnection()) {
+			//SELECT文を準備
+			String sql = "SELECT COUNT(*) FROM message WHERE USER_ID=? AND FACILITY_ID=? AND petID=?";
+			PreparedStatement pStmt = conn.prepareStatement(sql);
+			pStmt.setString(1, userId);
+			pStmt.setString(2, facilityId);
+			pStmt.setInt(3, petID);
+			
+			ResultSet rs = pStmt.executeQuery();
+			if (rs.next()) {
+				return rs.getInt(1) > 0;
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return false;
+	}
+	
+	public boolean existsPet(int petId, String facilityId) {
+	    try (Connection conn = DButil.getConnection()) {
+	        String sql = "SELECT 1 FROM Pet WHERE petID=? AND FACILITY_ID=?";
+	        PreparedStatement pStmt = conn.prepareStatement(sql);
+	        pStmt.setInt(1, petId);
+	        pStmt.setString(2, facilityId);
+
+	        ResultSet rs = pStmt.executeQuery();
+	        return rs.next();
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    }
+	    return false;
+	}
 }

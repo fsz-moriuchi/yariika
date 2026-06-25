@@ -1,7 +1,6 @@
 package servlet;
 
 import java.io.IOException;
-import java.util.Collections;
 import java.util.List;
 
 import jakarta.servlet.RequestDispatcher;
@@ -29,19 +28,35 @@ public class QuizAnswerServlet extends HttpServlet {
 
 		request.setCharacterEncoding("UTF-8");
 
-		HttpSession session = request.getSession();
+		HttpSession session = request.getSession(false);
+
+		//ログインチェック
+		if (session == null || session.getAttribute("user") == null) {
+			request.setAttribute("error", "ログインが必要です");
+			request.getRequestDispatcher("login.jsp").forward(request, response);
+			return;
+		}
+		//quizList nullチェック
+		List<PetQuiz> petQuizList = (List<PetQuiz>) session.getAttribute("quizList");
+		if (petQuizList == null) {
+			request.setAttribute("error", "不正なアクセスです");
+			request.getRequestDispatcher("WEB-INF/jsp/quizResult.jsp").forward(request, response);
+			return;
+		}
+
+		//quizSessionId nullチェック
+		String quizSessionId = (String) session.getAttribute("quizSessionId");
+		if (quizSessionId == null) {
+			request.setAttribute("error", "セッションが無効です");
+			request.getRequestDispatcher("WEB-INF/jsp/quizResult.jsp").forward(request, response);
+			return;
+		}
 
 		//DAOでクイズを取得
 		PetQuizDAO dao = new PetQuizDAO();
 
-		List<PetQuiz> petQuizList = (List<PetQuiz>) session.getAttribute("quizList");
-		String quizSessionId = (String) session.getAttribute("quizSessionId");
-
 		User login = (User) session.getAttribute("user");
-		if (login == null) {
-			response.sendRedirect("UserLoginServlet");
-			return;
-		}
+
 		String userId = login.getUserId();
 
 		Integer categoryId = (Integer) session.getAttribute("categoryId");
@@ -65,7 +80,14 @@ public class QuizAnswerServlet extends HttpServlet {
 				continue;
 			}
 
-			int userAnswer = Integer.parseInt(value);
+			int userAnswer;
+			try {
+				userAnswer = Integer.parseInt(value);
+				if (userAnswer < 1 || userAnswer > 4)
+					throw new NumberFormatException();
+			} catch (Exception e) {
+				continue;
+			}
 
 			//モデルに詰める
 			QuizAnswer answer = new QuizAnswer(userId, pq.getQuizId(), userAnswer, quizSessionId);
@@ -80,7 +102,12 @@ public class QuizAnswerServlet extends HttpServlet {
 
 		//正答率計算
 		int totalCount = petQuizList.size();
-		int percent = count * 100 / totalCount;
+		int percent;
+		if (totalCount == 0) {
+			percent = 0;
+		} else {
+			percent = count * 100 / totalCount;
+		}
 
 		request.setAttribute("totalCount", totalCount);
 		request.setAttribute("count", count);
@@ -89,8 +116,7 @@ public class QuizAnswerServlet extends HttpServlet {
 		//JOIN
 		QuizResultDAO resultDao = new QuizResultDAO();
 		List<QuizResult> resultList = resultDao.findByUserId(userId, quizSessionId);
-		//クイズ表示順を逆に
-		Collections.reverse(resultList);
+
 		// JSPに渡す
 		request.setAttribute("resultList", resultList);
 		Boolean reserved = (Boolean) session.getAttribute("reserved");

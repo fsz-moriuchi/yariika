@@ -40,19 +40,19 @@ pageEncoding="UTF-8"%>
 <p class="quiz-question-title">${q.question}</p>
 
 <label>
-<input type="radio" name="q${q.quizId}" value="1" required>${q.choice1}
+<input type="radio" name="q${q.quizId}" value="1" required><c:out value="${q.choice1}" />
 </label><br>
 
 <label>
-<input type="radio" name="q${q.quizId}" value="2" required>${q.choice2}
+<input type="radio" name="q${q.quizId}" value="2" required><c:out value="${q.choice2}" />
 </label><br>
 
 <label>
-<input type="radio" name="q${q.quizId}" value="3" required>${q.choice3}
+<input type="radio" name="q${q.quizId}" value="3" required><c:out value="${q.choice3}" />
 </label><br>
 
 <label>
-<input type="radio" name="q${q.quizId}" value="4" required>${q.choice4}
+<input type="radio" name="q${q.quizId}" value="4" required><c:out value="${q.choice4}" />
 </label><br>
 
 </div>
